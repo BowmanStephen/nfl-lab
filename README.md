@@ -6,6 +6,8 @@ Picks are saved with a timestamp before kickoff. The line at that moment is ESPN
 
 This is a research ledger. It is not betting advice.
 
+The box dump this PR started from is in [`pipeline/`](pipeline/) (branch `nfl-lab/box-pipeline`, commit `1c6993f`): team EPA, the frozen backtest, week-5 previews, and week-4 recaps. Run that copy with `python -m src.run` from `pipeline/`. The live card and the site use `uv run nfl-lab` from the repo root.
+
 ## Proof
 
 Locked rule: the model must be at least **2 points** off the spread, or **3 points** off the total. Tuned on 2016–2021 only. Details, including the three-part 2026 bar, are in [PRODUCT.md](PRODUCT.md). Plain-language definitions are in [GLOSSARY.md](GLOSSARY.md).
