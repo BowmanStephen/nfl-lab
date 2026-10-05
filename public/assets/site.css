@@ -70,6 +70,13 @@ nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accen
   padding: 0.8rem 1rem;
   margin: 1rem 0 1.2rem;
 }
+.lock {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-weight: 650;
+}
 .health strong { font-variant-numeric: tabular-nums; }
 .gloss { color: var(--muted); font-size: 0.92rem; max-width: 40rem; }
 .card {

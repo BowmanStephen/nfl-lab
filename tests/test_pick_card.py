@@ -5,7 +5,9 @@ import pytest
 from nfl_lab.odds_espn import MissingLineError
 from nfl_lab.picks import (
     apply_pre_kickoff,
+    apply_unclear_starter_nopick,
     build_games,
+    format_lock_label,
     grade_game,
     grade_spread,
     merge_card,
@@ -115,6 +117,54 @@ def test_zero_move_is_not_toward_us():
     grading = grade_game(game, None, None)
     assert grading["spread_moved_toward"] is False
     assert grading["spread_clv"] == 0
+
+
+def test_lock_label_uses_central_time():
+    label = format_lock_label(5, "2026-10-05T23:42:00+00:00")
+    assert label == (
+        "Official week-5 picks, locked Mon Oct 5 6:42 PM CT, DraftKings lines at lock"
+    )
+
+
+def test_unclear_starter_is_not_scored_when_the_rule_would_fire():
+    games = build_games(
+        [_proj("2026_05_NYG_WAS", "NYG", "WAS", -4, 44)],
+        [_line("NYG", "WAS", 0.5, 43.5)],
+        "2026-10-05T23:42:00+00:00",
+        2.0,
+        3.0,
+    )
+    noted = apply_unclear_starter_nopick(games, "2026_05_NYG_WAS")
+    sel = noted["selection"]
+    assert sel["model_margin"] == -4
+    assert sel["spread_edge"] == -4.5
+    assert sel["locked_rule_would_qualify"] == {"spread": True, "total": False}
+    assert sel["spread_qualifies"] is False
+    assert sel["total_qualifies"] is False
+    assert "Washington's starter is unclear" in sel["no_pick_reason"]
+    assert games[0]["pick_time"]["home_margin"] == 0.5
+
+
+def test_unclear_starter_keeps_the_locked_rule_when_it_already_excludes():
+    games = build_games(
+        [
+            _proj("2026_05_NYG_WAS", "NYG", "WAS", 1, 44),
+            _proj("g2", "CHI", "GB", 1, 44),
+        ],
+        [_line("NYG", "WAS", 0.5, 43.5), _line("CHI", "GB", 1, 44)],
+        "2026-10-05T23:42:00+00:00",
+        2.0,
+        3.0,
+    )
+    apply_unclear_starter_nopick(games, "2026_05_NYG_WAS")
+    was = games[0]["selection"]
+    assert was["spread_qualifies"] is False
+    assert was["total_qualifies"] is False
+    assert "locked rule" in was["no_pick_reason"]
+    assert "Washington's starter is unclear" in was["no_pick_reason"]
+    assert "locked_rule_would_qualify" not in was
+    assert "no_pick_reason" not in games[1]["selection"]
+    assert games[1]["selection"]["spread_qualifies"] is False
 
 
 def test_window_captures_pre_kickoff():

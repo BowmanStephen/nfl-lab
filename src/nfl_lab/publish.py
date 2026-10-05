@@ -123,6 +123,82 @@ def _refresh_freshness(generated_at: datetime) -> None:
     })
 
 
+def _signed_points(value: float) -> str:
+    text = f"{float(value):.1f}"
+    if text.endswith(".0"):
+        text = text[:-2]
+    if float(value) > 0:
+        text = "+" + text
+    return text
+
+
+def model_game_from_card(game: dict) -> dict:
+    """Chart row for one official pick. Market sign matches the existing chart: negative means home is favored."""
+    sel = game["selection"]
+    home_margin = float(game["pick_time"]["home_margin"])
+    spread_pick = None
+    if sel["spread_qualifies"]:
+        points = -home_margin if sel["spread_pick"] == game["home_team"] else home_margin
+        spread_pick = f"{sel['spread_pick']} {_signed_points(points)}"
+    total_pick = None
+    if sel["total_qualifies"]:
+        word = "OVER" if sel["total_pick"] == "over" else "UNDER"
+        total_pick = f"{word} {float(game['pick_time']['total']):.1f}"
+    row = {
+        "game": f"{game['away_team']}@{game['home_team']}",
+        "away": game["away_team"],
+        "home": game["home_team"],
+        "kickoff_utc": game.get("kickoff_utc"),
+        "market_margin_home": -home_margin,
+        "model_margin_home": sel["model_margin"],
+        "market_total": game["pick_time"]["total"],
+        "model_total": sel["model_total"],
+        "spread_edge": sel["spread_edge"],
+        "total_edge": sel["total_edge"],
+        "spread_pick": spread_pick,
+        "total_pick": total_pick,
+        "is_pick": bool(sel["spread_qualifies"] or sel["total_qualifies"]),
+        "away_qb": sel.get("away_qb"),
+        "home_qb": sel.get("home_qb"),
+    }
+    if sel.get("no_pick_reason"):
+        row["no_pick_reason"] = sel["no_pick_reason"]
+    return row
+
+
+def sync_model_page(card: dict, ratings) -> None:
+    """Point the model page at the official card. Leave the holdout block alone."""
+    path = PUBLIC_API / "model.json"
+    if not path.exists():
+        return
+    model = json.loads(path.read_text())
+    ppe = float(model["rating_units"]["points_per_net_epa"])
+    by_team = ratings.set_index("team")
+    for row in model.get("ratings") or []:
+        team = row.get("team")
+        if team not in by_team.index:
+            continue
+        epa = float(by_team.loc[team]["rating"])
+        row["rating_epa"] = round(epa, 6)
+        row["points"] = round(epa * ppe, 2)
+    model["ratings"] = sorted(model.get("ratings") or [], key=lambda r: r.get("points") or 0, reverse=True)
+    model["week"] = card["week"]
+    model["season"] = card["season"]
+    model["games"] = [model_game_from_card(game) for game in card["games"]]
+    model["live_2026"] = {
+        "label": card.get("lock_label"),
+        "holdout_note": card.get("holdout_note"),
+        "settled_picks": card["health"]["settled_picks"],
+        "wins": card["health"]["wins"],
+        "losses": card["health"]["losses"],
+        "pushes": card["health"]["pushes"],
+    }
+    source = model.setdefault("generated_from", {})
+    source["official_picks"] = f"output/live/{card['season']}-week-{int(card['week']):02d}.json"
+    source.pop("preview_lines", None)
+    _write(path, model)
+
+
 def write_site(card: dict, ratings, stats, through_week: int, weekly: list[dict], generated_at: datetime) -> dict:
     PUBLIC_API.mkdir(parents=True, exist_ok=True)
     picks_path = PUBLIC_API / "picks.json"
@@ -144,5 +220,6 @@ def write_site(card: dict, ratings, stats, through_week: int, weekly: list[dict]
         "n_total_picks": sum(1 for g in card["games"] if g["selection"]["total_qualifies"]),
     }
     _write(summary_path, summary)
+    sync_model_page(card, ratings)
     _refresh_freshness(generated_at)
     return summary
