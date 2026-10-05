@@ -1,11 +1,11 @@
 :root {
-  --bg: #f3efe6;
-  --ink: #1c1915;
-  --muted: #5e584e;
-  --line: #e2dacb;
-  --card: #fffdf8;
+  --bg: #f4f0e8;
+  --ink: #241f1a;
+  --muted: #655e54;
+  --line: #ddd4c6;
+  --card: #fffcf6;
   --accent: #0c6b52;
-  --accent-soft: #e5f3ee;
+  --accent-soft: #e7f3ee;
   --spent: #8a4b08;
   --spent-soft: #f8efe3;
   --bad: #8c2f2f;
@@ -19,21 +19,50 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: "Segoe UI", system-ui, sans-serif;
-  line-height: 1.45;
+  font-family: "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
 }
 a { color: var(--accent); }
-h1, h2, h3 { font-family: Georgia, "Iowan Old Style", serif; font-weight: 600; letter-spacing: -0.02em; }
-h1 { font-size: 2.1rem; line-height: 1.1; margin: 0 0 0.3rem; }
-h2 { font-size: 1.35rem; margin: 1.6rem 0 0.4rem; }
-p { margin: 0.4rem 0; }
-.wrap { max-width: 52rem; margin: 0 auto; padding: 1.25rem 1.1rem 3rem; }
-nav { display: flex; flex-wrap: wrap; gap: 0.85rem 1rem; align-items: baseline; margin-bottom: 1.4rem; font-size: 0.92rem; }
+h1, h2, h3, .mark, .side, .pick, .quiet-pick, .score, .model-line, .spent .big {
+  font-family: Georgia, "Iowan Old Style", Palatino, serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+h1 { font-size: clamp(2.15rem, 5vw, 2.85rem); line-height: 1.05; margin: 0.15rem 0 0.45rem; }
+h2 { font-size: 1.35rem; margin: 2rem 0 0.45rem; }
+p { margin: 0.55rem 0; }
+.wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem 4.5rem; }
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.45rem 1.4rem;
+  margin: 0 -1.25rem 1.7rem;
+  padding: 0.85rem 1.25rem 0.7rem;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+}
+.mark {
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+}
+.mark span { color: var(--accent); font-weight: 500; }
+nav { display: flex; flex-wrap: wrap; gap: 0.35rem 0.95rem; align-items: baseline; margin: 0; font-size: 0.92rem; }
 .game ul { max-width: 38rem; padding-left: 1.15rem; }
-.game li { margin: 0.35rem 0; }
-nav a { color: var(--ink); text-decoration: none; border-bottom: 1px solid transparent; }
-nav a[aria-current="page"] { border-bottom-color: var(--ink); }
-.kicker { color: var(--muted); font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.game li { margin: 0.4rem 0; }
+nav a { color: var(--muted); text-decoration: none; border-bottom: 1px solid transparent; padding-bottom: 0.05rem; }
+nav a:hover { color: var(--ink); }
+nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); }
+.kicker { color: var(--muted); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0; }
+.trail { margin: 0.35rem 0 0.2rem; font-size: 0.98rem; }
 .health {
   background: var(--card);
   border: 1px solid var(--line);
@@ -46,12 +75,12 @@ nav a[aria-current="page"] { border-bottom-color: var(--ink); }
 .card {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 0.95rem 1rem 1rem;
-  margin: 0.7rem 0;
+  border-radius: 16px;
+  padding: 1.05rem 1.15rem 1.15rem;
+  margin: 0.85rem 0;
 }
 .card header { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
-.side { color: var(--accent); font-family: Georgia, serif; font-size: 1.35rem; margin: 0.2rem 0 0.4rem; }
+.side { color: var(--accent); font-size: 1.7rem; line-height: 1.1; margin: 0.35rem 0 0.55rem; }
 .meta { color: var(--muted); font-size: 0.85rem; }
 .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin: 0.6rem 0; }
 .nums div { background: var(--bg); border-radius: 8px; padding: 0.45rem 0.55rem; }
@@ -114,17 +143,25 @@ footer { margin-top: 2rem; color: var(--muted); font-size: 0.85rem; }
   max-width: 36rem;
 }
 .epa-lead { max-width: 40rem; font-size: 1.05rem; line-height: 1.55; margin: 0.5rem 0 0.2rem; }
-.game { padding: 1.35rem 0 0.4rem; border-top: 1px solid var(--line); margin-top: 1.15rem; }
-.game h2 { font-size: clamp(1.65rem, 4vw, 2.15rem); line-height: 1.1; margin: 0 0 0.55rem; }
+.game { padding: 1.85rem 0 0.35rem; border-top: 1px solid var(--line); margin-top: 0.35rem; }
+.game h2 { font-size: clamp(1.7rem, 4vw, 2.2rem); line-height: 1.08; margin: 0.2rem 0 0.45rem; }
 .game h2 a { color: inherit; text-decoration: none; }
 .game h2 a:hover { color: var(--accent); }
 .game p { max-width: 38rem; font-size: 1.05rem; line-height: 1.58; }
+.game .kicker { font-size: 0.78rem; }
+.game .pick { font-size: clamp(1.85rem, 5vw, 2.25rem); }
+.game .quiet-pick { font-size: 1.35rem; }
+.game .market { font-size: 1rem; }
+.game .model-line { font-size: 1.25rem; }
+.game .lesson { font-size: 1.02rem; }
+.prose .model-line { font-size: 1.35rem; }
 .lesson {
   max-width: 38rem;
-  margin: 0.85rem 0 0.2rem;
-  padding: 0.75rem 0.95rem;
-  background: var(--accent-soft);
-  border-radius: 12px;
+  margin: 1rem 0 0.3rem;
+  padding: 0.1rem 0 0.1rem 0.9rem;
+  border-left: 3px solid var(--accent);
+  background: transparent;
+  border-radius: 0;
 }
 .lesson span {
   display: block;
@@ -136,17 +173,15 @@ footer { margin-top: 2rem; color: var(--muted); font-size: 0.85rem; }
 }
 .more { font-size: 0.95rem; }
 .pick {
-  font-family: Georgia, "Iowan Old Style", serif;
-  font-size: clamp(1.45rem, 3.5vw, 1.9rem);
+  font-size: clamp(1.75rem, 4vw, 2.2rem);
   color: var(--accent);
-  line-height: 1.15;
-  margin: 0.1rem 0 0.55rem;
+  line-height: 1.08;
+  margin: 0.15rem 0 0.45rem;
 }
 .quiet-pick {
-  font-family: Georgia, "Iowan Old Style", serif;
-  font-size: 1.2rem;
+  font-size: 1.35rem;
   color: var(--muted);
-  margin: 0.1rem 0 0.55rem;
+  margin: 0.15rem 0 0.45rem;
 }
 .market { color: var(--muted); max-width: 40rem; }
 
