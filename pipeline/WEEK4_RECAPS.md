@@ -35,7 +35,7 @@ Las Vegas ran 18 more plays and had a higher success rate. It still lost, becaus
 Both offenses were below average per play. Justin Herbert got sacked 4 times and threw or fumbled away 3 turnovers, and that was the difference.
 
 ### Rams 24, Eagles 20
-Philadelphia went **0 for 12 on third down**. Only a third of its plays succeeded, and Jalen Hurts was sacked 4 times. The Rams turned it over twice and still won comfortably on efficiency.
+Philadelphia went **0 for 12 on third down**. Only a third of its plays succeeded, and Jalen Hurts was sacked 4 times. The Rams turned it over twice and still won because they stayed on schedule (half their plays succeeded).
 
 ### Vikings 15, Dolphins 10
 Miami ran only 37 plays. Malik Willis's passing cost about **11 points** on 20 dropbacks. Minnesota wasn't sharp, but it kept the ball.
