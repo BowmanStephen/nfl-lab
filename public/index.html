@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <title>NFL Lab — this week</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="home">
+  <div class="wrap">
+    <nav>
+      <a href="index.html" aria-current="page">Picks</a>
+      <a href="ledger.html">Ledger</a>
+      <a href="teams.html">Teams</a>
+      <a href="freshness.html">Freshness</a>
+    </nav>
+    <p class="kicker" id="kicker">This week</p>
+    <h1>This week's picks</h1>
+    <p>Only the games where the model is at least 2 points off the spread, or 3 off the total. Research record, not a bet slip.</p>
+    <div class="health" id="health">Loading this week's card…</div>
+    <p class="meta" id="count"></p>
+    <h2>Spread picks</h2>
+    <p class="gloss">The spread is the market's guess at the final margin. The model's <strong>edge</strong> = model margin minus market margin. NFL Lab only makes a pick when the edge is <strong>2+ points on the spread</strong> or <strong>3+ points on the total</strong>.</p>
+    <div id="spreads"></div>
+    <h2>Total picks</h2>
+    <div id="totals"></div>
+    <footer>
+      <p>Lines are ESPN DraftKings, saved when the pick was written. The same book is checked again just before kickoff. That endpoint is unofficial and can change.</p>
+      <p>Margin includes a starting-QB adjustment checked on 2016–2021 only. It is not in the 2022–2025 ledger.</p>
+    </footer>
+  </div>
+  <script src="assets/site.js"></script>
+</body>
+</html>

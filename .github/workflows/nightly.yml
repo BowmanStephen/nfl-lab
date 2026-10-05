@@ -1,0 +1,66 @@
+name: nightly
+
+# One command. Refresh data and the pick card, then commit JSON.
+# A missing ESPN DraftKings line fails the job. The schedule stays alive
+# because a successful run commits.
+
+on:
+  schedule:
+    # Morning refresh, US time, so a new week is ready before Thursday.
+    - cron: "15 11 * * *"
+    # Hourly during NFL kickoff windows (Thu–Mon, afternoon through late night ET).
+    - cron: "15 16-23,0-4 * * 0,1,4,5,6"
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "refresh, pick-card, or line-snapshot"
+        required: false
+        default: refresh
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nfl-lab-nightly
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/cache@v4
+        with:
+          path: data
+          key: nflverse-${{ github.run_id }}
+          restore-keys: nflverse-
+      - name: Install
+        run: uv sync --frozen --all-groups
+      - name: Choose command
+        id: cmd
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            CMD="${{ inputs.command }}"
+          elif [ "${{ github.event.schedule }}" = "15 16-23,0-4 * * 0,1,4,5,6" ]; then
+            CMD="line-snapshot"
+          else
+            CMD="refresh"
+          fi
+          case "$CMD" in
+            refresh|pick-card|line-snapshot) ;;
+            *) echo "unknown command: $CMD" >&2; exit 1 ;;
+          esac
+          echo "command=$CMD" >> "$GITHUB_OUTPUT"
+      - name: Run
+        run: uv run nfl-lab ${{ steps.cmd.outputs.command }}
+      - name: Commit snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/api output/live
+          git diff --cached --quiet && echo "nothing to commit" && exit 0
+          git commit -m "refresh: pick card and site JSON"
+          git push

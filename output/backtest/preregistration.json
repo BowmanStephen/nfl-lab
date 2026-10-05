@@ -1,0 +1,35 @@
+{
+  "locked_at": "2026-10-05T00:23:40.782808-05:00",
+  "locked_at_utc": "2026-10-05T05:23:40.782808+00:00",
+  "headline_rule": {
+    "spread": "Bet the side where |model_margin - closing_spread_line| >= 2.0 points (side = model's side of the line).",
+    "total": "Bet over/under where |model_total - closing_total_line| >= 3.0 points (direction = model's side).",
+    "spread_edge_min": 2.0,
+    "total_edge_min": 3.0,
+    "lines_source": "nflverse/Lee Sharpe schedules (games.csv) spread_line (home-margin convention) and total_line",
+    "breakeven_at_minus_110": 0.5238,
+    "pushes": "excluded from win rate, counted separately"
+  },
+  "tuning_window": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ],
+  "holdout_window": [
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "holdout_policy": "All hyperparameters and regression coefficients frozen using 2016-2021 only. Holdout graded once with the locked rule; that is the headline result.",
+  "walk_forward_policy": "Each week's projection uses only games before that week: current-season ratings through week-1, priors from strictly earlier seasons, model params frozen from tuning window.",
+  "descriptive_only": [
+    "edge-size buckets",
+    "per-season splits",
+    "tuning-window ATS results"
+  ],
+  "tuning_objective": "Leave-one-season-out MAE vs final margin within 2016-2021 (ATS-free; no line data used in tuning)."
+}

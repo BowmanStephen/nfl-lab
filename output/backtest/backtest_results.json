@@ -1,0 +1,969 @@
+{
+  "preregistration": {
+    "locked_at": "2026-10-05T00:23:40.782808-05:00",
+    "locked_at_utc": "2026-10-05T05:23:40.782808+00:00",
+    "headline_rule": {
+      "spread": "Bet the side where |model_margin - closing_spread_line| >= 2.0 points (side = model's side of the line).",
+      "total": "Bet over/under where |model_total - closing_total_line| >= 3.0 points (direction = model's side).",
+      "spread_edge_min": 2.0,
+      "total_edge_min": 3.0,
+      "lines_source": "nflverse/Lee Sharpe schedules (games.csv) spread_line (home-margin convention) and total_line",
+      "breakeven_at_minus_110": 0.5238,
+      "pushes": "excluded from win rate, counted separately"
+    },
+    "tuning_window": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021
+    ],
+    "holdout_window": [
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "holdout_policy": "All hyperparameters and regression coefficients frozen using 2016-2021 only. Holdout graded once with the locked rule; that is the headline result.",
+    "walk_forward_policy": "Each week's projection uses only games before that week: current-season ratings through week-1, priors from strictly earlier seasons, model params frozen from tuning window.",
+    "descriptive_only": [
+      "edge-size buckets",
+      "per-season splits",
+      "tuning-window ATS results"
+    ],
+    "tuning_objective": "Leave-one-season-out MAE vs final margin within 2016-2021 (ATS-free; no line data used in tuning)."
+  },
+  "graded_at": "2026-10-05T00:26:16.182966-05:00",
+  "locked_model": {
+    "locked_at": "2026-10-05T00:25:49.092267-05:00",
+    "fit_on_seasons": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021
+    ],
+    "prior_regress": 0.3,
+    "prior_plays_equiv": 1200,
+    "prior_seasons_weighting": "S-3:S-2:S-1 = 1:2:3",
+    "points_per_net_epa": 81.22071383225719,
+    "hfa": 1.4703715732185563,
+    "margin_sigma": 13.50392487843858,
+    "points_per_combined_off": 19.41067783178249,
+    "base_total": 46.15196331795182,
+    "total_sigma": 13.973237205269175,
+    "n_fit_games": 1550
+  },
+  "HEADLINE_holdout": {
+    "window": "holdout 2022-2025 (untouched, graded once)",
+    "seasons": [
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "accuracy_ats_free": {
+      "n_games": 1087,
+      "model_mae_margin": 10.103019630130195,
+      "market_mae_margin": 9.494480220791168,
+      "model_mae_total": 10.82028941980107,
+      "market_mae_total": 10.189052437902484,
+      "model_brier": 0.22652294751884833,
+      "market_brier_from_spread": 0.21051423132320693,
+      "model_straight_up_acc": 0.6309963099630996,
+      "corr_model_margin": 0.35250224992341894
+    },
+    "locked_rule": {
+      "spread": {
+        "bets": 569,
+        "wins": 268,
+        "losses": 281,
+        "pushes": 20,
+        "win_rate": 0.48816029143898,
+        "win_rate_ci95": [
+          0.4465751177096987,
+          0.5299100033090266
+        ],
+        "p_value_vs_breakeven_one_sided": 0.9567715482311746,
+        "roi_at_minus_110": -0.06566544176386006,
+        "units_at_minus_110": -37.363636363636374,
+        "beats_breakeven": false
+      },
+      "total": {
+        "bets": 548,
+        "wins": 277,
+        "losses": 266,
+        "pushes": 5,
+        "win_rate": 0.5101289134438306,
+        "win_rate_ci95": [
+          0.468159221251964,
+          0.5519562981962548
+        ],
+        "p_value_vs_breakeven_one_sided": 0.7522470051375321,
+        "roi_at_minus_110": -0.025879230258792314,
+        "units_at_minus_110": -14.181818181818187,
+        "beats_breakeven": false
+      }
+    },
+    "all_games_model_side": {
+      "spread": {
+        "bets": 1087,
+        "wins": 518,
+        "losses": 540,
+        "pushes": 29,
+        "win_rate": 0.4896030245746692,
+        "win_rate_ci95": [
+          0.45957332053450883,
+          0.5197079555757368
+        ],
+        "p_value_vs_breakeven_one_sided": 0.9880052570930201,
+        "roi_at_minus_110": -0.0635610939198796,
+        "units_at_minus_110": -69.09090909090912,
+        "beats_breakeven": false
+      },
+      "total": {
+        "bets": 1087,
+        "wins": 532,
+        "losses": 547,
+        "pushes": 8,
+        "win_rate": 0.49304911955514363,
+        "win_rate_ci95": [
+          0.46329589409430644,
+          0.5228516625236898
+        ],
+        "p_value_vs_breakeven_one_sided": 0.9799429587836637,
+        "roi_at_minus_110": -0.058292213765994826,
+        "units_at_minus_110": -63.363636363636374,
+        "beats_breakeven": false
+      }
+    },
+    "descriptive_only__spread_edge_buckets": [
+      {
+        "edge_bucket": "0-1",
+        "bets": 279,
+        "wins": 139,
+        "losses": 135,
+        "pushes": 5,
+        "win_rate": 0.5072992700729927,
+        "win_rate_ci95": [
+          0.4484123474729691,
+          0.5659843520584042
+        ],
+        "p_value_vs_breakeven_one_sided": 0.7284652262221185,
+        "roi_at_minus_110": -0.030954708374063226,
+        "units_at_minus_110": -8.63636363636364,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "1-2",
+        "bets": 239,
+        "wins": 111,
+        "losses": 124,
+        "pushes": 4,
+        "win_rate": 0.4723404255319149,
+        "win_rate_ci95": [
+          0.40947003012283506,
+          0.5361005585672989
+        ],
+        "p_value_vs_breakeven_one_sided": 0.9499468397917136,
+        "roi_at_minus_110": -0.09661468238874098,
+        "units_at_minus_110": -23.090909090909093,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "2-3",
+        "bets": 199,
+        "wins": 95,
+        "losses": 94,
+        "pushes": 10,
+        "win_rate": 0.5026455026455027,
+        "win_rate_ci95": [
+          0.4320241333089747,
+          0.5731614735937911
+        ],
+        "p_value_vs_breakeven_one_sided": 0.744053325414213,
+        "roi_at_minus_110": -0.03837368661489266,
+        "units_at_minus_110": -7.63636363636364,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "3+",
+        "bets": 370,
+        "wins": 173,
+        "losses": 187,
+        "pushes": 10,
+        "win_rate": 0.48055555555555557,
+        "win_rate_ci95": [
+          0.42942310173489373,
+          0.5320986004774444
+        ],
+        "p_value_vs_breakeven_one_sided": 0.9549781859643385,
+        "roi_at_minus_110": -0.08034398034398033,
+        "units_at_minus_110": -29.72727272727272,
+        "beats_breakeven": false
+      }
+    ],
+    "descriptive_only__total_edge_buckets": [
+      {
+        "edge_bucket": "0-1",
+        "bets": 178,
+        "wins": 85,
+        "losses": 92,
+        "pushes": 1,
+        "win_rate": 0.480225988700565,
+        "win_rate_ci95": [
+          0.4078284200308051,
+          0.5534636418357133
+        ],
+        "p_value_vs_breakeven_one_sided": 0.891756862772121,
+        "roi_at_minus_110": -0.08273748723186929,
+        "units_at_minus_110": -14.727272727272734,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "1-2",
+        "bets": 188,
+        "wins": 87,
+        "losses": 99,
+        "pushes": 2,
+        "win_rate": 0.46774193548387094,
+        "win_rate_ci95": [
+          0.39741480956015346,
+          0.5393745510223837
+        ],
+        "p_value_vs_breakeven_one_sided": 0.9456164954070675,
+        "roi_at_minus_110": -0.10589941972920695,
+        "units_at_minus_110": -19.909090909090907,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "2-3",
+        "bets": 173,
+        "wins": 83,
+        "losses": 90,
+        "pushes": 0,
+        "win_rate": 0.4797687861271676,
+        "win_rate_ci95": [
+          0.4065743311059772,
+          0.5538421908641478
+        ],
+        "p_value_vs_breakeven_one_sided": 0.8917033693125006,
+        "roi_at_minus_110": -0.08407777193904362,
+        "units_at_minus_110": -14.545454545454547,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "3-5",
+        "bets": 250,
+        "wins": 127,
+        "losses": 121,
+        "pushes": 2,
+        "win_rate": 0.5120967741935484,
+        "win_rate_ci95": [
+          0.4501775647423217,
+          0.573646947822434
+        ],
+        "p_value_vs_breakeven_one_sided": 0.6677101447632763,
+        "roi_at_minus_110": -0.022181818181818188,
+        "units_at_minus_110": -5.545454545454547,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "5+",
+        "bets": 298,
+        "wins": 150,
+        "losses": 145,
+        "pushes": 3,
+        "win_rate": 0.5084745762711864,
+        "win_rate_ci95": [
+          0.4516848250997349,
+          0.5650464544882156
+        ],
+        "p_value_vs_breakeven_one_sided": 0.7211157228097284,
+        "roi_at_minus_110": -0.028981086028065955,
+        "units_at_minus_110": -8.636363636363654,
+        "beats_breakeven": false
+      }
+    ],
+    "descriptive_only__per_season": [
+      {
+        "season": 2022,
+        "accuracy_ats_free": {
+          "n_games": 271,
+          "model_mae_margin": 9.241874009393573,
+          "market_mae_margin": 8.74169741697417,
+          "model_mae_total": 11.309136861675544,
+          "market_mae_total": 10.394833948339484,
+          "model_brier": 0.22696439109977457,
+          "market_brier_from_spread": 0.21000008248525545,
+          "model_straight_up_acc": 0.6171003717472119,
+          "corr_model_margin": 0.2683761735791655
+        },
+        "locked_rule_spread": {
+          "bets": 135,
+          "wins": 62,
+          "losses": 67,
+          "pushes": 6,
+          "win_rate": 0.4806201550387597,
+          "win_rate_ci95": [
+            0.3962167097966134,
+            0.5661444382637307
+          ],
+          "p_value_vs_breakeven_one_sided": 0.8577417255217668,
+          "roi_at_minus_110": -0.07878787878787882,
+          "units_at_minus_110": -10.63636363636364,
+          "beats_breakeven": false
+        },
+        "locked_rule_total": {
+          "bets": 150,
+          "wins": 71,
+          "losses": 77,
+          "pushes": 2,
+          "win_rate": 0.4797297297297297,
+          "win_rate_ci95": [
+            0.4007777542712146,
+            0.5597073461315334
+          ],
+          "p_value_vs_breakeven_one_sided": 0.8761178842613054,
+          "roi_at_minus_110": -0.08303030303030302,
+          "units_at_minus_110": -12.454545454545453,
+          "beats_breakeven": false
+        }
+      },
+      {
+        "season": 2023,
+        "accuracy_ats_free": {
+          "n_games": 272,
+          "model_mae_margin": 10.586247330947174,
+          "market_mae_margin": 9.900735294117647,
+          "model_mae_total": 11.064943219781025,
+          "market_mae_total": 10.238970588235293,
+          "model_brier": 0.23414448795505144,
+          "market_brier_from_spread": 0.21733020756972032,
+          "model_straight_up_acc": 0.6066176470588235,
+          "corr_model_margin": 0.32807200168052036
+        },
+        "locked_rule_spread": {
+          "bets": 154,
+          "wins": 72,
+          "losses": 72,
+          "pushes": 10,
+          "win_rate": 0.5,
+          "win_rate_ci95": [
+            0.4194027960425476,
+            0.5805972039574524
+          ],
+          "p_value_vs_breakeven_one_sided": 0.7441024061641328,
+          "roi_at_minus_110": -0.042502951593860694,
+          "units_at_minus_110": -6.545454545454547,
+          "beats_breakeven": false
+        },
+        "locked_rule_total": {
+          "bets": 161,
+          "wins": 83,
+          "losses": 76,
+          "pushes": 2,
+          "win_rate": 0.5220125786163522,
+          "win_rate_ci95": [
+            0.4447705297128774,
+            0.5982160662725329
+          ],
+          "p_value_vs_breakeven_one_sided": 0.5501114747178815,
+          "roi_at_minus_110": -0.0033879164313947003,
+          "units_at_minus_110": -0.5454545454545467,
+          "beats_breakeven": false
+        }
+      },
+      {
+        "season": 2024,
+        "accuracy_ats_free": {
+          "n_games": 272,
+          "model_mae_margin": 10.149490549915429,
+          "market_mae_margin": 9.610294117647058,
+          "model_mae_total": 9.99599088908252,
+          "market_mae_total": 9.729779411764707,
+          "model_brier": 0.21391277203052983,
+          "market_brier_from_spread": 0.2031009565023274,
+          "model_straight_up_acc": 0.6838235294117647,
+          "corr_model_margin": 0.42623053040839093
+        },
+        "locked_rule_spread": {
+          "bets": 145,
+          "wins": 73,
+          "losses": 69,
+          "pushes": 3,
+          "win_rate": 0.5140845070422535,
+          "win_rate_ci95": [
+            0.4325969169065103,
+            0.5948301263522782
+          ],
+          "p_value_vs_breakeven_one_sided": 0.6244108530214334,
+          "roi_at_minus_110": -0.01818181818181821,
+          "units_at_minus_110": -2.6363636363636402,
+          "beats_breakeven": false
+        },
+        "locked_rule_total": {
+          "bets": 121,
+          "wins": 66,
+          "losses": 54,
+          "pushes": 1,
+          "win_rate": 0.55,
+          "win_rate_ci95": [
+            0.46081543419687576,
+            0.6360826491612539
+          ],
+          "p_value_vs_breakeven_one_sided": 0.3150145930400285,
+          "roi_at_minus_110": 0.049586776859504134,
+          "units_at_minus_110": 6.0,
+          "beats_breakeven": true
+        }
+      },
+      {
+        "season": 2025,
+        "accuracy_ats_free": {
+          "n_games": 272,
+          "model_mae_margin": 10.431300653717782,
+          "market_mae_margin": 9.722426470588236,
+          "model_mae_total": 10.91288394190738,
+          "market_mae_total": 10.393382352941176,
+          "model_brier": 0.23107176194437903,
+          "market_brier_from_spread": 0.21162378848244381,
+          "model_straight_up_acc": 0.6162361623616236,
+          "corr_model_margin": 0.36386322551891803
+        },
+        "locked_rule_spread": {
+          "bets": 135,
+          "wins": 61,
+          "losses": 73,
+          "pushes": 1,
+          "win_rate": 0.4552238805970149,
+          "win_rate_ci95": [
+            0.37332816938325647,
+            0.5396152940517196
+          ],
+          "p_value_vs_breakeven_one_sided": 0.9530876230756948,
+          "roi_at_minus_110": -0.12996632996632998,
+          "units_at_minus_110": -17.545454545454547,
+          "beats_breakeven": false
+        },
+        "locked_rule_total": {
+          "bets": 116,
+          "wins": 57,
+          "losses": 59,
+          "pushes": 0,
+          "win_rate": 0.49137931034482757,
+          "win_rate_ci95": [
+            0.4021496603059668,
+            0.5811616242888545
+          ],
+          "p_value_vs_breakeven_one_sided": 0.7860094764099309,
+          "roi_at_minus_110": -0.0619122257053292,
+          "units_at_minus_110": -7.181818181818187,
+          "beats_breakeven": false
+        }
+      }
+    ]
+  },
+  "descriptive_only__tuning_window_in_sample": {
+    "window": "tuning 2016-2021 (in-sample, descriptive)",
+    "seasons": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021
+    ],
+    "accuracy_ats_free": {
+      "n_games": 1550,
+      "model_mae_margin": 10.479894924707255,
+      "market_mae_margin": 9.993548387096775,
+      "model_mae_total": 11.063900274440671,
+      "market_mae_total": 10.57741935483871,
+      "model_brier": 0.226711124377389,
+      "market_brier_from_spread": 0.2101930747590793,
+      "model_straight_up_acc": 0.627349319507453,
+      "corr_model_margin": 0.3555789270065968
+    },
+    "locked_rule": {
+      "spread": {
+        "bets": 820,
+        "wins": 410,
+        "losses": 397,
+        "pushes": 13,
+        "win_rate": 0.5080545229244114,
+        "win_rate_ci95": [
+          0.47360562209187634,
+          0.5424271052169956
+        ],
+        "p_value_vs_breakeven_one_sided": 0.8241890991279309,
+        "roi_at_minus_110": -0.02960088691796013,
+        "units_at_minus_110": -24.27272727272731,
+        "beats_breakeven": false
+      },
+      "total": {
+        "bets": 742,
+        "wins": 372,
+        "losses": 364,
+        "pushes": 6,
+        "win_rate": 0.5054347826086957,
+        "win_rate_ci95": [
+          0.4693799669003147,
+          0.5414331605672267
+        ],
+        "p_value_vs_breakeven_one_sided": 0.8496632625406959,
+        "roi_at_minus_110": -0.03479539328595932,
+        "units_at_minus_110": -25.818181818181813,
+        "beats_breakeven": false
+      }
+    },
+    "all_games_model_side": {
+      "spread": {
+        "bets": 1550,
+        "wins": 758,
+        "losses": 756,
+        "pushes": 36,
+        "win_rate": 0.5006605019815059,
+        "win_rate_ci95": [
+          0.47550497772699557,
+          0.5258126829472318
+        ],
+        "p_value_vs_breakeven_one_sided": 0.9662641185317418,
+        "roi_at_minus_110": -0.04316715542521992,
+        "units_at_minus_110": -66.90909090909088,
+        "beats_breakeven": false
+      },
+      "total": {
+        "bets": 1550,
+        "wins": 769,
+        "losses": 768,
+        "pushes": 13,
+        "win_rate": 0.5003253090435914,
+        "win_rate_ci95": [
+          0.4753590694361326,
+          0.5252899266005949
+        ],
+        "p_value_vs_breakeven_one_sided": 0.9691363037973624,
+        "roi_at_minus_110": -0.04445747800586508,
+        "units_at_minus_110": -68.90909090909088,
+        "beats_breakeven": false
+      }
+    },
+    "descriptive_only__spread_edge_buckets": [
+      {
+        "edge_bucket": "0-1",
+        "bets": 377,
+        "wins": 177,
+        "losses": 191,
+        "pushes": 9,
+        "win_rate": 0.48097826086956524,
+        "win_rate_ci95": [
+          0.43039065215803607,
+          0.5319588931444125
+        ],
+        "p_value_vs_breakeven_one_sided": 0.9551055517727077,
+        "roi_at_minus_110": -0.07981673498914879,
+        "units_at_minus_110": -30.090909090909093,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "1-2",
+        "bets": 353,
+        "wins": 171,
+        "losses": 168,
+        "pushes": 14,
+        "win_rate": 0.504424778761062,
+        "win_rate_ci95": [
+          0.45145096233304666,
+          0.5572994379549449
+        ],
+        "p_value_vs_breakeven_one_sided": 0.7791373177030794,
+        "roi_at_minus_110": -0.03553953129023955,
+        "units_at_minus_110": -12.545454545454561,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "2-3",
+        "bets": 255,
+        "wins": 136,
+        "losses": 112,
+        "pushes": 7,
+        "win_rate": 0.5483870967741935,
+        "win_rate_ci95": [
+          0.4861819463812286,
+          0.6091161038777938
+        ],
+        "p_value_vs_breakeven_one_sided": 0.2386092174898415,
+        "roi_at_minus_110": 0.045632798573975,
+        "units_at_minus_110": 11.636363636363626,
+        "beats_breakeven": true
+      },
+      {
+        "edge_bucket": "3+",
+        "bets": 565,
+        "wins": 274,
+        "losses": 285,
+        "pushes": 6,
+        "win_rate": 0.49016100178890876,
+        "win_rate_ci95": [
+          0.4489289646053045,
+          0.5315273436008323
+        ],
+        "p_value_vs_breakeven_one_sided": 0.9489284033967365,
+        "roi_at_minus_110": -0.06355591311343524,
+        "units_at_minus_110": -35.90909090909091,
+        "beats_breakeven": false
+      }
+    ],
+    "descriptive_only__total_edge_buckets": [
+      {
+        "edge_bucket": "0-1",
+        "bets": 291,
+        "wins": 140,
+        "losses": 150,
+        "pushes": 1,
+        "win_rate": 0.4827586206896552,
+        "win_rate_ci95": [
+          0.4258484486976985,
+          0.540119593932725
+        ],
+        "p_value_vs_breakeven_one_sided": 0.9275716414328534,
+        "roi_at_minus_110": -0.07810059356451111,
+        "units_at_minus_110": -22.727272727272734,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "1-2",
+        "bets": 267,
+        "wins": 128,
+        "losses": 135,
+        "pushes": 4,
+        "win_rate": 0.4866920152091255,
+        "win_rate_ci95": [
+          0.4269128067691822,
+          0.5468543880627734
+        ],
+        "p_value_vs_breakeven_one_sided": 0.8973580067583403,
+        "roi_at_minus_110": -0.06979911474293499,
+        "units_at_minus_110": -18.63636363636364,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "2-3",
+        "bets": 250,
+        "wins": 129,
+        "losses": 119,
+        "pushes": 2,
+        "win_rate": 0.5201612903225806,
+        "win_rate_ci95": [
+          0.45815072537368945,
+          0.5815567955675697
+        ],
+        "p_value_vs_breakeven_one_sided": 0.5712383137258223,
+        "roi_at_minus_110": -0.006909090909090935,
+        "units_at_minus_110": -1.7272727272727337,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "3-5",
+        "bets": 388,
+        "wins": 190,
+        "losses": 195,
+        "pushes": 3,
+        "win_rate": 0.4935064935064935,
+        "win_rate_ci95": [
+          0.4438776065012094,
+          0.5432636823542425
+        ],
+        "p_value_vs_breakeven_one_sided": 0.8927447444122132,
+        "roi_at_minus_110": -0.05740393626991567,
+        "units_at_minus_110": -22.27272727272728,
+        "beats_breakeven": false
+      },
+      {
+        "edge_bucket": "5+",
+        "bets": 354,
+        "wins": 182,
+        "losses": 169,
+        "pushes": 3,
+        "win_rate": 0.5185185185185185,
+        "win_rate_ci95": [
+          0.4663296853648223,
+          0.5703063944303773
+        ],
+        "p_value_vs_breakeven_one_sided": 0.5997325186153373,
+        "roi_at_minus_110": -0.01001540832049311,
+        "units_at_minus_110": -3.545454545454561,
+        "beats_breakeven": false
+      }
+    ],
+    "descriptive_only__per_season": [
+      {
+        "season": 2016,
+        "accuracy_ats_free": {
+          "n_games": 256,
+          "model_mae_margin": 9.67547449887739,
+          "market_mae_margin": 9.01953125,
+          "model_mae_total": 10.50947542679894,
+          "market_mae_total": 9.91796875,
+          "model_brier": 0.2350281079348681,
+          "market_brier_from_spread": 0.21873683887952677,
+          "model_straight_up_acc": 0.5590551181102362,
+          "corr_model_margin": 0.3203301185002233
+        },
+        "locked_rule_spread": {
+          "bets": 131,
+          "wins": 60,
+          "losses": 70,
+          "pushes": 1,
+          "win_rate": 0.46153846153846156,
+          "win_rate_ci95": [
+            0.3781784643431,
+            0.5471062711333947
+          ],
+          "p_value_vs_breakeven_one_sided": 0.9343336976307903,
+          "roi_at_minus_110": -0.11797362942401109,
+          "units_at_minus_110": -15.454545454545453,
+          "beats_breakeven": false
+        },
+        "locked_rule_total": {
+          "bets": 117,
+          "wins": 56,
+          "losses": 61,
+          "pushes": 0,
+          "win_rate": 0.47863247863247865,
+          "win_rate_ci95": [
+            0.3902428932081045,
+            0.5683805788287644
+          ],
+          "p_value_vs_breakeven_one_sided": 0.8578899652045306,
+          "roi_at_minus_110": -0.08624708624708627,
+          "units_at_minus_110": -10.090909090909093,
+          "beats_breakeven": false
+        }
+      },
+      {
+        "season": 2017,
+        "accuracy_ats_free": {
+          "n_games": 254,
+          "model_mae_margin": 10.782307818769759,
+          "market_mae_margin": 10.09251968503937,
+          "model_mae_total": 11.470323441441264,
+          "market_mae_total": 11.17716535433071,
+          "model_brier": 0.22013872187438804,
+          "market_brier_from_spread": 0.2011515198299881,
+          "model_straight_up_acc": 0.6811023622047244,
+          "corr_model_margin": 0.3146019176717093
+        },
+        "locked_rule_spread": {
+          "bets": 144,
+          "wins": 64,
+          "losses": 77,
+          "pushes": 3,
+          "win_rate": 0.45390070921985815,
+          "win_rate_ci95": [
+            0.3740333550932513,
+            0.5362133373534652
+          ],
+          "p_value_vs_breakeven_one_sided": 0.959577759535013,
+          "roi_at_minus_110": -0.1306818181818182,
+          "units_at_minus_110": -18.81818181818182,
+          "beats_breakeven": false
+        },
+        "locked_rule_total": {
+          "bets": 132,
+          "wins": 70,
+          "losses": 62,
+          "pushes": 0,
+          "win_rate": 0.5303030303030303,
+          "win_rate_ci95": [
+            0.44551449299365087,
+            0.6133776896246154
+          ],
+          "p_value_vs_breakeven_one_sided": 0.47575167156398107,
+          "roi_at_minus_110": 0.012396694214876009,
+          "units_at_minus_110": 1.6363636363636331,
+          "beats_breakeven": true
+        }
+      },
+      {
+        "season": 2018,
+        "accuracy_ats_free": {
+          "n_games": 256,
+          "model_mae_margin": 10.238775669397612,
+          "market_mae_margin": 9.978515625,
+          "model_mae_total": 11.187324395642365,
+          "market_mae_total": 10.59765625,
+          "model_brier": 0.2211635826633493,
+          "market_brier_from_spread": 0.20969237808326852,
+          "model_straight_up_acc": 0.6417322834645669,
+          "corr_model_margin": 0.33231043829008017
+        },
+        "locked_rule_spread": {
+          "bets": 129,
+          "wins": 68,
+          "losses": 56,
+          "pushes": 5,
+          "win_rate": 0.5483870967741935,
+          "win_rate_ci95": [
+            0.46065500744902865,
+            0.6332112555825186
+          ],
+          "p_value_vs_breakeven_one_sided": 0.3239415361410769,
+          "roi_at_minus_110": 0.04510218463706832,
+          "units_at_minus_110": 5.818181818181813,
+          "beats_breakeven": true
+        },
+        "locked_rule_total": {
+          "bets": 131,
+          "wins": 67,
+          "losses": 63,
+          "pushes": 1,
+          "win_rate": 0.5153846153846153,
+          "win_rate_ci95": [
+            0.430274333727488,
+            0.5996117720819142
+          ],
+          "p_value_vs_breakeven_one_sided": 0.610745471114453,
+          "roi_at_minus_110": -0.015961138098542698,
+          "units_at_minus_110": -2.0909090909090935,
+          "beats_breakeven": false
+        }
+      },
+      {
+        "season": 2019,
+        "accuracy_ats_free": {
+          "n_games": 256,
+          "model_mae_margin": 10.633974531730264,
+          "market_mae_margin": 10.2109375,
+          "model_mae_total": 11.138250355523768,
+          "market_mae_total": 10.828125,
+          "model_brier": 0.2254405080216786,
+          "market_brier_from_spread": 0.21176785138972215,
+          "model_straight_up_acc": 0.6235294117647059,
+          "corr_model_margin": 0.3989589428990252
+        },
+        "locked_rule_spread": {
+          "bets": 130,
+          "wins": 67,
+          "losses": 60,
+          "pushes": 3,
+          "win_rate": 0.5275590551181102,
+          "win_rate_ci95": [
+            0.44120305902913287,
+            0.6122968030412897
+          ],
+          "p_value_vs_breakeven_one_sided": 0.5022510399040481,
+          "roi_at_minus_110": 0.006993006993006973,
+          "units_at_minus_110": 0.9090909090909065,
+          "beats_breakeven": true
+        },
+        "locked_rule_total": {
+          "bets": 114,
+          "wins": 61,
+          "losses": 53,
+          "pushes": 0,
+          "win_rate": 0.5350877192982456,
+          "win_rate_ci95": [
+            0.44388388545852037,
+            0.6240039367057715
+          ],
+          "p_value_vs_breakeven_one_sided": 0.4420491373939337,
+          "roi_at_minus_110": 0.021531100478468887,
+          "units_at_minus_110": 2.4545454545454533,
+          "beats_breakeven": true
+        }
+      },
+      {
+        "season": 2020,
+        "accuracy_ats_free": {
+          "n_games": 256,
+          "model_mae_margin": 10.256686253487269,
+          "market_mae_margin": 9.830078125,
+          "model_mae_total": 11.10324194210596,
+          "market_mae_total": 10.146484375,
+          "model_brier": 0.22551456657896018,
+          "market_brier_from_spread": 0.20284440830480543,
+          "model_straight_up_acc": 0.6431372549019608,
+          "corr_model_margin": 0.3824869406776055
+        },
+        "locked_rule_spread": {
+          "bets": 149,
+          "wins": 81,
+          "losses": 68,
+          "pushes": 0,
+          "win_rate": 0.5436241610738255,
+          "win_rate_ci95": [
+            0.4635544689137371,
+            0.6215009872452554
+          ],
+          "p_value_vs_breakeven_one_sided": 0.3442161253982775,
+          "roi_at_minus_110": 0.03782794386821235,
+          "units_at_minus_110": 5.63636363636364,
+          "beats_breakeven": true
+        },
+        "locked_rule_total": {
+          "bets": 133,
+          "wins": 60,
+          "losses": 70,
+          "pushes": 3,
+          "win_rate": 0.46153846153846156,
+          "win_rate_ci95": [
+            0.3781784643431,
+            0.5471062711333947
+          ],
+          "p_value_vs_breakeven_one_sided": 0.9343336976307903,
+          "roi_at_minus_110": -0.1161995898838004,
+          "units_at_minus_110": -15.454545454545453,
+          "beats_breakeven": false
+        }
+      },
+      {
+        "season": 2021,
+        "accuracy_ats_free": {
+          "n_games": 272,
+          "model_mae_margin": 11.246594644244984,
+          "market_mae_margin": 10.78125,
+          "model_mae_total": 10.983016501907244,
+          "market_mae_total": 10.788602941176471,
+          "model_brier": 0.23256410124246762,
+          "market_brier_from_spread": 0.2165005949098575,
+          "model_straight_up_acc": 0.6162361623616236,
+          "corr_model_margin": 0.3775120688267372
+        },
+        "locked_rule_spread": {
+          "bets": 137,
+          "wins": 70,
+          "losses": 66,
+          "pushes": 1,
+          "win_rate": 0.5147058823529411,
+          "win_rate_ci95": [
+            0.43146624550741874,
+            0.5971375750886523
+          ],
+          "p_value_vs_breakeven_one_sided": 0.6177193620797364,
+          "roi_at_minus_110": -0.017252820172528226,
+          "units_at_minus_110": -2.363636363636367,
+          "beats_breakeven": false
+        },
+        "locked_rule_total": {
+          "bets": 115,
+          "wins": 58,
+          "losses": 55,
+          "pushes": 2,
+          "win_rate": 0.5132743362831859,
+          "win_rate_ci95": [
+            0.42220800085413385,
+            0.6034678168759736
+          ],
+          "p_value_vs_breakeven_one_sided": 0.6253450604212492,
+          "roi_at_minus_110": -0.01976284584980238,
+          "units_at_minus_110": -2.2727272727272734,
+          "beats_breakeven": false
+        }
+      }
+    ]
+  }
+}
