@@ -135,6 +135,20 @@ footer { margin-top: 2rem; color: var(--muted); font-size: 0.85rem; }
   margin-bottom: 0.2rem;
 }
 .more { font-size: 0.95rem; }
+.pick {
+  font-family: Georgia, "Iowan Old Style", serif;
+  font-size: clamp(1.45rem, 3.5vw, 1.9rem);
+  color: var(--accent);
+  line-height: 1.15;
+  margin: 0.1rem 0 0.55rem;
+}
+.quiet-pick {
+  font-family: Georgia, "Iowan Old Style", serif;
+  font-size: 1.2rem;
+  color: var(--muted);
+  margin: 0.1rem 0 0.55rem;
+}
+.market { color: var(--muted); max-width: 40rem; }
 
 @media (prefers-color-scheme: dark) {
   :root {

@@ -28,7 +28,7 @@ No odds API key. The ESPN scoreboard is a public, unofficial endpoint and can ch
 
 ## Site
 
-Static files in `public/`. Home is this week's locked-rule picks. Ledger is the spent holdout plus the live card. Teams are EPA and success rate. Freshness is what updated when. Week 4 recaps are plain sentences at `public/recaps/week4.html`. The Jets at Bears page is `public/recaps/week4-nyj-chi.html`. The source copy is [`pipeline/WEEK4_RECAPS.md`](pipeline/WEEK4_RECAPS.md).
+Static files in `public/`. Home is this week's locked-rule picks. Ledger is the spent holdout plus the live card. Teams are EPA and success rate. Freshness is what updated when. Week 4 recaps are plain sentences at `public/recaps/week4.html`. The Jets at Bears page is `public/recaps/week4-nyj-chi.html`. Week 5 previews are at `public/previews/week5.html`. Source copy: [`pipeline/WEEK4_RECAPS.md`](pipeline/WEEK4_RECAPS.md) and [`pipeline/WEEK5_PREVIEWS.md`](pipeline/WEEK5_PREVIEWS.md).
 
 ## Model, briefly
 
