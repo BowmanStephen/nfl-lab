@@ -22,6 +22,16 @@ function when(iso) {
   });
 }
 
+function whenCT(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleString("en-US", {
+    weekday: "short", month: "short", day: "numeric",
+    hour: "numeric", minute: "2-digit", timeZone: "America/Chicago",
+    timeZoneName: "short",
+  });
+}
+
 async function load(name) {
   const res = await fetch(`api/${name}`);
   if (!res.ok) throw new Error(`${name} (${res.status})`);
@@ -76,7 +86,7 @@ function spreadCards(games) {
           <div><span>Edge</span><b>${fmt(Math.abs(s.spread_edge))}</b></div>
         </div>
         ${gapChart(s.model_margin, line)}
-        <p class="meta">Snapshotted ${esc(when(g.pick_time.captured_at))} · ${esc(g.pick_time.provider)} · ${esc(g.pick_time.spread_display || "")}</p>
+        <p class="meta">Snapshotted ${esc(whenCT(g.pick_time.captured_at))} · ${esc(g.pick_time.provider)} · ${esc(g.pick_time.spread_display || "")}</p>
         <p class="meta">Starters used: ${esc(g.away_team)} ${esc(s.away_qb)}, ${esc(g.home_team)} ${esc(s.home_qb)}</p>
         ${notes}
       </article>`;
@@ -100,15 +110,54 @@ function totalCards(games) {
     }).join("");
 }
 
+function noPickReason(game) {
+  const s = game.selection;
+  if (s.no_pick_reason) return s.no_pick_reason;
+  return `No pick: locked rule (|spread edge| ${Math.abs(s.spread_edge).toFixed(1)} < 2 and |total edge| ${Math.abs(s.total_edge).toFixed(1)} < 3).`;
+}
+
+function noPickCards(games) {
+  return games
+    .filter((g) => !g.selection.spread_qualifies && !g.selection.total_qualifies)
+    .map((g) => {
+      const s = g.selection;
+      return `<article class="card">
+        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">No pick</span></header>
+        <p>${esc(noPickReason(g))}</p>
+        <div class="nums">
+          <div><span>Model margin, home</span><b>${fmt(s.model_margin)}</b></div>
+          <div><span>ESPN line, home</span><b>${fmt(g.pick_time.home_margin)}</b></div>
+          <div><span>Spread edge</span><b>${fmt(s.spread_edge)}</b></div>
+          <div><span>Model total</span><b>${Number(s.model_total).toFixed(1)}</b></div>
+          <div><span>ESPN total</span><b>${Number(g.pick_time.total).toFixed(1)}</b></div>
+          <div><span>Total edge</span><b>${fmt(s.total_edge)}</b></div>
+        </div>
+        <p class="meta">Starters used: ${esc(g.away_team)} ${esc(s.away_qb)}, ${esc(g.home_team)} ${esc(s.home_qb)}</p>
+      </article>`;
+    }).join("");
+}
+
+function showLock(card) {
+  const label = $("lock-label");
+  if (label && card.lock_label) label.textContent = card.lock_label;
+  const note = $("holdout-note");
+  if (note && card.holdout_note) note.textContent = card.holdout_note;
+}
+
 async function renderHome() {
   const card = await load("picks.json");
   $("kicker").textContent = `Week ${card.week} · ${card.season}`;
+  showLock(card);
   $("health").textContent = card.health.line;
   const spreads = card.games.filter((g) => g.selection.spread_qualifies);
   const totals = card.games.filter((g) => g.selection.total_qualifies);
+  const nopicks = card.games.filter((g) => !g.selection.spread_qualifies && !g.selection.total_qualifies);
   $("count").textContent = `${spreads.length} spread picks · ${totals.length} total picks · ${card.games.length} games snapshotted`;
   $("spreads").innerHTML = spreads.length ? spreadCards(card.games) : "<p>No spread pick cleared 2 points this week.</p>";
   $("totals").innerHTML = totals.length ? totalCards(card.games) : "<p>No total cleared 3 points this week.</p>";
+  if ($("nopicks")) {
+    $("nopicks").innerHTML = nopicks.length ? noPickCards(card.games) : "<p>Every snapshotted game cleared a pick.</p>";
+  }
 }
 
 function record(r) {
@@ -123,6 +172,7 @@ async function renderLedger() {
   $("seasons").innerHTML = base.per_season.map((row) =>
     `<tr><td>${row.season}</td><td>${record(row.spread)}</td><td>${record(row.total)}</td></tr>`
   ).join("");
+  showLock(card);
   $("live-health").textContent = card.health.line;
   const picks = card.games.filter((g) => g.selection.spread_qualifies || g.selection.total_qualifies);
   $("live").innerHTML = picks.map((g) => {
@@ -130,7 +180,7 @@ async function renderLedger() {
     const bits = [];
     if (s.spread_qualifies) bits.push(`${s.spread_pick}, ${Math.abs(s.spread_edge).toFixed(1)} pts off the spread`);
     if (s.total_qualifies) bits.push(`${s.total_pick}, ${Math.abs(s.total_edge).toFixed(1)} pts off the total`);
-    return `<tr><td>${esc(g.away_team)} at ${esc(g.home_team)}</td><td>${esc(bits.join("; "))}</td><td>${esc(when(g.pick_time.captured_at))}</td></tr>`;
+    return `<tr><td>${esc(g.away_team)} at ${esc(g.home_team)}</td><td>${esc(bits.join("; "))}</td><td>${esc(whenCT(g.pick_time.captured_at))}</td></tr>`;
   }).join("");
 }
 
@@ -317,17 +367,51 @@ function maeChart(holdout) {
   </svg>`;
 }
 
+function officialGames(card) {
+  return card.games.map((g) => {
+    const s = g.selection;
+    const homeMargin = Number(g.pick_time.home_margin);
+    let spreadPick = null;
+    if (s.spread_qualifies) {
+      const points = s.spread_pick === g.home_team ? -homeMargin : homeMargin;
+      const text = `${points > 0 ? "+" : ""}${Math.abs(points % 1) < 0.05 ? Math.round(points) : points.toFixed(1)}`;
+      spreadPick = `${s.spread_pick} ${text}`;
+    }
+    let totalPick = null;
+    if (s.total_qualifies) {
+      const word = s.total_pick === "over" ? "Over" : "Under";
+      totalPick = `${word} ${Number(g.pick_time.total).toFixed(1)}`;
+    }
+    return {
+      away: g.away_team,
+      home: g.home_team,
+      market_margin_home: -homeMargin,
+      model_margin_home: s.model_margin,
+      spread_edge: s.spread_edge,
+      total_edge: s.total_edge,
+      spread_pick: spreadPick,
+      total_pick: totalPick,
+      is_pick: Boolean(s.spread_qualifies || s.total_qualifies),
+    };
+  });
+}
+
 async function renderModel() {
-  const data = await load("model.json");
+  const [data, card] = await Promise.all([load("model.json"), load("picks.json")]);
   $("ratings-caption").textContent =
     "Points better than an average team on a neutral field. Built from EPA per play, adjusted for who each team played.";
   $("ratings-chart").innerHTML = powerChart(data.ratings);
-  $("games-chart").innerHTML = gamesChart(data.games);
+  $("games-chart").innerHTML = gamesChart(officialGames(card));
+  const caption = $("week5-caption");
+  if (caption && card.lock_label) {
+    caption.textContent = `${card.lock_label}. A pick lights up only when that card clears 2 points on the spread or 3 on the total.`;
+  }
   $("winrate-chart").innerHTML = winRateChart(data.holdout);
   $("mae-chart").innerHTML = maeChart(data.holdout);
-  const live = data.live_2026;
-  $("live-slot").querySelector(".live-label").textContent =
-    live.label.charAt(0).toUpperCase() + live.label.slice(1);
+  const label = $("live-label");
+  if (label) label.textContent = card.lock_label || "2026 live record";
+  const meta = $("live-meta");
+  if (meta && card.holdout_note) meta.textContent = card.holdout_note;
 }
 
 const page = document.body.dataset.page;

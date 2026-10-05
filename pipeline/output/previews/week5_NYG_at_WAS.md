@@ -30,4 +30,4 @@ _The pre-registered backtest headline grades the base model; the QB adjustment w
 - ESPN lines pulled: 2026-10-05 15:45 CT
 - Updated Mon Oct 5, 4 PM CT
 
-_Numbers from nflverse play-by-play via NFL Lab. Not betting advice. Not the Thursday lock._
+_Numbers from nflverse play-by-play via NFL Lab. Not betting advice. Not the official scored card._

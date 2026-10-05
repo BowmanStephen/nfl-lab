@@ -20,7 +20,14 @@ from .config import LIVE_DIR, OUTPUT_DIR, PRE_KICKOFF_MINUTES
 from .odds_espn import MissingLineError
 
 ET = ZoneInfo("America/New_York")
+CT = ZoneInfo("America/Chicago")
 UTC = ZoneInfo("UTC")
+
+# Display copy for the spent holdout. Not a regrade.
+HOLDOUT_NOTE = (
+    "2026 live record starts with these picks. "
+    "Holdout record 48.8% ATS vs 52.4% break-even stays as-is."
+)
 
 
 def locked_rule() -> tuple[float, float]:
@@ -28,6 +35,59 @@ def locked_rule() -> tuple[float, float]:
     prereg = json.loads(path.read_text())
     rule = prereg["headline_rule"]
     return float(rule["spread_edge_min"]), float(rule["total_edge_min"])
+
+
+def captured_ct(captured_at: str) -> datetime:
+    dt = datetime.fromisoformat(captured_at)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
+    return dt.astimezone(CT)
+
+
+def format_lock_label(week: int, captured_at: str) -> str:
+    """The sentence the site shows for an official card. Clock is Central Time."""
+    clock = captured_ct(captured_at).strftime("%a %b %-d %-I:%M %p")
+    return (
+        f"Official week-{int(week)} picks, locked {clock} CT, "
+        "DraftKings lines at lock"
+    )
+
+
+def apply_unclear_starter_nopick(games: list[dict], game_id: str) -> dict:
+    """Do not score one game whose starter is unconfirmed.
+
+    The locked edge rule runs first. If it already leaves both the spread and
+    the total unqualified, record that reason and leave the flags alone. If it
+    would have scored either market, clear the flags and record the starter
+    reason. Model numbers and the pick-time line stay as the pipeline wrote them.
+    """
+    for game in games:
+        if game.get("game_id") != game_id:
+            continue
+        sel = game["selection"]
+        spread_q = bool(sel["spread_qualifies"])
+        total_q = bool(sel["total_qualifies"])
+        spread_abs = abs(float(sel["spread_edge"]))
+        total_abs = abs(float(sel["total_edge"]))
+        if not spread_q and not total_q:
+            sel["no_pick_reason"] = (
+                "No pick: the locked rule already excludes this game "
+                f"(|spread edge| {spread_abs:.2f} < 2 and "
+                f"|total edge| {total_abs:.2f} < 3). "
+                "Washington's starter is unclear; that did not change the card."
+            )
+            return game
+        sel["locked_rule_would_qualify"] = {"spread": spread_q, "total": total_q}
+        sel["spread_qualifies"] = False
+        sel["total_qualifies"] = False
+        sel["no_pick_reason"] = (
+            "No pick: Washington's starter is unclear. "
+            "The locked rule would have scored this game; it is not a pick."
+        )
+        return game
+    raise MissingLineError(
+        f"{game_id}: not on the card. Refusing to skip the unclear-starter check."
+    )
 
 
 def card_path(season: int, week: int):
@@ -94,6 +154,7 @@ def _line_block(captured_at: str, line: dict) -> dict:
         )
     return {
         "captured_at": captured_at,
+        "captured_at_ct": captured_ct(captured_at).isoformat(),
         "provider": "DraftKings",
         "source": "espn_scoreboard",
         "home_margin": float(line["home_margin"]),
@@ -325,6 +386,10 @@ def new_card(season: int, week: int, games: list[dict], captured_at: str) -> dic
         "season": season,
         "week": week,
         "created_at": captured_at,
+        "created_at_ct": captured_ct(captured_at).isoformat(),
+        "official_lock": True,
+        "lock_label": format_lock_label(week, captured_at),
+        "holdout_note": HOLDOUT_NOTE,
         "line_source": "espn_draftkings",
         "same_book_clv": "ESPN DraftKings at pick time vs ESPN DraftKings pre-kickoff. Not nflverse.",
         "rule": {"spread_edge_min": spread_min, "total_edge_min": total_min},

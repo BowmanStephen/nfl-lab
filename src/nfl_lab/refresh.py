@@ -19,6 +19,7 @@ from .model import ModelParams, project_games
 from .odds_espn import MissingLineError, fetch_week_lines
 from .picks import (
     apply_pre_kickoff,
+    apply_unclear_starter_nopick,
     build_games,
     card_path,
     grade_game,
@@ -198,7 +199,12 @@ def run(mode: str = "refresh") -> dict:
     if existing is None:
         log(f"no pick card for {LIVE_SEASON} week {week}; snapshotting ESPN DraftKings")
         lines = fetch_week_lines(LIVE_SEASON, week)
+        # Stamp the pick at the fetch, not at the start of the data load.
+        captured_at = datetime.now(UTC).isoformat()
         games = build_games(records, lines, captured_at, spread_min, total_min)
+        if LIVE_SEASON == 2026 and int(week) == 5:
+            noted = apply_unclear_starter_nopick(games, "2026_05_NYG_WAS")
+            log(noted["selection"]["no_pick_reason"])
         if _due(games, now):
             apply_pre_kickoff(games, lines, captured_at, now)
         games = _with_grades(games, slate)
