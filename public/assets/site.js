@@ -240,10 +240,13 @@ function gamesChart(games) {
     const tag = g.is_pick
       ? (pickBits.join(" · ") || "Pick")
       : "No pick";
-    const sub = g.is_pick && edgeBits.length ? edgeBits.join(" · ") : `Mkt ${g.market_margin_home > 0 ? "+" : ""}${g.market_margin_home} · Mod ${g.model_margin_home > 0 ? "+" : ""}${g.model_margin_home.toFixed(1)}`;
+    // market_margin_home is the home spread (negative = home favored); flip it to a home margin for plotting
+    const mktHome = -g.market_margin_home;
+    const byLine = (m) => Math.abs(m) < 0.05 ? "even" : `${m > 0 ? g.home : g.away} by ${Math.abs(m).toFixed(1).replace(/\.0$/, "")}`;
+    const sub = g.is_pick && edgeBits.length ? edgeBits.join(" · ") : `Line: ${byLine(mktHome)} · Model: ${byLine(g.model_margin_home)}`;
     return `<div class="game-row${g.is_pick ? " is-pick" : ""}">
       <div class="match">${esc(g.away)} @ ${esc(g.home)}<small>${esc(tag)}</small></div>
-      ${gameScale(g.market_margin_home, g.model_margin_home)}
+      ${gameScale(mktHome, g.model_margin_home)}
       <div class="edge-tag">${esc(sub)}</div>
     </div>`;
   }).join("");
