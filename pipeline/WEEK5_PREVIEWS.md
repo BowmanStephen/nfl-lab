@@ -1,6 +1,6 @@
 # Week 5 previews, in plain English
 
-**Honest note up top.** On the locked 2022–2025 holdout, this model went **48.8%** against the spread (and **51.0%** on totals) when it only bet edges of 2+ points on the side or 3+ on the total. That is below the **52.4%** break-even line at −110. These week-5 picks are logged for the week-18 proof test — not bets, not advice. Every number below is from the NFL Lab pipeline (nflverse through 2026 week 4, walk-forward ratings, starting-QB adjustment) or from ESPN’s public scoreboard/DraftKings lines pulled **2026-10-05 01:09 CT**.
+**Honest note up top.** On the locked 2022–2025 holdout, this model went **48.8%** against the spread (and **51.0%** on totals) when it only bet edges of 2+ points on the side or 3+ on the total. That is below the **52.4%** break-even line at −110. This file is a Sunday-night preview, not the scored card. Official week-5 picks are the Thursday lock (`output/live/2026-week-05.json`). The companion rows are `pipeline/previews/2026_wk05_preview_lines.csv` and are not the ledger. Not bets, not advice. Every number below is from the NFL Lab pipeline (nflverse through 2026 week 4, walk-forward ratings, starting-QB adjustment) or from ESPN’s public scoreboard/DraftKings lines pulled **2026-10-05 01:09 CT**.
 
 **How to read a card.** Kickoff is Central Time. “Market” is the current DraftKings line on ESPN. “Model” is the QB-adjusted projected margin (positive = home wins by that many) and projected total. A **pick** only appears when the locked rule fires.
 
