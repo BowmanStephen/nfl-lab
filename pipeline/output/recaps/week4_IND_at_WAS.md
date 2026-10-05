@@ -1,27 +1,5 @@
-# Recap: Indianapolis Colts at Washington Commanders
+# Colts 30, Commanders 13
 
-**Week 4 · 2026-10-04 · Final 30–13**
+Indianapolis's passing was bad (about −13), and it didn't matter. Washington played a backup QB and was worse: only 28% of its plays succeeded, and it converted 2 of 15 third downs.
 
-Winner: **Indianapolis Colts** (margin -17 home perspective)
-
-## Model vs result
-
-- Model projected margin (home): **-2.0**
-- Actual margin (home): **-17**
-- Model home win prob: **44.2%**
-- Model favorite: **IND**
-- Error (|proj − actual|): **15.0**
-
-## Game EPA
-
-- IND off EPA/play: **-0.086** (64 plays)
-- WAS off EPA/play: **-0.226** (64 plays)
-- IND success rate: **0.422**
-- WAS success rate: **0.281**
-
-## Season EPA context
-
-- **IND**: off -0.048 / def 0.039 / net -0.087
-- **WAS**: off -0.036 / def 0.029 / net -0.065
-
-_Numbers from nflverse play-by-play via NFL Lab._
+Lesson: you don't have to be good, just better than the other offense.

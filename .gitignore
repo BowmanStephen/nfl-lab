@@ -5,6 +5,6 @@ __pycache__/
 .env
 data/
 output/previews/
-output/recaps/
+/output/recaps/
 .DS_Store
 .playwright-mcp/

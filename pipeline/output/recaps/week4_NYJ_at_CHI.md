@@ -1,27 +1,9 @@
-# Recap: New York Jets at Chicago Bears
+# Bears 23, Jets 12
 
-**Week 4 · 2026-10-04 · Final 12–23**
+Chicago kept the ball the entire game.
 
-Winner: **Chicago Bears** (margin +11 home perspective)
+The Bears ran 86 plays and the Jets ran 32. New York went 0 for 7 on third downs, so almost every drive ended fast, with five punts. Chicago went 7 for 15 and kept drives going.
 
-## Model vs result
+Tyson Bagent was the QB who won it, not the running game. Here's the one stat worth learning. EPA asks whether a play made scoring more likely or less likely, measured in points. Bagent's 35 throws added about a quarter of a point each, roughly 8 points total. Geno Smith's 18 throws took away about a quarter of a point each. Kyle Monangai's 30 carries for 146 yards looked big, but they mostly just ran clock.
 
-- Model projected margin (home): **8.9**
-- Actual margin (home): **11**
-- Model home win prob: **74.5%**
-- Model favorite: **CHI**
-- Error (|proj − actual|): **2.1**
-
-## Game EPA
-
-- NYJ off EPA/play: **-0.137** (32 plays)
-- CHI off EPA/play: **0.104** (90 plays)
-- NYJ success rate: **0.406**
-- CHI success rate: **0.567**
-
-## Season EPA context
-
-- **NYJ**: off 0.018 / def 0.024 / net -0.006
-- **CHI**: off 0.116 / def -0.066 / net 0.182
-
-_Numbers from nflverse play-by-play via NFL Lab._
+The model had the Bears by 9, and they won by 11.
