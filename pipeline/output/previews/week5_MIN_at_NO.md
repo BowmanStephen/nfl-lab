@@ -6,41 +6,26 @@
 
 - Projected spread (home): **1.3**
 - Projected total: **46.4**
-- Home win probability: **46.1%**
-- Model favorite: **MIN**
+- Model favorite (base): **MIN**
 - Home rating: -0.0102 · Away rating: 0.0241
 
 ## Starting-QB adjustment (secondary)
 
 - Projected starters: MIN **Kyler Murray**, NO **Tyler Shough**
-- QB value vs team's rated QB mix (EPA/dropback): MIN +0.037, NO +0.000
-- QB adjustment: -0.9 pts to home margin → spread **2.2**, home win prob **43.5%**
+- QB adjustment: -0.9 pts to home margin → QB-adjusted home margin **-2.2**
+
 
 _The pre-registered backtest headline grades the base model; the QB adjustment was validated on 2016–2021 only._
 
 ## Market (for reference)
 
-- Closing/current spread (home perspective): +1.5 (MIN favored by 1.5) · Total: 42.5
-- Model minus market (home margin): +0.2 pts base, -0.7 pts QB-adjusted
+- Current DraftKings (ESPN): MIN -1.5 · Total: 41.5
+- Model minus market (home margin, QB-adjusted): -0.7 pts · Total edge: +4.9 pts
+- Locked-rule picks: none / OVER 41.5
 
-## Team EPA snapshot
+## Snapshot
 
-### Minnesota Vikings (MIN)
+- ESPN lines pulled: 2026-10-05 15:45 CT
+- Updated Mon Oct 5, 4 PM CT
 
-- Off EPA/play: **-0.084** (pass -0.048, rush -0.134)
-- Def EPA/play allowed: **-0.209**
-- Success rate (off): **0.347**
-- Early-down EPA: **-0.146**
-- Pass rate over expected: **-3.77%**
-- Explosive play rate: **5.6%**
-
-### New Orleans Saints (NO)
-
-- Off EPA/play: **0.024** (pass 0.048, rush -0.027)
-- Def EPA/play allowed: **0.067**
-- Success rate (off): **0.474**
-- Early-down EPA: **-0.018**
-- Pass rate over expected: **2.32%**
-- Explosive play rate: **6.5%**
-
-_Numbers from nflverse play-by-play via NFL Lab. Not betting advice._
+_Numbers from nflverse play-by-play via NFL Lab. Not betting advice. Not the Thursday lock._

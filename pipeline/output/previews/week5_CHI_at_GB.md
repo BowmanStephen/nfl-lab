@@ -6,42 +6,27 @@
 
 - Projected spread (home): **2.4**
 - Projected total: **46.6**
-- Home win probability: **43.1%**
-- Model favorite: **CHI**
+- Model favorite (base): **CHI**
 - Home rating: -0.0126 · Away rating: 0.0345
 
 ## Starting-QB adjustment (secondary)
 
-- Projected starters: CHI **Case Keenum**, GB **Jordan Love**
-- QB value vs team's rated QB mix (EPA/dropback): CHI -0.053, GB +0.000
-- QB adjustment: +1.3 pts to home margin → spread **1.1**, home win prob **46.8%**
-- ⚠️ CHI: schedule lists Case Keenum, latest depth chart QB1 is Caleb Williams
+- Projected starters: CHI **Tyson Bagent**, GB **Jordan Love**
+- QB adjustment: +1.0 pts to home margin → QB-adjusted home margin **-1.3**
+- ⚠️ CHI: schedule lists Tyson Bagent, latest depth chart QB1 is Caleb Williams
+- ⚠️ CHI: Caleb Williams listed Out (Hamstring) on week 5 report
 
 _The pre-registered backtest headline grades the base model; the QB adjustment was validated on 2016–2021 only._
 
 ## Market (for reference)
 
-- Closing/current spread (home perspective): +2.5 (CHI favored by 2.5) · Total: 44.5
-- Model minus market (home margin): +0.1 pts base, +1.4 pts QB-adjusted
+- Current DraftKings (ESPN): CHI -3 · Total: 45.5
+- Model minus market (home margin, QB-adjusted): +1.7 pts · Total edge: +1.1 pts
+- Locked-rule picks: none / none
 
-## Team EPA snapshot
+## Snapshot
 
-### Chicago Bears (CHI)
+- ESPN lines pulled: 2026-10-05 15:45 CT
+- Updated Mon Oct 5, 4 PM CT
 
-- Off EPA/play: **0.116** (pass 0.264, rush -0.048)
-- Def EPA/play allowed: **-0.066**
-- Success rate (off): **0.487**
-- Early-down EPA: **0.064**
-- Pass rate over expected: **-3.20%**
-- Explosive play rate: **7.5%**
-
-### Green Bay Packers (GB)
-
-- Off EPA/play: **-0.074** (pass 0.072, rush -0.406)
-- Def EPA/play allowed: **0.070**
-- Success rate (off): **0.388**
-- Early-down EPA: **-0.055**
-- Pass rate over expected: **2.24%**
-- Explosive play rate: **6.0%**
-
-_Numbers from nflverse play-by-play via NFL Lab. Not betting advice._
+_Numbers from nflverse play-by-play via NFL Lab. Not betting advice. Not the Thursday lock._

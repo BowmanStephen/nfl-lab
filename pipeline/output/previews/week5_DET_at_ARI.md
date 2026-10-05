@@ -6,41 +6,26 @@
 
 - Projected spread (home): **1.8**
 - Projected total: **46.1**
-- Home win probability: **44.8%**
-- Model favorite: **DET**
+- Model favorite (base): **DET**
 - Home rating: -0.0218 · Away rating: 0.0179
 
 ## Starting-QB adjustment (secondary)
 
 - Projected starters: DET **Jared Goff**, ARI **Jacoby Brissett**
-- QB value vs team's rated QB mix (EPA/dropback): DET +0.000, ARI +0.000
-- QB adjustment: +0.0 pts to home margin → spread **1.8**, home win prob **44.8%**
+- QB adjustment: -0.0 pts to home margin → QB-adjusted home margin **-1.8**
+
 
 _The pre-registered backtest headline grades the base model; the QB adjustment was validated on 2016–2021 only._
 
 ## Market (for reference)
 
-- Closing/current spread (home perspective): +5.5 (DET favored by 5.5) · Total: 54.5
-- Model minus market (home margin): +3.7 pts base, +3.7 pts QB-adjusted
+- Current DraftKings (ESPN): DET -4.5 · Total: 53.5
+- Model minus market (home margin, QB-adjusted): +2.7 pts · Total edge: -7.4 pts
+- Locked-rule picks: ARI +4.5 / UNDER 53.5
 
-## Team EPA snapshot
+## Snapshot
 
-### Detroit Lions (DET)
+- ESPN lines pulled: 2026-10-05 15:45 CT
+- Updated Mon Oct 5, 4 PM CT
 
-- Off EPA/play: **0.144** (pass 0.274, rush -0.093)
-- Def EPA/play allowed: **0.203**
-- Success rate (off): **0.496**
-- Early-down EPA: **0.160**
-- Pass rate over expected: **0.61%**
-- Explosive play rate: **6.5%**
-
-### Arizona Cardinals (ARI)
-
-- Off EPA/play: **-0.019** (pass 0.010, rush -0.069)
-- Def EPA/play allowed: **0.085**
-- Success rate (off): **0.462**
-- Early-down EPA: **0.025**
-- Pass rate over expected: **-0.11%**
-- Explosive play rate: **2.9%**
-
-_Numbers from nflverse play-by-play via NFL Lab. Not betting advice._
+_Numbers from nflverse play-by-play via NFL Lab. Not betting advice. Not the Thursday lock._
