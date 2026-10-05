@@ -1,0 +1,150 @@
+{
+  "locked_model": {
+    "locked_at": "2026-10-05T00:25:49.092267-05:00",
+    "fit_on_seasons": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021
+    ],
+    "prior_regress": 0.3,
+    "prior_plays_equiv": 1200,
+    "prior_seasons_weighting": "S-3:S-2:S-1 = 1:2:3",
+    "points_per_net_epa": 81.22071383225719,
+    "hfa": 1.4703715732185563,
+    "margin_sigma": 13.50392487843858,
+    "points_per_combined_off": 19.41067783178249,
+    "base_total": 46.15196331795182,
+    "total_sigma": 13.973237205269175,
+    "n_fit_games": 1550
+  },
+  "tuning_grid_loso_mae": [
+    {
+      "prior_regress": 0.3,
+      "prior_plays_equiv": 1200,
+      "loso_mae": 10.496016043354517
+    },
+    {
+      "prior_regress": 0.45,
+      "prior_plays_equiv": 800,
+      "loso_mae": 10.498622245667514
+    },
+    {
+      "prior_regress": 0.45,
+      "prior_plays_equiv": 1200,
+      "loso_mae": 10.506236708878578
+    },
+    {
+      "prior_regress": 0.6,
+      "prior_plays_equiv": 800,
+      "loso_mae": 10.50682592747573
+    },
+    {
+      "prior_regress": 0.6,
+      "prior_plays_equiv": 500,
+      "loso_mae": 10.510609890848178
+    },
+    {
+      "prior_regress": 0.75,
+      "prior_plays_equiv": 500,
+      "loso_mae": 10.51304182510238
+    },
+    {
+      "prior_regress": 0.3,
+      "prior_plays_equiv": 800,
+      "loso_mae": 10.514794102873491
+    },
+    {
+      "prior_regress": 0.9,
+      "prior_plays_equiv": 500,
+      "loso_mae": 10.519004702188903
+    },
+    {
+      "prior_regress": 0.75,
+      "prior_plays_equiv": 800,
+      "loso_mae": 10.522030500985014
+    },
+    {
+      "prior_regress": 0.45,
+      "prior_plays_equiv": 500,
+      "loso_mae": 10.522289482806604
+    },
+    {
+      "prior_regress": 0.6,
+      "prior_plays_equiv": 1200,
+      "loso_mae": 10.529852941278659
+    },
+    {
+      "prior_regress": 0.9,
+      "prior_plays_equiv": 300,
+      "loso_mae": 10.535981261652136
+    },
+    {
+      "prior_regress": 0.75,
+      "prior_plays_equiv": 300,
+      "loso_mae": 10.540015213384303
+    },
+    {
+      "prior_regress": 0.9,
+      "prior_plays_equiv": 800,
+      "loso_mae": 10.54117939106623
+    },
+    {
+      "prior_regress": 0.6,
+      "prior_plays_equiv": 300,
+      "loso_mae": 10.551630354732197
+    },
+    {
+      "prior_regress": 0.3,
+      "prior_plays_equiv": 500,
+      "loso_mae": 10.557122268202274
+    },
+    {
+      "prior_regress": 0.75,
+      "prior_plays_equiv": 1200,
+      "loso_mae": 10.559650446202172
+    },
+    {
+      "prior_regress": 0.45,
+      "prior_plays_equiv": 300,
+      "loso_mae": 10.575799986738689
+    },
+    {
+      "prior_regress": 0.9,
+      "prior_plays_equiv": 1200,
+      "loso_mae": 10.58926254428965
+    },
+    {
+      "prior_regress": 0.9,
+      "prior_plays_equiv": 150,
+      "loso_mae": 10.603324837339878
+    },
+    {
+      "prior_regress": 0.3,
+      "prior_plays_equiv": 300,
+      "loso_mae": 10.612437923285714
+    },
+    {
+      "prior_regress": 0.75,
+      "prior_plays_equiv": 150,
+      "loso_mae": 10.613556869356783
+    },
+    {
+      "prior_regress": 0.6,
+      "prior_plays_equiv": 150,
+      "loso_mae": 10.629043116191152
+    },
+    {
+      "prior_regress": 0.45,
+      "prior_plays_equiv": 150,
+      "loso_mae": 10.653159093520696
+    },
+    {
+      "prior_regress": 0.3,
+      "prior_plays_equiv": 150,
+      "loso_mae": 10.682755726478788
+    }
+  ]
+}
