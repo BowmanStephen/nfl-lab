@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f0e8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#12110e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <title>NFL Lab — Model</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="model">
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="wrap wide">
+    <header class="top">
+      <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
+      <nav>
+        <a href="index.html">Picks</a>
+        <a href="model.html" aria-current="page">Model</a>
+        <a href="ledger.html">Ledger</a>
+        <a href="teams.html">Teams</a>
+        <a href="freshness.html">Freshness</a>
+        <a href="recaps/week4.html">Week 4</a>
+        <a href="previews/week5.html">Week 5</a>
+        <a href="glossary.html">Glossary</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <p class="kicker">How the model thinks</p>
+      <h1>The model</h1>
+      <p class="lede">Three straight answers: who is good, where we disagree with the line this week, and how often we have been right.</p>
+
+      <section class="model-sec" aria-labelledby="ratings-h">
+        <h2 id="ratings-h">Team power</h2>
+        <p class="caption" id="ratings-caption">Loading…</p>
+        <div class="chart-card" id="ratings-chart" role="img" aria-label="Team power ratings ranked as horizontal bars"></div>
+      </section>
+
+      <section class="model-sec" aria-labelledby="week5-h">
+        <h2 id="week5-h">Week 5 · model vs the line</h2>
+        <p class="caption">Each game plots the market’s home margin against ours. A pick lights up when we are 2+ points off the spread or 3+ off the total.</p>
+        <div class="chart-card games-panel" id="games-chart"></div>
+        <p class="legend-row" aria-hidden="true">
+          <span class="swatch market"></span> Market
+          <span class="swatch model"></span> Model
+          <span class="swatch pick"></span> Meets pick rule
+        </p>
+      </section>
+
+      <section class="model-sec" aria-labelledby="record-h">
+        <h2 id="record-h">How often it has been right</h2>
+        <p class="caption">2022–2025 holdout, locked rule only. Break-even at −110 is 52.4%. These numbers are not dressed up.</p>
+        <div class="chart-grid">
+          <div class="chart-card" id="winrate-chart" role="img" aria-label="Win rates against break-even"></div>
+          <div class="chart-card" id="mae-chart" role="img" aria-label="Average miss vs market"></div>
+        </div>
+        <div class="live-slot" id="live-slot">
+          <p class="kicker">2026 live record</p>
+          <p class="live-label">Starts Thursday, Oct 8</p>
+          <p class="meta">Thursday’s lock is the first scored card. Nothing is graded yet.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Ratings from nflverse plays through 2026 week 4. Lines are ESPN DraftKings, snapshot on the week-5 preview. Research record, not a bet slip.</p>
+    </footer>
+  </div>
+  <script src="assets/site.js"></script>
+</body>
+</html>

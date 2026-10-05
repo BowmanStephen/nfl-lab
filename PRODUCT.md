@@ -41,7 +41,7 @@ Before that lock, one exploratory pass looked at 2023–2025 margin error only. 
 
 ## Pages
 
-Picks, ledger, teams, freshness, glossary, week-4 recaps, week-5 previews. Ratings, the pick card, the ledger, and the line snapshots are the v1 surface.
+Picks, model, ledger, teams, freshness, glossary, week-4 recaps, week-5 previews. Ratings, the pick card, the ledger, and the line snapshots are the v1 surface.
 
 ## Site
 
@@ -55,3 +55,4 @@ Canonical URL: https://nfl-lab-bowman-ai-labs.vercel.app
 - Teams: `/teams`
 - Freshness: `/freshness`
 - Glossary: `/glossary`
+- Model: `/model`

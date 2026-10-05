@@ -165,11 +165,179 @@ async function renderFreshness() {
   ).join("");
 }
 
+
+function fmtPct(rate) {
+  return `${(100 * rate).toFixed(1)}%`;
+}
+
+function powerChart(ratings) {
+  const maxAbs = Math.max(6, ...ratings.map((r) => Math.abs(r.points)));
+  const rowH = 22;
+  const padL = 36;
+  const padR = 48;
+  const padT = 8;
+  const padB = 22;
+  const W = 640;
+  const H = padT + ratings.length * rowH + padB;
+  const mid = padL + (W - padL - padR) / 2;
+  const usable = (W - padL - padR) / 2;
+  const x = (pts) => mid + (pts / maxAbs) * usable;
+
+  const bars = ratings.map((r, i) => {
+    const y = padT + i * rowH + 4;
+    const x0 = mid;
+    const x1 = x(r.points);
+    const left = Math.min(x0, x1);
+    const width = Math.max(2, Math.abs(x1 - x0));
+    return `
+      <rect class="track" x="${padL}" y="${y}" width="${W - padL - padR}" height="12" rx="6"/>
+      <rect x="${left.toFixed(1)}" y="${y}" width="${width.toFixed(1)}" height="12" rx="6" fill="${esc(r.color)}" opacity="0.92"/>
+      <text class="team-abbr" x="${padL - 8}" y="${y + 10}" text-anchor="end">${esc(r.team)}</text>
+      <text class="pts" x="${W - padR + 8}" y="${y + 10}">${r.points > 0 ? "+" : ""}${r.points.toFixed(1)}</text>`;
+  }).join("");
+
+  const ticks = [-6, -3, 0, 3, 6].filter((t) => Math.abs(t) <= maxAbs + 0.01);
+  const tickMarks = ticks.map((t) => {
+    const tx = x(t);
+    return `<line class="axis-line" x1="${tx}" y1="${padT}" x2="${tx}" y2="${H - padB + 2}"/>
+      <text class="pts" x="${tx}" y="${H - 6}" text-anchor="middle">${t > 0 ? "+" : ""}${t}</text>`;
+  }).join("");
+
+  return `<svg class="power-chart" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
+    ${tickMarks}
+    <line class="zero" x1="${mid}" y1="${padT - 2}" x2="${mid}" y2="${H - padB + 4}"/>
+    <text class="zero-label" x="${mid - 8}" y="${H - 6}" text-anchor="end">worse</text>
+    <text class="zero-label" x="${mid + 8}" y="${H - 6}" text-anchor="start">better</text>
+    ${bars}
+  </svg>`;
+}
+
+function gameScale(market, model) {
+  const maxAbs = Math.max(12, Math.abs(market), Math.abs(model)) + 1;
+  const W = 320, H = 36, y = 16;
+  const pad = 18;
+  const x = (v) => pad + ((v + maxAbs) / (2 * maxAbs)) * (W - 2 * pad);
+  const mid = x(0);
+  // draw market under, model on top when close
+  return `<svg class="game-scale" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
+    <line class="rail" x1="${pad}" y1="${y}" x2="${W - pad}" y2="${y}"/>
+    <line class="zero" x1="${mid}" y1="6" x2="${mid}" y2="26"/>
+    <circle class="dot-market" cx="${x(market).toFixed(1)}" cy="${y}" r="5.5"/>
+    <circle class="dot-model" cx="${x(model).toFixed(1)}" cy="${y}" r="5.5"/>
+    <text class="tick-label" x="${pad}" y="34" text-anchor="start">away</text>
+    <text class="tick-label" x="${W - pad}" y="34" text-anchor="end">home</text>
+  </svg>`;
+}
+
+function gamesChart(games) {
+  return games.map((g) => {
+    const pickBits = [];
+    if (g.spread_pick) pickBits.push(g.spread_pick);
+    if (g.total_pick) pickBits.push(g.total_pick.replace("OVER", "Over").replace("UNDER", "Under"));
+    const edgeBits = [];
+    if (Math.abs(g.spread_edge) >= 2) edgeBits.push(`${Math.abs(g.spread_edge).toFixed(1)} off spread`);
+    if (Math.abs(g.total_edge) >= 3) edgeBits.push(`${Math.abs(g.total_edge).toFixed(1)} off total`);
+    const tag = g.is_pick
+      ? (pickBits.join(" · ") || "Pick")
+      : "No pick";
+    const sub = g.is_pick && edgeBits.length ? edgeBits.join(" · ") : `Mkt ${g.market_margin_home > 0 ? "+" : ""}${g.market_margin_home} · Mod ${g.model_margin_home > 0 ? "+" : ""}${g.model_margin_home.toFixed(1)}`;
+    return `<div class="game-row${g.is_pick ? " is-pick" : ""}">
+      <div class="match">${esc(g.away)} @ ${esc(g.home)}<small>${esc(tag)}</small></div>
+      ${gameScale(g.market_margin_home, g.model_margin_home)}
+      <div class="edge-tag">${esc(sub)}</div>
+    </div>`;
+  }).join("");
+}
+
+function winRateChart(holdout) {
+  const W = 320, H = 200;
+  const padL = 44, padR = 16, padT = 24, padB = 36;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  const max = 0.65;
+  const rows = [
+    { label: "Spreads", rate: holdout.spread_win_rate, detail: `${holdout.spread_wins}–${holdout.spread_losses}–${holdout.spread_pushes}` },
+    { label: "Totals", rate: holdout.total_win_rate, detail: `${holdout.total_wins}–${holdout.total_losses}–${holdout.total_pushes}` },
+  ];
+  const barW = 64;
+  const gap = (chartW - rows.length * barW) / (rows.length + 1);
+  const y = (rate) => padT + chartH - (rate / max) * chartH;
+  const breakY = y(holdout.breakeven);
+
+  const bars = rows.map((r, i) => {
+    const x = padL + gap + i * (barW + gap);
+    const top = y(r.rate);
+    const h = padT + chartH - top;
+    const below = r.rate < holdout.breakeven;
+    return `
+      <rect class="${below ? "bar-miss" : "bar-fill"}" x="${x}" y="${top}" width="${barW}" height="${h}" rx="8"/>
+      <text class="val" x="${x + barW / 2}" y="${top - 8}" text-anchor="middle">${fmtPct(r.rate)}</text>
+      <text class="label" x="${x + barW / 2}" y="${H - 18}" text-anchor="middle">${esc(r.label)}</text>
+      <text class="axis" x="${x + barW / 2}" y="${H - 4}" text-anchor="middle">${esc(r.detail)}</text>`;
+  }).join("");
+
+  return `<svg class="rate-bar" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
+    <line class="break" x1="${padL}" y1="${breakY}" x2="${W - padR}" y2="${breakY}"/>
+    <text class="axis" x="${W - padR}" y="${breakY - 6}" text-anchor="end">Break-even ${fmtPct(holdout.breakeven)}</text>
+    ${bars}
+  </svg>`;
+}
+
+function maeChart(holdout) {
+  const W = 320, H = 200;
+  const padL = 44, padR = 16, padT = 28, padB = 36;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  const max = 12;
+  const rows = [
+    { label: "Model", val: holdout.model_mae_margin },
+    { label: "Market", val: holdout.market_mae_margin },
+  ];
+  const barW = 64;
+  const gap = (chartW - rows.length * barW) / (rows.length + 1);
+  const y = (v) => padT + chartH - (v / max) * chartH;
+
+  const bars = rows.map((r, i) => {
+    const x = padL + gap + i * (barW + gap);
+    const top = y(r.val);
+    const h = padT + chartH - top;
+    const cls = i === 0 ? "bar-miss" : "bar-fill";
+    return `
+      <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}" rx="8"/>
+      <text class="val" x="${x + barW / 2}" y="${top - 8}" text-anchor="middle">${r.val.toFixed(2)}</text>
+      <text class="label" x="${x + barW / 2}" y="${H - 14}" text-anchor="middle">${esc(r.label)}</text>`;
+  }).join("");
+
+  return `<svg class="mae-bar" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
+    <text class="axis" x="${padL}" y="14">Avg miss on final margin (pts)</text>
+    ${bars}
+  </svg>`;
+}
+
+async function renderModel() {
+  const data = await load("model.json");
+  $("ratings-caption").textContent =
+    "Points better than an average team on a neutral field. Built from EPA per play, adjusted for who each team played.";
+  $("ratings-chart").innerHTML = powerChart(data.ratings);
+  $("games-chart").innerHTML = gamesChart(data.games);
+  $("winrate-chart").innerHTML = winRateChart(data.holdout);
+  $("mae-chart").innerHTML = maeChart(data.holdout);
+  const live = data.live_2026;
+  $("live-slot").querySelector(".live-label").textContent =
+    live.label.charAt(0).toUpperCase() + live.label.slice(1);
+}
+
 const page = document.body.dataset.page;
-const run = { home: renderHome, ledger: renderLedger, teams: renderTeams, freshness: renderFreshness }[page];
+const run = {
+  home: renderHome,
+  ledger: renderLedger,
+  teams: renderTeams,
+  freshness: renderFreshness,
+  model: renderModel,
+}[page];
 if (run) {
   run().catch((err) => {
-    const slot = $("health") || $("when") || document.querySelector("main");
+    const slot = $("health") || $("when") || $("ratings-caption") || document.querySelector("main");
     if (slot) slot.textContent = `Could not load the latest JSON (${err.message}).`;
   });
 }
