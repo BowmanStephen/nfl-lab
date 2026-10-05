@@ -1,0 +1,16 @@
+game,kickoff_ct,market_spread_home,market_total,market_details,model_margin_home_qb,model_total,spread_edge,total_edge,spread_pick,total_pick,is_pick,away_qb,home_qb,espn_snapshot_ct,espn_event_id
+TB@DAL,2026-10-08 19:15 CT,-10.0,47.5,DAL -10,3.91,45.59,-6.09,-1.91,TB +10,,yes,Jalon Daniels,Dak Prescott,2026-10-05 01:09 CT,401872980
+PHI@JAX,2026-10-11 08:30 CT,-4.5,43.5,JAX -4.5,5.4,46.92,0.9,3.42,,OVER 43.5,yes,Jalen Hurts,Trevor Lawrence,2026-10-05 01:09 CT,401872981
+CHI@GB,2026-10-11 12:00 CT,2.5,44.5,CHI -2.5,-1.07,46.58,1.43,2.08,,,no,Case Keenum,Jordan Love,2026-10-05 01:09 CT,401872990
+CIN@MIA,2026-10-11 12:00 CT,7.0,41.5,CIN -7,-1.05,45.51,5.95,4.01,MIA +7,OVER 41.5,yes,Joe Burrow,Malik Willis,2026-10-05 01:09 CT,401872982
+CLE@NYJ,2026-10-11 12:00 CT,-2.5,40.5,NYJ -2.5,-0.83,44.48,-3.33,3.98,CLE +2.5,OVER 40.5,yes,Deshaun Watson,Geno Smith,2026-10-05 01:09 CT,401872983
+HOU@TEN,2026-10-11 12:00 CT,6.5,39.5,HOU -6.5,-3.99,44.76,2.51,5.26,TEN +6.5,OVER 39.5,yes,C.J. Stroud,Cam Ward,2026-10-05 01:09 CT,401872984
+IND@PIT,2026-10-11 12:00 CT,-2.5,44.5,PIT -2.5,0.36,45.74,-2.14,1.24,IND +2.5,,yes,Daniel Jones,Aaron Rodgers,2026-10-05 01:09 CT,401872985
+LV@NE,2026-10-11 12:00 CT,-3.5,44.5,NE -3.5,2.35,45.93,-1.15,1.43,,,no,Kirk Cousins,Drake Maye,2026-10-05 01:09 CT,401872986
+MIN@NO,2026-10-11 12:00 CT,1.5,42.5,MIN -1.5,-2.2,46.42,-0.7,3.92,,OVER 42.5,yes,Kyler Murray,Tyler Shough,2026-10-05 01:09 CT,401872987
+NYG@WAS,2026-10-11 12:00 CT,-3.0,43.5,WSH -3,5.11,44.46,2.11,0.96,WAS -3,,yes,Jameis Winston,Jayden Daniels,2026-10-05 01:09 CT,401872988
+DEN@LAC,2026-10-11 15:05 CT,3.5,43.5,DEN -3.5,-2.42,46.8,1.08,3.3,,OVER 43.5,yes,Bo Nix,Justin Herbert,2026-10-05 01:09 CT,401872989
+DET@ARI,2026-10-11 15:25 CT,5.5,54.5,DET -5.5,-1.76,46.08,3.74,-8.42,ARI +5.5,UNDER 54.5,yes,Jared Goff,Jacoby Brissett,2026-10-05 01:09 CT,401872991
+SF@SEA,2026-10-11 15:25 CT,-2.5,46.5,SEA -2.5,-3.76,48.04,-6.26,1.54,SF +2.5,,yes,Brock Purdy,Drew Lock,2026-10-05 01:09 CT,401872992
+BAL@ATL,2026-10-11 19:20 CT,3.5,46.5,BAL -3.5,-2.01,46.38,1.49,-0.12,,,no,Lamar Jackson,Michael Penix Jr.,2026-10-05 01:09 CT,401872993
+BUF@LA,2026-10-12 19:15 CT,-2.5,53.5,LAR -2.5,4.25,47.91,1.75,-5.59,,UNDER 53.5,yes,Josh Allen,Matthew Stafford,2026-10-05 01:09 CT,401872994

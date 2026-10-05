@@ -1,0 +1,28 @@
+{
+  "fit_seasons": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ],
+  "loso_mae_all_games": {
+    "without_qb": 10.496016043354517,
+    "with_qb": 10.448443563041582
+  },
+  "loso_mae_games_with_|qb_diff|>0.03": {
+    "without_qb": 11.028321448485254,
+    "with_qb": 10.87665781659816,
+    "n_games": 546
+  },
+  "coefs": {
+    "points_per_net_epa": 81.2882593911583,
+    "hfa": 1.5030083772003022,
+    "points_per_qb_epa_db": 24.365727328275526,
+    "margin_sigma": 13.375587528069568
+  },
+  "adopt": true,
+  "validated_at": "2026-10-05T00:30:15.834593-05:00",
+  "holdout_note": "Not graded on 2022-2025 holdout (pre-registered holdout already graded once without QB term)."
+}

@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-10-05T00:53:34.144844-05:00",
+  "timezone": "America/Chicago",
+  "season": 2026,
+  "week": 5,
+  "through_week": 4,
+  "health": {
+    "line": "Live 2026 record: no settled picks yet. Judged once after week 18.",
+    "settled_picks": 0,
+    "wins": 0,
+    "losses": 0,
+    "pushes": 0,
+    "cover_rate": null,
+    "clv_samples": 0,
+    "moved_toward_rate": null,
+    "average_clv": null
+  },
+  "n_games": 15,
+  "n_spread_picks": 7,
+  "n_total_picks": 8
+}

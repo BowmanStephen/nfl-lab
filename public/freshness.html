@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <title>NFL Lab — freshness</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="freshness">
+  <div class="wrap">
+    <header class="top">
+      <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
+      <nav>
+        <a href="index.html">Picks</a>
+        <a href="ledger.html">Ledger</a>
+        <a href="teams.html">Teams</a>
+        <a href="freshness.html" aria-current="page">Freshness</a>
+        <a href="recaps/week4.html">Week 4</a>
+        <a href="previews/week5.html">Week 5</a>
+        <a href="glossary.html">Glossary</a>
+      </nav>
+    </header>
+    <h1>What updated when</h1>
+    <p>Last refresh: <strong id="when">…</strong></p>
+    <p id="stale" class="stale" hidden></p>
+    <p class="gloss">If this timestamp is older than 36 hours, the page says so, even when nobody has shipped a new deploy.</p>
+    <table>
+      <thead><tr><th>File</th><th>Updated</th><th>Bytes</th><th>Hash</th></tr></thead>
+      <tbody id="files"></tbody>
+    </table>
+  </div>
+  <script src="assets/site.js"></script>
+</body>
+</html>

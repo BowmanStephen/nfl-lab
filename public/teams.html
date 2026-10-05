@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <title>NFL Lab — teams</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="teams">
+  <div class="wrap">
+    <header class="top">
+      <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
+      <nav>
+        <a href="index.html">Picks</a>
+        <a href="ledger.html">Ledger</a>
+        <a href="teams.html" aria-current="page">Teams</a>
+        <a href="freshness.html">Freshness</a>
+        <a href="recaps/week4.html">Week 4</a>
+        <a href="previews/week5.html">Week 5</a>
+        <a href="glossary.html">Glossary</a>
+      </nav>
+    </header>
+    <p class="kicker">Rankings</p>
+    <h1>Teams</h1>
+    <p id="through">Loading…</p>
+    <p class="gloss">Every spot on the field is worth some number of points before the snap: 1st-and-10 at your own 25 is worth about +1; 1st-and-goal at the 1 is worth about +5.5. EPA is how much one play changed that number.</p>
+    <p class="gloss"><strong>College cousin:</strong> CFBD's PPA is the same idea with a college-trained model. Same math, different league.</p>
+    <p class="gloss">Did the play keep the offense on schedule? Counts as a success if it gains 40% of the needed yards on 1st down, 60% on 2nd, 100% on 3rd/4th (nflverse uses "EPA &gt; 0", which lines up closely).</p>
+    <p class="gloss">EPA rewards big plays; success rate rewards consistency. A team with high EPA but low success rate is living on explosives. For defense, lower is better.</p>
+    <p class="gloss">Opponent-adjusted rating: raw EPA, corrected for who you played. Beating up three bad defenses gets marked down. The bars below are this season's raw EPA. The rating beside the name is the adjusted one.</p>
+    <div id="teams"></div>
+  </div>
+  <script src="assets/site.js"></script>
+</body>
+</html>

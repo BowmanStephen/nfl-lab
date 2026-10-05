@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+data/
+output/previews/
+/output/recaps/
+.DS_Store
+.playwright-mcp/

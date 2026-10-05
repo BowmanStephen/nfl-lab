@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <title>NFL Lab — ledger</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="ledger">
+  <div class="wrap">
+    <header class="top">
+      <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
+      <nav>
+        <a href="index.html">Picks</a>
+        <a href="ledger.html" aria-current="page">Ledger</a>
+        <a href="teams.html">Teams</a>
+        <a href="freshness.html">Freshness</a>
+        <a href="recaps/week4.html">Week 4</a>
+        <a href="previews/week5.html">Week 5</a>
+        <a href="glossary.html">Glossary</a>
+      </nav>
+    </header>
+    <p class="kicker">Spent holdout · graded once</p>
+    <h1>2022–2025 did not clear the bar</h1>
+    <p class="gloss">Standard bets cost $110 to win $100. You need to win 52.4% just to break even. Below that loses money.</p>
+    <div class="spent">
+      <p>Spreads</p>
+      <p class="big" id="spread-rec">…</p>
+      <p>Totals</p>
+      <p class="big" id="total-rec">…</p>
+      <p>Not a target. These seasons were graded once under the locked rule. Pushes are counted and left out of the rate.</p>
+    </div>
+    <h2>By season</h2>
+    <table>
+      <thead><tr><th>Season</th><th>Spreads</th><th>Totals</th></tr></thead>
+      <tbody id="seasons"></tbody>
+    </table>
+    <h2>Live 2026</h2>
+    <p id="live-health">…</p>
+    <p class="gloss">Did the line move toward our pick between when we picked and kickoff? Sharp bettors consistently get better numbers than the close. It's the earliest honest sign of a real edge, long before win-loss means anything.</p>
+    <p class="gloss">Here that move is ESPN DraftKings at pick time versus ESPN DraftKings again before kickoff. Not the nflverse close.</p>
+    <table>
+      <thead><tr><th>Game</th><th>Pick</th><th>Saved</th></tr></thead>
+      <tbody id="live"></tbody>
+    </table>
+    <footer>The frozen game list is <code>output/backtest/ledger.json</code> in the repo.</footer>
+  </div>
+  <script src="assets/site.js"></script>
+</body>
+</html>

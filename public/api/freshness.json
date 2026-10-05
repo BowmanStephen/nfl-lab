@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-10-05T00:53:34.144844-05:00",
+  "stale_after": "2026-10-06T12:53:34.144844-05:00",
+  "files": [
+    {
+      "path": "api/baseline.json",
+      "bytes": 4704,
+      "sha256": "99c3be16425e12796a9ad9e458a5c9a2f28a3466dc8ac87c8bf52277a0ec6344",
+      "updated_at": "2026-10-05T00:53:34.144844-05:00"
+    },
+    {
+      "path": "api/picks.json",
+      "bytes": 20410,
+      "sha256": "fb54f50961c0ef586961d281f42d8031191c7b53d4e3af80274a2cf879e4829d",
+      "updated_at": "2026-10-05T00:53:34.144844-05:00"
+    },
+    {
+      "path": "api/summary.json",
+      "bytes": 479,
+      "sha256": "cd592bf0f5ae5883e88200910fd2ed46870b752b300ce609eaad3daaab9aac04",
+      "updated_at": "2026-10-05T00:53:34.144844-05:00"
+    },
+    {
+      "path": "api/teams.json",
+      "bytes": 29545,
+      "sha256": "a838c08a40bfe9e5c5c2c8af76572f2d609b6e576c25d93d4a756d00ce8e3af6",
+      "updated_at": "2026-10-05T00:53:34.144844-05:00"
+    }
+  ]
+}
