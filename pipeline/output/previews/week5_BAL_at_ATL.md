@@ -6,41 +6,26 @@
 
 - Projected spread (home): **4.8**
 - Projected total: **46.4**
-- Home win probability: **36.2%**
-- Model favorite: **BAL**
+- Model favorite (base): **BAL**
 - Home rating: -0.0326 · Away rating: 0.0442
 
 ## Starting-QB adjustment (secondary)
 
 - Projected starters: BAL **Lamar Jackson**, ATL **Michael Penix Jr.**
-- QB value vs team's rated QB mix (EPA/dropback): BAL +0.020, ATL +0.133
-- QB adjustment: +2.7 pts to home margin → spread **2.0**, home win prob **44.0%**
+- QB adjustment: +2.8 pts to home margin → QB-adjusted home margin **-2.0**
+
 
 _The pre-registered backtest headline grades the base model; the QB adjustment was validated on 2016–2021 only._
 
 ## Market (for reference)
 
-- Closing/current spread (home perspective): +3.5 (BAL favored by 3.5) · Total: 46.5
-- Model minus market (home margin): -1.3 pts base, +1.5 pts QB-adjusted
+- Current DraftKings (ESPN): BAL -2.5 · Total: 44.5
+- Model minus market (home margin, QB-adjusted): +0.5 pts · Total edge: +1.9 pts
+- Locked-rule picks: none / none
 
-## Team EPA snapshot
+## Snapshot
 
-### Baltimore Ravens (BAL)
+- ESPN lines pulled: 2026-10-05 15:45 CT
+- Updated Mon Oct 5, 4 PM CT
 
-- Off EPA/play: **0.160** (pass 0.328, rush -0.032)
-- Def EPA/play allowed: **0.008**
-- Success rate (off): **0.502**
-- Early-down EPA: **0.269**
-- Pass rate over expected: **-4.36%**
-- Explosive play rate: **7.7%**
-
-### Atlanta Falcons (ATL)
-
-- Off EPA/play: **-0.162** (pass -0.353, rush 0.025)
-- Def EPA/play allowed: **-0.062**
-- Success rate (off): **0.455**
-- Early-down EPA: **-0.149**
-- Pass rate over expected: **-10.97%**
-- Explosive play rate: **5.6%**
-
-_Numbers from nflverse play-by-play via NFL Lab. Not betting advice._
+_Numbers from nflverse play-by-play via NFL Lab. Not betting advice. Not the Thursday lock._
