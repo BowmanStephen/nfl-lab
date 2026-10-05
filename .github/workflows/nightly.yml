@@ -60,7 +60,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/api output/live
-          git diff --cached --quiet && echo "nothing to commit" && exit 0
+          git add -- public/api output/live
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+            exit 0
+          fi
           git commit -m "refresh: pick card and site JSON"
-          git push
+          # checkout leaves a detached HEAD, so name the branch explicitly.
+          git push origin "HEAD:${GITHUB_REF_NAME}"
