@@ -16,6 +16,7 @@ uv run nfl-lab refresh        # nightly: data, ratings, card, site
 uv run nfl-lab pick-card      # same path; creates the card if it is missing
 uv run nfl-lab line-snapshot  # pre-kickoff ESPN DraftKings only
 uv run nfl-lab backtest       # prints the spent holdout; does not recompute it
+uv run nfl-lab report-card    # 2026 wk1-4 walk-forward backtest -> public/api/report_card.json (not official picks)
 ```
 
 A missing DraftKings line is exit code 1. Do not catch that and continue.

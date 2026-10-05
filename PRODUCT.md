@@ -56,3 +56,4 @@ Canonical URL: https://nfl-lab-bowman-ai-labs.vercel.app
 - Freshness: `/freshness`
 - Glossary: `/glossary`
 - Model: `/model`
+- 2026 so far (backtest, weeks 1-4, not official picks): `/report-card`

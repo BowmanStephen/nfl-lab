@@ -414,6 +414,151 @@ async function renderModel() {
   if (meta && card.holdout_note) meta.textContent = card.holdout_note;
 }
 
+
+/* 2026 so far: backtest report card */
+function rcRec(r) {
+  return r ? `${r.wins}-${r.losses}-${r.pushes}` : "n/a";
+}
+
+function rcPct(r) {
+  return r && r.win_rate != null ? fmtPct(r.win_rate) : "n/a";
+}
+
+function rcNum(v, digits = 1) {
+  return Number(v).toFixed(digits).replace(/\.0$/, "");
+}
+
+function rcRateChart(rc) {
+  const W = 320, H = 200;
+  const padL = 44, padR = 16, padT = 24, padB = 36;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  const max = 0.7;
+  const rows = [
+    { label: "Spreads", r: rc.spread },
+    { label: "Totals", r: rc.total },
+  ];
+  const barW = 64;
+  const gap = (chartW - rows.length * barW) / (rows.length + 1);
+  const y = (rate) => padT + chartH - (rate / max) * chartH;
+  const breakY = y(rc.breakeven);
+  const bars = rows.map((row, i) => {
+    const x = padL + gap + i * (barW + gap);
+    const top = y(row.r.win_rate);
+    const h = padT + chartH - top;
+    const cls = row.r.win_rate < rc.breakeven ? "bar-miss" : "bar-fill";
+    return `
+      <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}" rx="8"/>
+      <text class="val" x="${x + barW / 2}" y="${top - 8}" text-anchor="middle">${fmtPct(row.r.win_rate)}</text>
+      <text class="label" x="${x + barW / 2}" y="${H - 18}" text-anchor="middle">${esc(row.label)}</text>
+      <text class="axis" x="${x + barW / 2}" y="${H - 4}" text-anchor="middle">${esc(rcRec(row.r))}</text>`;
+  }).join("");
+  return `<svg class="rate-bar" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
+    <line class="break" x1="${padL}" y1="${breakY}" x2="${W - padR}" y2="${breakY}"/>
+    <text class="axis" x="${W - padR}" y="${breakY - 6}" text-anchor="end">Break-even ${fmtPct(rc.breakeven)}</text>
+    ${bars}
+  </svg>`;
+}
+
+function rcDots(games, kind) {
+  const ruleCol = kind === "spread" ? "spread_bet_locked_rule" : "total_bet_locked_rule";
+  const outCol = kind === "spread" ? "spread_outcome" : "total_outcome";
+  return games.filter((g) => g[ruleCol]).map((g) => {
+    const o = g[outCol];
+    const call = kind === "spread" ? g.spread_pick : g.total_pick;
+    const word = o === "win" ? "covered" : o === "loss" ? "lost" : "pushed";
+    const tip = `${g.away_team} at ${g.home_team}: ${call} ${word}`;
+    return `<i class="rc-dot ${esc(o)}" title="${esc(tip)}"><span class="sr">${esc(tip)}</span></i>`;
+  }).join("");
+}
+
+function rcWeeks(rc) {
+  const head = `<div class="rc-week rc-week-head" aria-hidden="true"><span></span><span>Spreads</span><span>Totals</span></div>`;
+  return head + rc.weekly.map((w) => {
+    const games = rc.games.filter((g) => g.week === w.week);
+    return `<div class="rc-week">
+      <span class="rc-wk">Week ${w.week}</span>
+      <div class="rc-cell"><div class="rc-dots">${rcDots(games, "spread")}</div><b>${esc(rcRec(w.spread))}</b></div>
+      <div class="rc-cell"><div class="rc-dots">${rcDots(games, "total")}</div><b>${esc(rcRec(w.total))}</b></div>
+    </div>`;
+  }).join("");
+}
+
+function rcLesson(l, rc) {
+  const N = (t) => `the ${rc.names[t] || t}`;
+  const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+  const by = (m) => `${m > 0 ? N(l.home) : N(l.away)} by ${rcNum(Math.abs(m))}`;
+  let saw = "", happened = "", number = "";
+  if (l.kind === "spread") {
+    const pickLine = l.pick === l.home ? -l.line_home_margin : l.line_home_margin;
+    const pickMargin = l.pick === l.home ? l.actual_home_margin : -l.actual_home_margin;
+    saw = `The line had ${by(l.line_home_margin)}. The model had ${by(l.model_home_margin)}, ${rcNum(Math.abs(l.edge))} points away from the line, so it would have taken ${N(l.pick)} at ${pickLine > 0 ? "+" : ""}${rcNum(pickLine)}.`;
+    happened = `${l.final}. ${cap(N(l.pick))} ${l.outcome === "win" ? "covered" : "did not cover"}.`;
+    if (l.outcome === "win") {
+      const dog = rc.spread_underdog_calls;
+      number = `${dog.bets} of the model's ${rc.spread.bets} spread calls were on the underdog, and those went ${rcRec(dog)}. The model pulls every team hard toward average, so it rarely believes in a big favorite. Here that paid: ${N(l.pick)} were getting ${rcNum(Math.abs(pickLine))} points and ${pickMargin > 0 ? "won by" : "lost by only"} ${Math.abs(pickMargin)}.`;
+    } else {
+      number = `Same squeeze, other side. A ${rcNum(Math.abs(l.line_home_margin))}-point favorite looked like a ${rcNum(Math.abs(l.model_home_margin))}-point favorite to the model. The line missed the final margin by ${rcNum(l.line_miss_pts)} points. The model missed by ${rcNum(l.model_miss_pts)}.`;
+    }
+  } else {
+    const side = l.pick === "over" ? "over" : "under";
+    const sideRec = rc.total_by_side[side];
+    const [pa, pb] = rc.proj_total_range;
+    const [la, lb] = rc.line_total_range;
+    const mu = l.model_used;
+    const offPts = rc.points_per_combined_off * (mu[l.home].off_epa + mu[l.away].off_epa);
+    const defPts = -rc.points_per_combined_off * (mu[l.home].def_epa + mu[l.away].def_epa);
+    const stingy = mu[l.home].def_epa < mu[l.away].def_epa ? l.home : l.away;
+    saw = `The line was ${rcNum(l.line_total)} points. The model expected ${rcNum(l.model_total)}, ${rcNum(Math.abs(l.edge))} points ${l.edge > 0 ? "higher" : "lower"}, so it would have taken the ${side}.`;
+    happened = `${l.final}, ${l.actual_total} points in all. That is ${rcNum(l.line_miss_pts)} ${l.actual_total < l.line_total ? "under" : "over"} the line.`;
+    number = `Every model total in weeks 1 to 4 landed between ${rcNum(pa)} and ${rcNum(pb)}, while the lines ran from ${rcNum(la)} to ${rcNum(lb)}. So low lines drew ${side}s, and ${side}s went ${rcRec(sideRec)}. Part of the reason is in the totals math itself: a defense that allows less adds projected points instead of taking them away. Here the two offenses ${offPts < 0 ? "took" : "added"} ${rcNum(Math.abs(offPts))} ${offPts < 0 ? "off" : ""}, and the defenses, led by ${N(stingy)}, ${defPts > 0 ? "added" : "took"} ${rcNum(Math.abs(defPts))} ${defPts > 0 ? "back" : "off"}.`;
+  }
+  return `<article class="rc-lesson">
+    <p class="rc-tag ${l.outcome === "win" ? "hit" : "miss"}">${esc(l.label)}</p>
+    <h3>${esc(l.matchup)}</h3>
+    <p class="meta">Week ${l.week}</p>
+    <dl>
+      <div><dt>What the model saw</dt><dd>${esc(saw)}</dd></div>
+      <div><dt>What happened</dt><dd>${esc(happened)}</dd></div>
+    </dl>
+    <p class="lesson"><span>The number</span>${esc(number.replace(/\s+/g, " ").replace(/ ,/g, ","))}</p>
+  </article>`;
+}
+
+async function renderReportCard() {
+  const [rc, model] = await Promise.all([load("report_card.json"), load("model.json")]);
+  const be = fmtPct(rc.breakeven);
+  const verdict = (r) => (r.win_rate > rc.breakeven ? `above the ${be} break-even` : `below the ${be} break-even`);
+  $("rec-caption").textContent =
+    `${rc.games_graded} games graded. A call counts when the model is ${rc.rule.spread_edge_min}+ points off the spread or ${rc.rule.total_edge_min}+ off the total. Break-even at standard odds is ${be}.`;
+  $("rc-hero").innerHTML = [
+    ["Spreads", rc.spread], ["Totals", rc.total],
+  ].map(([label, r]) => `<div class="rc-big ${r.win_rate > rc.breakeven ? "up" : "down"}">
+      <span>${label}</span>
+      <b>${rcRec(r)}</b>
+      <p>${rcPct(r)}, ${verdict(r)}</p>
+    </div>`).join("");
+  $("rc-winrate").innerHTML = rcRateChart(rc);
+  const all = rc.all_games_model_side;
+  $("rc-context").innerHTML = `${maeChart({ model_mae_margin: rc.model_mae_margin, market_mae_margin: rc.market_mae_margin })}
+    <p class="meta">If it had taken a side in every game, not just the big gaps: spreads ${rcRec(all.spread)} (${rcPct(all.spread)}), totals ${rcRec(all.total)} (${rcPct(all.total)}). The line still guessed final margins better.</p>`;
+  $("rc-weeks").innerHTML = rcWeeks(rc);
+  $("rc-lessons").innerHTML = rc.lessons.map((l) => rcLesson(l, rc)).join("");
+
+  const lc = rc.leak_check;
+  const h = model.holdout;
+  const pending = rc.pending.length
+    ? `<p>${rc.pending.map((p) => esc(p.matchup)).join(", ")} had not finished when this ran, so it is not graded.</p>` : "";
+  $("rc-honest").innerHTML = `
+    <p>Each week, the model only saw games already played. Week 3 used weeks 1 and 2. Week 4 used weeks 1 through 3. The settings were tuned on ${rc.model.fit_on_seasons[0]} to ${rc.model.fit_on_seasons[rc.model.fit_on_seasons.length - 1]} and frozen before any of this.</p>
+    <p>We tested it. For each week, we swapped every play from that week onward for random numbers (${lc.map((x) => x.plays_poisoned.toLocaleString("en-US")).join(", ")} plays for weeks ${lc.map((x) => x.week).join(", ")}) and ran it again. That week's numbers did not move at all. Scrambling earlier weeks did move weeks 3 and 4, so the test can catch a leak.</p>
+    <p>Weeks 1 and 2 ran on ${rc.model.prior_seasons[0]} to ${rc.model.prior_seasons[2]} alone. With one game per team, the model's strength-of-schedule step cancels out, so 2026 games start counting in week 3.</p>
+    <p>Lines are nflverse closing numbers, used only to grade. This is the same model as the 2022 to 2025 test (${fmtPct(h.spread_win_rate)} on spreads, ${fmtPct(h.total_win_rate)} on totals), without the starting-QB adjustment the live card uses. Four weeks is a small sample in either direction.</p>
+    ${pending}`;
+  const t = new Date(rc.generated_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/Chicago" });
+  $("rc-foot").textContent = `Backtest generated ${t} CT. Closing lines and final scores from nflverse. Research record, not a bet slip.`;
+}
+
 const page = document.body.dataset.page;
 const run = {
   home: renderHome,
@@ -421,10 +566,11 @@ const run = {
   teams: renderTeams,
   freshness: renderFreshness,
   model: renderModel,
+  "report-card": renderReportCard,
 }[page];
 if (run) {
   run().catch((err) => {
-    const slot = $("health") || $("when") || $("ratings-caption") || document.querySelector("main");
+    const slot = $("health") || $("when") || $("ratings-caption") || $("rec-caption") || document.querySelector("main");
     if (slot) slot.textContent = `Could not load the latest JSON (${err.message}).`;
   });
 }
