@@ -20,6 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("pick-card", help="Snapshot this week's card before kickoff. Fails if a line is missing.")
     sub.add_parser("line-snapshot", help="Save pre-kickoff ESPN DraftKings lines for games inside the window.")
     sub.add_parser("backtest", help="Print the frozen 2022–2025 holdout. Does not recompute it.")
+    sub.add_parser("report-card", help="Backtest 2026 weeks 1-4 walk-forward with the frozen model. Not official picks.")
     return parser
 
 
@@ -28,6 +29,12 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.cmd == "backtest":
             print_backtest()
+            return 0
+        if args.cmd == "report-card":
+            from .report_card import build
+            out = build()
+            print(f"spreads {out['spread']['wins']}-{out['spread']['losses']}-{out['spread']['pushes']}, "
+                  f"totals {out['total']['wins']}-{out['total']['losses']}-{out['total']['pushes']}")
             return 0
         if args.cmd == "line-snapshot":
             run("line-snapshot")

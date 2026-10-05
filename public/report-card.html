@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f0e8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#12110e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <title>NFL Lab: 2026 so far (backtest)</title>
+  <meta name="description" content="How the locked NFL Lab model would have done in 2026 weeks 1 to 4, run walk-forward before each game. A backtest, not official picks.">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="report-card">
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="wrap wide">
+    <header class="top">
+      <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
+      <nav>
+        <a href="index.html">Picks</a>
+        <a href="model.html">Model</a>
+        <a href="report-card.html" aria-current="page">2026 so far</a>
+        <a href="ledger.html">Ledger</a>
+        <a href="teams.html">Teams</a>
+        <a href="freshness.html">Freshness</a>
+        <a href="recaps/week4.html">Week 4</a>
+        <a href="previews/week5.html">Week 5</a>
+        <a href="glossary.html">Glossary</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <p class="kicker">Backtest</p>
+      <h1>2026 so far: the report card</h1>
+      <p class="lede">What the locked model would have said in weeks 1 to 4 if we had run it before every kickoff, graded against the final scores.</p>
+
+      <aside class="backtest-note" aria-label="This is a backtest">
+        <strong>Not official picks.</strong>
+        <p>Nobody saved these before the games. We re-ran the frozen model after the fact, giving it only the games played before each week. The official record starts with Thursday's week-5 lock.</p>
+      </aside>
+
+      <section class="model-sec" aria-labelledby="rec-h">
+        <h2 id="rec-h">The record</h2>
+        <p class="caption" id="rec-caption">Loading…</p>
+        <div class="rc-hero" id="rc-hero"></div>
+        <div class="chart-grid">
+          <div class="chart-card" id="rc-winrate" role="img" aria-label="Spread and total win rates against the 52.4 percent break-even line"></div>
+          <div class="chart-card rc-context" id="rc-context"></div>
+        </div>
+      </section>
+
+      <section class="model-sec" aria-labelledby="wk-h">
+        <h2 id="wk-h">Week by week</h2>
+        <p class="caption">Every call that met the rule, one dot each. Filled green covered, red lost, hollow pushed.</p>
+        <div class="chart-card" id="rc-weeks"></div>
+      </section>
+
+      <section class="model-sec" aria-labelledby="les-h">
+        <h2 id="les-h">Three lessons</h2>
+        <p class="caption">The biggest hit, the biggest miss, and the biggest total miss, picked by how far the model was from the line.</p>
+        <div id="rc-lessons"></div>
+      </section>
+
+      <section class="model-sec" aria-labelledby="hon-h">
+        <h2 id="hon-h">How we kept it honest</h2>
+        <div class="prose" id="rc-honest"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p id="rc-foot">Backtest. Closing lines and final scores from nflverse. Research record, not a bet slip.</p>
+    </footer>
+  </div>
+  <script src="assets/site.js"></script>
+</body>
+</html>
