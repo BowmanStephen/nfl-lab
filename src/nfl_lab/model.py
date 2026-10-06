@@ -39,13 +39,15 @@ def _game_features(
     games["home_def"] = games["home_team"].map(r["shrunk_def_epa"])
     games["away_def"] = games["away_team"].map(r["shrunk_def_epa"])
     games["rating_diff"] = games["home_rating"] - games["away_rating"]
-    # Combined offensive environment for totals: home_off + away_off - home_def - away_def
-    # (higher = more points expected)
+    # Scoring environment for totals. Defense ratings are EPA *allowed* per play
+    # (higher = leakier), so a weak defense ADDS points and a stingy one subtracts.
+    # Before Oct 2026 this subtracted the defense terms, which counted a stingy
+    # defense as adding points. See CHANGES.md.
     games["off_env"] = (
         games["home_off"].fillna(0)
         + games["away_off"].fillna(0)
-        - games["home_def"].fillna(0)
-        - games["away_def"].fillna(0)
+        + games["home_def"].fillna(0)
+        + games["away_def"].fillna(0)
     )
     if "result" in games.columns:
         # result = home_score - away_score in habitatring

@@ -34,6 +34,7 @@ from .publish import publish_card, write_site
 from . import qb_adjust
 from .ratings import build_current_ratings
 from .team_stats import compute_season_team_stats
+from .walkforward import with_signfix_totals
 
 UTC = ZoneInfo("UTC")
 CT = ZoneInfo("America/Chicago")
@@ -89,7 +90,8 @@ def weekly_team_epa(pbp: pd.DataFrame, through_week: int) -> list[dict]:
 
 
 def _locked_params() -> tuple[ModelParams, dict]:
-    locked = json.loads((OUTPUT_DIR / "backtest" / "locked_model.json").read_text())["locked_model"]
+    locked = with_signfix_totals(
+        json.loads((OUTPUT_DIR / "backtest" / "locked_model.json").read_text())["locked_model"])
     qb = json.loads((OUTPUT_DIR / "backtest" / "qb_adjustment_validation.json").read_text())
     if not qb.get("adopt"):
         raise RuntimeError("QB adjustment was not adopted on the 2016–2021 check")

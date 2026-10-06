@@ -24,6 +24,10 @@ from .data_loader import filter_offensive_plays
 from .ratings import build_prior_ratings, opponent_adjust, shrink_to_prior
 
 BT_DIR = OUTPUT_DIR / "backtest"
+# Totals coefficients refit on 2016-2021 after the defense-sign fix. The frozen
+# locked_model.json totals numbers were fit on the flipped feature, so they must not
+# be paired with the corrected one. Margin coefficients are unaffected.
+TOTALS_SIGNFIX_PATH = OUTPUT_DIR / "calibration" / "totals_signfix_2016_2021.json"
 BREAKEVEN = 110 / 210  # 0.5238
 REGRESS_GRID = [0.3, 0.45, 0.6, 0.75, 0.9]
 PLAYS_EQUIV_GRID = [150, 300, 500, 800, 1200]
@@ -64,8 +68,9 @@ def features(pre: dict, regress: float, plays_equiv: float) -> pd.DataFrame:
         g["home_rating"] = g["home_team"].map(r["rating"])
         g["away_rating"] = g["away_team"].map(r["rating"])
         g["rating_diff"] = g["home_rating"] - g["away_rating"]
+        # Defense = EPA allowed (higher = leakier), so it adds to the scoring environment.
         g["off_env"] = (g["home_team"].map(r["shrunk_off_epa"]) + g["away_team"].map(r["shrunk_off_epa"])
-                        - g["home_team"].map(r["shrunk_def_epa"]) - g["away_team"].map(r["shrunk_def_epa"]))
+                        + g["home_team"].map(r["shrunk_def_epa"]) + g["away_team"].map(r["shrunk_def_epa"]))
         out.append(g)
     f = pd.concat(out, ignore_index=True)
     f["margin"] = f["home_score"] - f["away_score"]
@@ -270,3 +275,72 @@ def run(pbp: pd.DataFrame, schedules: pd.DataFrame, prereg: dict) -> dict:
     }, indent=2))
     ledger.to_csv(BT_DIR / "ledger.csv", index=False)
     return result
+
+
+# ---------------------------------------------------------------- totals sign fix
+def refit_totals_signfix(pbp: pd.DataFrame, schedules: pd.DataFrame, locked: dict,
+                         tune_seasons: list[int]) -> dict:
+    """Refit only the two totals numbers on the corrected feature, 2016-2021 only.
+
+    Same ratings (locked prior_regress / prior_plays_equiv) and the same 2-term form
+    (base_total + points_per_combined_off * env). Reports leave-one-season-out MAE and
+    the spread (SD) of projected totals before and after, all inside the tuning window.
+    """
+    assert max(tune_seasons) <= 2021, "totals sign fix may only be fit on 2016-2021"
+    pre = precompute(pbp, schedules, tune_seasons)
+    f = features(pre, locked["prior_regress"], locked["prior_plays_equiv"])
+    # Rebuild the old (flipped) feature for the before/after comparison only.
+    olds = []
+    for (s, w), cur in pre["current"].items():
+        r = shrink_to_prior(cur, pre["priors"][s], prior_plays_equiv=locked["prior_plays_equiv"],
+                            prior_regress=locked["prior_regress"]).set_index("team")
+        g = pre["games"][(pre["games"]["season"] == s) & (pre["games"]["week"] == w)][["game_id"]].copy()
+        gg = pre["games"].set_index("game_id").loc[g["game_id"]]
+        g["old_env"] = (gg["home_team"].map(r["shrunk_off_epa"]).values + gg["away_team"].map(r["shrunk_off_epa"]).values
+                        - gg["home_team"].map(r["shrunk_def_epa"]).values - gg["away_team"].map(r["shrunk_def_epa"]).values)
+        olds.append(g)
+    f = f.merge(pd.concat(olds), on="game_id", how="left")
+
+    def loso(col: str) -> np.ndarray:
+        pred = np.full(len(f), np.nan)
+        for hold in tune_seasons:
+            tr, te = f["season"] != hold, f["season"] == hold
+            c = _ols(np.column_stack([f.loc[tr, col], np.ones(tr.sum())]), f.loc[tr, "total_points"].values)
+            pred[te.values] = np.column_stack([f.loc[te, col], np.ones(te.sum())]) @ c
+        return pred
+
+    def stats(pred: np.ndarray) -> dict:
+        y = f["total_points"].values
+        return {"loso_mae": float(np.mean(np.abs(pred - y))), "projected_total_sd": float(np.std(pred, ddof=1)),
+                "slope_actual_on_projected": float(np.polyfit(pred, y, 1)[0])}
+
+    X = np.column_stack([f["off_env"], np.ones(len(f))])
+    ct = _ols(X, f["total_points"].values)
+    resid = f["total_points"].values - X @ ct
+    return {
+        "fit_on_seasons": tune_seasons,
+        "fitted_at": datetime.now(ZoneInfo("America/Chicago")).isoformat(),
+        "feature": "home_off + away_off + home_def + away_def (shrunk EPA/play; def = EPA allowed)",
+        "points_per_combined_off": float(ct[0]),
+        "base_total": float(ct[1]),
+        "total_sigma": float(np.std(resid, ddof=2)),
+        "n_fit_games": int(len(f)),
+        "tuning_window_before_after": {
+            "before_flipped_sign": stats(loso("old_env")),
+            "after_sign_fix": stats(loso("off_env")),
+            "market_total_sd": float(f["total_line"].std()),
+        },
+    }
+
+
+def with_signfix_totals(locked: dict) -> dict:
+    """Locked margin coefficients + totals coefficients refit for the corrected sign."""
+    if not TOTALS_SIGNFIX_PATH.exists():
+        raise RuntimeError(
+            f"{TOTALS_SIGNFIX_PATH} missing: run `nfl-lab refit-totals-signfix`. The locked totals "
+            "coefficients were fit on the flipped defense sign and must not be used with the fixed feature.")
+    fix = json.loads(TOTALS_SIGNFIX_PATH.read_text())
+    out = dict(locked)
+    for k in ("points_per_combined_off", "base_total", "total_sigma"):
+        out[k] = fix[k]
+    return out
