@@ -1,0 +1,28 @@
+f256e283d6f1590c20ff9138635b61902792ab40
+exp: rest diff in margin
+
+
+diff --git a/research/candidate.py b/research/candidate.py
+index 15f4c99..ba7d2c6 100644
+--- a/research/candidate.py
++++ b/research/candidate.py
+@@ -34,7 +34,7 @@ MARGIN_KG, MARGIN_RG = 32, 0.2     # scoring-margin level: prior games-equivalen
+ TOTAL_KG, TOTAL_RG = 2, 1.0        # scoring levels used for totals
+ BUCKETS = [("wk1_4", 1, 4), ("wk5_8", 5, 8), ("wk9_plus", 9, 99)]
+ QB_K_SHRINK, QB_BACKUP_MAX_DB = 200, 150
+-MARGIN_COLS = [f"pt_{b}" for b, _, _ in BUCKETS] + ["hfa_flag", "qb_diff"]
++MARGIN_COLS = [f"pt_{b}" for b, _, _ in BUCKETS] + ["hfa_flag", "qb_diff", "rest_diff"]
+ TOTAL_COLS = ["env_fix", "pts_env", "indoor", "wind", "one"]
+ 
+ 
+@@ -185,6 +185,9 @@ def _week_features(history, season: int, week: int, g: pd.DataFrame) -> pd.DataF
+     # Weather: closed roofs play faster/cleaner; wind (mph) hurts passing and kicking.
+     f["indoor"] = g["roof"].isin(["dome", "closed"]).astype(float)
+     f["wind"] = pd.to_numeric(g["wind"], errors="coerce").where(f["indoor"] == 0, 0.0)
++    # Rest edge in days (byes, Thursday games), capped so a bye counts once.
++    f["rest_diff"] = (pd.to_numeric(g["home_rest"], errors="coerce").clip(upper=14)
++                      - pd.to_numeric(g["away_rest"], errors="coerce").clip(upper=14))
+     f["hfa_flag"] = np.where(g["location"].eq("Neutral"), 0.0, 1.0)
+     for b, lo, hi in BUCKETS:
+         f[f"pt_{b}"] = f["ptdiff"] * float(lo <= week <= hi)
+

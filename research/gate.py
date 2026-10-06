@@ -34,7 +34,7 @@ import evaluate as E  # noqa: E402
 
 LOG = E.RESEARCH / "gate_log.tsv"
 HEADER = ["date_ct", "candidate", "candidate_blob", "reference", "result", "note"]
-GATE_SCRAMBLE = ((2020, 6), (2021, 12))
+GATE_SCRAMBLE = (2020, 6)
 
 
 def git(*args: str) -> str:
@@ -51,16 +51,16 @@ def log_rows() -> list[dict]:
     return [dict(zip(HEADER, l.split("\t"))) for l in lines[1:]]
 
 
-def module_from_blob(blob: str, name: str, tmp: Path):
-    """Load a candidate.py version by its git blob id (survives squash merges)."""
+def file_from_blob(blob: str, name: str, tmp: Path) -> Path:
+    """Write a candidate.py version, by git blob id (survives squash merges), to a temp file."""
     path = tmp / f"{name}.py"
     path.write_text(git("cat-file", "-p", blob) + "\n")
-    return E.load_candidate(path, name)
+    return path
 
 
-def gate_score(mod, data) -> tuple[float, bool]:
-    preds = E.walkforward(mod, E.GATE, data)
-    ok, _ = E.scramble_test(mod, data, preds, GATE_SCRAMBLE)
+def gate_score(path: Path, name: str, data) -> tuple[float, bool]:
+    preds = E.walkforward(path, E.GATE, data, name)
+    ok, _ = E.scramble_test(path, data, preds, GATE_SCRAMBLE, name)
     return E.score(preds)["score"], ok
 
 
@@ -70,6 +70,8 @@ def main() -> int:
     ap.add_argument("--force", action="store_true", help="allow a second gate run on the same date")
     a = ap.parse_args()
 
+    if git("diff", "--cached", "--name-only"):
+        raise SystemExit("the git index has staged changes; commit or unstage them before running the gate")
     now = datetime.now(ZoneInfo("America/Chicago"))
     today = now.strftime("%Y-%m-%d")
     if not a.force and any(r["date_ct"].startswith(today) for r in log_rows()):
@@ -79,18 +81,18 @@ def main() -> int:
     cand = git("log", "-1", "--format=%h", "--abbrev=7", a.candidate, "--", "research/candidate.py")
     blob = git("rev-parse", "--short=12", f"{a.candidate}:research/candidate.py")
     passed = [r for r in log_rows() if r["result"] == "pass"]
-    data = E._STATE["data"] = E.load()
+    data = E.load()
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
-        c_mod = module_from_blob(blob, "gate_candidate", tmp)
+        c_path = file_from_blob(blob, "gate_candidate", tmp)
         if passed:
             ref_label = f"{passed[-1]['candidate']} (last pass)"
-            r_mod = module_from_blob(passed[-1]["candidate_blob"], "gate_reference", tmp)
+            r_path = file_from_blob(passed[-1]["candidate_blob"], "gate_reference", tmp)
         else:
             ref_label = "main-model-form"
-            r_mod = E.load_candidate(E.RESEARCH / "reference_main.py", "gate_reference")
-        c_score, c_ok = gate_score(c_mod, data)
-        r_score, _ = gate_score(r_mod, data)
+            r_path = E.RESEARCH / "reference_main.py"
+        c_score, c_ok = gate_score(c_path, "gate_candidate", data)
+        r_score, _ = gate_score(r_path, "gate_reference", data)
 
     if not c_ok:
         result, note = "fail", "scramble test failed"
@@ -103,7 +105,7 @@ def main() -> int:
     with LOG.open("a") as fh:
         fh.write("\t".join([now.strftime("%Y-%m-%d %H:%M"), cand, blob, ref_label, result, note]) + "\n")
     git("add", "research/gate_log.tsv")
-    git("commit", "-q", "-m", f"research gate: {result} {cand} vs {ref_label}")
+    git("commit", "-q", "-m", f"research gate: {result} {cand} vs {ref_label}", "--", "research/gate_log.tsv")
     print(f"GATE {result}: {cand} vs {ref_label} ({note})")
     return 0
 

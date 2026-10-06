@@ -7,9 +7,11 @@ some candidate passes the gate:
     prior_regress 0.3, 1200 plays) + home field + the starting-QB term.
   * Total: base + scale * (home_off + away_off - home_def - away_def), i.e. main's
     totals feature WITH its flipped defense sign, as live today.
-  * Coefficients are refit walk-forward exactly like research/candidate.py, so the
-    comparison is like for like (main's locked numbers were fit on 2016-2021 and
-    would be in-sample on GATE).
+  * Coefficients are refit walk-forward once per season, on every game from 2013
+    through the previous season. That is the closest walk-forward match to the live
+    model, which holds one locked coefficient set all season (main's actual locked
+    numbers were fit on 2016-2021 and would be in-sample on GATE). A candidate that
+    refits more often is free to win the gate that way; that counts as improving on main.
 Same predict(history, games) contract as candidate.py.
 """
 from __future__ import annotations

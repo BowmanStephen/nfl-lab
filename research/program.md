@@ -13,7 +13,8 @@ questions; follow these rules and stop when the budget runs out.
    `research/.cache/` from nflverse, 2010-2021 only; skips if it already exists).
 3. Read `research/README.md`, `research/evaluate.py` (do not edit) and
    `research/candidate.py` (the file you edit). Skim `research/results.tsv`:
-   the last `keep` row is the score to beat, and earlier rows show what was tried.
+   the lowest `keep` score is the one to beat, and earlier rows (with their diffs in
+   `research/experiments/`) show what was tried.
 4. If `research/results.tsv` has no `keep` row, the first step is the baseline:
    `uv run python research/step.py "baseline"` with no edits.
 
@@ -38,8 +39,8 @@ unless the person who started you gave other numbers. Count only your own rows
   way either, and do not read `research/gate_log.tsv` for hints.
 - Look at any season after 2021, in the candidate or in your own scratch analysis.
   Do not open `data/`, `output/`, `public/` or nflverse data for 2022 or later.
-- Make the candidate read files, use the network, start processes, inspect the
-  evaluator's memory, or use betting lines. The harness blocks most of this and the
+- Make the candidate read files, use the network, start processes, tamper with the
+  worker sandbox, or use betting lines. The harness blocks most of this and the
   scramble test catches peeking; a `leak` row is a serious failure, not a near miss.
 - Hard-code answers for particular games, teams or seasons.
 
@@ -52,14 +53,15 @@ Repeat until the budget is spent:
 3. `git commit -q -m "exp: <idea>" -- research/candidate.py`
 4. `uv run python research/step.py "<one-line description of the idea>"`
    (add `--simplification` only when the change removes code or settings).
-   It runs `research/evaluate.py` (TUNE = 2016-2019, about 40 s, hard timeout 10 min),
+   It runs `research/evaluate.py` (TUNE = 2016-2019, about 1 minute, hard timeout 10 min),
    writes the full output to `research/run.log`, and then, by rule:
-   - **keep** if `tune_score` beats the last kept score by more than 0.001 points
-     (with `--simplification`: if it is no worse than last kept + 0.001);
+   - **keep** if `tune_score` beats the best kept score by more than 0.001 points
+     (with `--simplification`: if it is no worse than the best kept score + 0.001);
    - **discard** otherwise, **crash** if the run errors or times out, **leak** if the
      scramble test fails. Anything but keep is undone with `git reset --hard HEAD~1`.
-   - It appends a row to `research/results.tsv` (commit, time, TUNE score, margin and
-     total MAE, info-only hit rates, status, seconds, your description) and commits it.
+   - It saves the diff to `research/experiments/<commit>.diff`, appends a row to
+     `research/results.tsv` (commit, time, TUNE score, margin and total MAE, info-only hit
+     rates, status, seconds, your description) and commits both.
 5. If it crashed, read `research/run.log`. If it was a typo, fix it and run again as a
    new experiment. If the idea is broken, move on.
 

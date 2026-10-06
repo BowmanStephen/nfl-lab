@@ -9,11 +9,13 @@ Rules applied here (not by the agent):
   * HEAD must be one commit on top of the last logged state that changes ONLY
     research/candidate.py. The harness files must match origin/main.
   * Runs research/evaluate.py (TUNE 2016-2019 only) with a hard timeout.
-  * keep    if tune_score beats the current best by more than MIN_GAIN points,
-            or, with --simplification, is no worse than best + MIN_GAIN.
+  * keep    if tune_score beats the best kept score so far by more than MIN_GAIN
+            points, or, with --simplification, is no worse than that best + MIN_GAIN
+            (always measured against the best ever kept, so it cannot ratchet worse).
     discard otherwise, crash if the run fails or times out, leak if the scramble test fails.
     Anything but keep is reverted with `git reset --hard HEAD~1` (the experiment commit only).
-  * Appends one row to research/results.tsv and commits that file.
+  * Saves the experiment's diff to research/experiments/<commit>.diff, appends one row
+    to research/results.tsv, and commits just those files.
 The first run on an empty log is the baseline: HEAD is scored as is and kept.
 GATE (2020-2021) is never run here.
 """
@@ -32,6 +34,7 @@ RESEARCH = Path(__file__).resolve().parent
 REPO = RESEARCH.parent
 RESULTS = RESEARCH / "results.tsv"
 RUN_LOG = RESEARCH / "run.log"
+EXPERIMENTS = RESEARCH / "experiments"   # one .diff per experiment, kept or not
 HEADER = ["commit", "time_ct", "tune_score", "margin_mae", "total_mae", "ats_hit_info", "total_hit_info",
           "status", "eval_s", "description"]
 PROTECTED = ["research/evaluate.py", "research/step.py", "research/gate.py",
@@ -85,6 +88,14 @@ def main() -> int:
         if files != ["research/candidate.py"]:
             raise SystemExit(f"HEAD must change only research/candidate.py (it changes {files})")
     commit = git("rev-parse", "--short=7", "HEAD")
+    logged = ["research/results.tsv"]
+    if not baseline:
+        # Archive the experiment's diff so every row stays reproducible after a revert
+        # or a squash merge (the commit itself may become unreachable).
+        EXPERIMENTS.mkdir(exist_ok=True)
+        (EXPERIMENTS / f"{commit}.diff").write_text(
+            git("show", "--format=%H%n%s%n", "HEAD", "--", "research/candidate.py") + "\n")
+        logged.append(f"research/experiments/{commit}.diff")
 
     t0 = time.time()
     try:
@@ -105,7 +116,7 @@ def main() -> int:
         status = "crash"
     else:
         score = float(vals["tune_score"])
-        best = float(kept[-1]["tune_score"]) if kept else None
+        best = min(float(r["tune_score"]) for r in kept) if kept else None
         if baseline:
             status = "keep"
         elif score < best - MIN_GAIN or (a.simplification and score <= best + MIN_GAIN):
@@ -127,10 +138,10 @@ def main() -> int:
             raise SystemExit(f"baseline run failed ({status}); see {RUN_LOG}")
         git("reset", "--hard", "HEAD~1")
     append(row)
-    git("add", "research/results.tsv")
-    git("commit", "-q", "-m", f"research log: {status} {commit} {a.description}"[:120])
+    git("add", *logged)
+    git("commit", "-q", "-m", f"research log: {status} {commit} {a.description}"[:120], "--", *logged)
 
-    best_now = [r for r in rows() if r["status"] == "keep"][-1]
+    best_now = min((r for r in rows() if r["status"] == "keep"), key=lambda r: float(r["tune_score"]))
     print(f"{status}: {commit} tune_score={row.get('tune_score')} (best {best_now['tune_score']} @ {best_now['commit']}) "
           f"in {secs:.0f}s")
     return 0

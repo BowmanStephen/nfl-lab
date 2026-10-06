@@ -12,10 +12,13 @@ What it does
     every play and every final score from earlier weeks/seasons, plus the week's
     matchups (teams, site, rest, roof, weather, listed starting QBs). No betting
     lines are ever passed in, and no outcome of the target week.
-  * While the candidate runs, file reads outside the Python install, network
-    access, and subprocesses are blocked.
-  * After scoring, a scramble test re-asks the candidate for past weeks with every
-    later play and score scrambled in memory. Any change in its answers = leakage.
+  * The candidate runs in its own freshly spawned worker process that is fed rows
+    strictly in time order, so it never holds a later play, score or any betting
+    line in memory. Inside the worker, file reads outside the Python install,
+    network sockets, subprocesses and ctypes are refused.
+  * After scoring, a scramble test starts a brand-new worker on data whose future
+    (plays, scores, lines) is scrambled and replays to a checkpoint week. Its answers
+    must match the main pass exactly; any change = leakage.
 
 Score (lower is better), on every REG-season TUNE game:
 
@@ -34,7 +37,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
-import importlib.util
+import multiprocessing as mp
 import os
 import site
 import sys
@@ -57,7 +60,7 @@ FIRST_DATA_SEASON = 2010            # earliest season loaded (priors for 2013+ t
 MAX_SEASON = 2021                   # hard ceiling. 2022-2025 = spent holdout, 2026 = live.
 TUNE = (2016, 2017, 2018, 2019)     # the loop sees and optimizes these
 GATE = (2020, 2021)                 # gate.py only, once per night, pass/fail only
-SCRAMBLE_CHECKPOINTS = ((2017, 6), (2019, 12))
+SCRAMBLE_CHECKPOINT = (2017, 6)
 
 TEAM_FIX = {"STL": "LA", "SD": "LAC", "OAK": "LV", "LAR": "LA", "WSH": "WAS"}
 
@@ -160,33 +163,29 @@ class History:
     schedule: pd.DataFrame   # all completed games before this week, with final scores, no lines
 
 
-def history(data: Data, season: int, week: int) -> History:
-    k = int(_key(season, week))
-    n_p = int(np.searchsorted(data.pbp_key, k, side="left"))
-    n_s = int(np.searchsorted(data.sched_key, k, side="left"))
-    sched = data.sched.iloc[:n_s].drop(columns=LINE_COLS, errors="ignore")
-    h = History(season, week, data.pbp.iloc[:n_p], sched)
-    assert len(h.pbp) == 0 or int(_key(h.pbp["season"].iloc[-1], h.pbp["week"].iloc[-1])) < k
-    return h
-
-
-def target_games(data: Data, season: int, week: int) -> tuple[pd.DataFrame, pd.DataFrame]:
+def target_games(data: Data, season: int, week: int) -> pd.DataFrame:
     s = data.sched
     m = (s["season"] == season) & (s["week"] == week) & (s["game_type"] == "REG")
-    full = s.loc[m]
-    public = full[[c for c in PREGAME_COLS if c in full.columns]].reset_index(drop=True)
-    return public, full
+    return s.loc[m, [c for c in PREGAME_COLS if c in s.columns]].reset_index(drop=True)
 
 
-# ---------------------------------------------------------------- sandbox for candidate calls
+# ---------------------------------------------------------------- sandbox
+# The candidate runs in a separate, freshly spawned worker process. The worker only
+# ever holds the rows it has been sent, and rows are sent strictly in time order:
+# before week W it has received every play/score before week W and nothing later.
+# Inside the worker, an audit hook additionally refuses file reads outside the Python
+# install, network sockets, subprocesses and ctypes. (An in-process hook is a
+# tripwire, not a hard OS sandbox; program.md forbids trying to get around it.)
 _GUARD = {"on": False, "extra": set()}
 _ALLOWED_PREFIXES = tuple(
     str(Path(p).resolve()) for p in
     {sys.prefix, sys.base_prefix, sys.exec_prefix, *site.getsitepackages(), "/usr/lib", "/usr/local/lib",
      "/usr/share/zoneinfo", "/etc/localtime", "/dev/null", "/dev/urandom", "/proc/self"}
 )
-_BLOCKED_EVENTS = ("socket.connect", "socket.getaddrinfo", "subprocess.Popen", "os.system",
-                   "os.posix_spawn", "os.exec", "os.fork", "urllib.Request")
+_BLOCKED_EVENTS = ("socket.__new__", "socket.connect", "socket.bind", "socket.sendto", "socket.sendmsg",
+                   "socket.getaddrinfo", "socket.gethostbyname", "subprocess.Popen", "os.system",
+                   "os.posix_spawn", "os.exec", "os.fork", "os.forkpty", "urllib.Request",
+                   "ctypes.dlopen", "ctypes.dlsym", "ctypes.call_function")
 
 
 def _audit(event: str, args) -> None:
@@ -200,7 +199,8 @@ def _audit(event: str, args) -> None:
             p = str(Path(os.fsdecode(path)).resolve())
         except Exception:
             return
-        if p in _GUARD["extra"] or (p.startswith(_ALLOWED_PREFIXES) and not p.startswith(str(CACHE))):
+        if p in _GUARD["extra"] or (p.startswith(_ALLOWED_PREFIXES) and not p.startswith(str(REPO) + os.sep + "research")
+                                    and not p.startswith(str(REPO) + os.sep + "data")):
             return
         raise PermissionError(f"candidate may not read files outside the data it is passed: {p}")
     if event in _BLOCKED_EVENTS:
@@ -210,54 +210,112 @@ def _audit(event: str, args) -> None:
 sys.addaudithook(_audit)
 
 
-@contextlib.contextmanager
-def guarded(extra_paths=()):
-    _GUARD["extra"] = {str(Path(p).resolve()) for p in extra_paths}
-    _GUARD["on"] = True
+def _tb_text(e: BaseException) -> str:
+    """Traceback without reading source files (the worker cannot open them)."""
+    out, tb = [], e.__traceback__
+    while tb is not None:
+        out.append(f"  {tb.tb_frame.f_code.co_filename}:{tb.tb_lineno} in {tb.tb_frame.f_code.co_name}")
+        tb = tb.tb_next
+    return "\n".join(out + [f"{type(e).__name__}: {e}"])
+
+
+def _worker_main(conn, cand_path: str, name: str) -> None:
+    import importlib.util as iu
     try:
-        yield
-    finally:
-        _GUARD["on"] = False
-        _GUARD["extra"] = set()
-
-
-def load_candidate(path: Path = CANDIDATE_PATH, name: str = "candidate"):
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    with guarded([path]):
+        spec = iu.spec_from_file_location(name, cand_path)
+        mod = iu.module_from_spec(spec)
+        _GUARD["extra"] = {str(Path(cand_path).resolve())}
+        _GUARD["on"] = True
         spec.loader.exec_module(mod)
-    if not callable(getattr(mod, "predict", None)):
-        raise SystemExit(f"{path} must define predict(history, games)")
-    return mod
+        _GUARD["extra"] = set()
+        if not callable(getattr(mod, "predict", None)):
+            raise TypeError(f"{cand_path} must define predict(history, games)")
+        conn.send(("ok", None))
+    except BaseException as e:  # noqa: BLE001
+        conn.send(("err", _tb_text(e)))
+        return
+    pbp = sch = None
+    while True:
+        msg = conn.recv()
+        if msg[0] == "stop":
+            return
+        if msg[0] == "data":
+            pbp = msg[1] if pbp is None else pd.concat([pbp, msg[1]], ignore_index=True)
+            sch = msg[2] if sch is None else pd.concat([sch, msg[2]], ignore_index=True)
+            continue
+        _, season, week, games = msg
+        try:
+            out = pd.DataFrame(mod.predict(History(season, week, pbp, sch), games))
+            conn.send(("ok", out))
+        except BaseException as e:  # noqa: BLE001
+            conn.send(("err", _tb_text(e)))
 
 
-def _call(mod, data: Data, season: int, week: int) -> pd.DataFrame:
-    games, _ = target_games(data, season, week)
-    h = history(data, season, week)
-    with guarded():
-        out = mod.predict(h, games.copy())
-    out = pd.DataFrame(out)
-    need = {"game_id", "pred_margin", "pred_total"}
-    if not need <= set(out.columns):
-        raise ValueError(f"predict() must return columns {sorted(need)}")
-    out = out[["game_id", "pred_margin", "pred_total"]].copy()
-    if set(out["game_id"]) != set(games["game_id"]) or out["game_id"].duplicated().any():
-        raise ValueError(f"{season} wk{week}: predict() must return exactly one row per game")
-    vals = out[["pred_margin", "pred_total"]].to_numpy(dtype=float)
-    if not np.isfinite(vals).all():
-        raise ValueError(f"{season} wk{week}: non-finite prediction")
-    return out
+class Worker:
+    """One candidate in its own spawned process, fed data strictly in time order."""
+
+    def __init__(self, cand_path: Path, name: str, data: Data):
+        ctx = mp.get_context("spawn")
+        self.conn, child = ctx.Pipe()
+        self.proc = ctx.Process(target=_worker_main, args=(child, str(cand_path), name), daemon=True)
+        self.proc.start()
+        child.close()
+        self.data, self.sent_p, self.sent_s, self.last_key = data, 0, 0, -1
+        self._reply(f"loading {cand_path.name}")
+
+    def _reply(self, what: str):
+        status, payload = self.conn.recv()
+        if status != "ok":
+            raise RuntimeError(f"candidate failed while {what}:\n{payload}")
+        return payload
+
+    def predict(self, season: int, week: int) -> pd.DataFrame:
+        k = int(_key(season, week))
+        if k <= self.last_key:
+            raise RuntimeError("weeks must be requested in time order")
+        self.last_key = k
+        d = self.data
+        n_p = int(np.searchsorted(d.pbp_key, k, side="left"))
+        n_s = int(np.searchsorted(d.sched_key, k, side="left"))
+        assert n_p == 0 or d.pbp_key[n_p - 1] < k
+        pbp_new = d.pbp.iloc[self.sent_p:n_p]
+        sch_new = d.sched.iloc[self.sent_s:n_s].drop(columns=LINE_COLS, errors="ignore")
+        self.conn.send(("data", pbp_new, sch_new))
+        self.sent_p, self.sent_s = n_p, n_s
+        games = target_games(d, season, week)
+        self.conn.send(("predict", season, week, games))
+        out = self._reply(f"predicting {season} week {week}")
+        need = {"game_id", "pred_margin", "pred_total"}
+        if not need <= set(out.columns):
+            raise ValueError(f"predict() must return columns {sorted(need)}")
+        out = out[["game_id", "pred_margin", "pred_total"]].copy()
+        if set(out["game_id"]) != set(games["game_id"]) or out["game_id"].duplicated().any():
+            raise ValueError(f"{season} wk{week}: predict() must return exactly one row per game")
+        if not np.isfinite(out[["pred_margin", "pred_total"]].to_numpy(dtype=float)).all():
+            raise ValueError(f"{season} wk{week}: non-finite prediction")
+        return out
+
+    def close(self) -> None:
+        with contextlib.suppress(Exception):
+            self.conn.send(("stop",))
+        self.proc.join(5)
+        if self.proc.is_alive():
+            self.proc.kill()
 
 
-def walkforward(mod, seasons, data: Data | None = None) -> pd.DataFrame:
+def _weeks(data: Data, season: int) -> list[int]:
+    s = data.sched
+    return sorted(int(w) for w in s.loc[(s["season"] == season) & (s["game_type"] == "REG"), "week"].unique())
+
+
+def walkforward(cand_path: Path, seasons, data: Data, name: str = "candidate") -> pd.DataFrame:
     """Week-by-week predictions for every REG game of `seasons`, in time order."""
     seasons = _check_seasons(seasons)
-    data = data or load()
-    rows = []
-    for s in sorted(seasons):
-        weeks = sorted(data.sched.loc[(data.sched["season"] == s) & (data.sched["game_type"] == "REG"), "week"].unique())
-        for w in weeks:
-            rows.append(_call(mod, data, s, int(w)))
+    w = Worker(cand_path, name, data)
+    try:
+        rows = [w.predict(s, wk) for s in sorted(seasons) for wk in _weeks(data, s)]
+    finally:
+        w.close()
     pred = pd.concat(rows, ignore_index=True)
     g = data.sched[data.sched["season"].isin(seasons) & (data.sched["game_type"] == "REG")]
     g = g[["game_id", "season", "week", "home_score", "away_score", "spread_line", "total_line"]]
@@ -289,41 +347,43 @@ def score(df: pd.DataFrame) -> dict:
 
 # ---------------------------------------------------------------- leakage scramble test
 def _scrambled(data: Data, season: int, week: int, seed: int) -> Data:
-    """Same data, but every play and score at/after (season, week) is scrambled."""
+    """Same data, but every play, score and line at/after (season, week) is scrambled."""
     rng = np.random.default_rng(seed)
     k = int(_key(season, week))
     p, s = data.pbp.copy(), data.sched.copy()
     fp, fs = data.pbp_key >= k, data.sched_key >= k
     for c in ("epa", "success", "yards_gained", "qb_epa", "wp", "ep", "touchdown", "posteam_score", "defteam_score"):
         if c in p.columns:
-            v = p.loc[fp, c].to_numpy(copy=True)
-            p.loc[fp, c] = rng.permutation(v) * (1 if c == "success" or c == "touchdown" else -1.7)
-    for c in ("home_score", "away_score"):
+            v = p.loc[fp, c].to_numpy(dtype=float, copy=True)
+            p.loc[fp, c] = rng.permutation(v) * (1.0 if c in ("success", "touchdown") else -1.7)
+    for c in ("home_score", "away_score", "spread_line", "total_line"):
         s.loc[fs, c] = rng.integers(0, 60, int(fs.sum())).astype(float)
     s.loc[fs, "result"] = s.loc[fs, "home_score"] - s.loc[fs, "away_score"]
     s.loc[fs, "total"] = s.loc[fs, "home_score"] + s.loc[fs, "away_score"]
     return Data(p, data.pbp_key, s, data.sched_key)
 
 
-def scramble_test(mod, data: Data, preds: pd.DataFrame, checkpoints=SCRAMBLE_CHECKPOINTS) -> tuple[bool, str]:
-    """Re-predict checkpoint weeks with the future scrambled. Answers must not move."""
-    for i, (s, w) in enumerate(checkpoints):
-        if s not in set(preds["season"]):
-            continue
-        base = preds[(preds["season"] == s) & (preds["week"] == w)].set_index("game_id")
-        _STATE["data"] = _scrambled(data, s, w, seed=i)
-        try:
-            again = _call(mod, _STATE["data"], s, w).set_index("game_id").loc[base.index]
-        finally:
-            _STATE["data"] = data
-        diff = float(np.max(np.abs(again[["pred_margin", "pred_total"]].to_numpy()
-                                   - base[["pred_margin", "pred_total"]].to_numpy())))
-        if diff > 1e-6:
-            return False, f"{s} wk{w} predictions moved by {diff:.4f} when later games were scrambled"
+def scramble_test(cand_path: Path, data: Data, preds: pd.DataFrame, checkpoint: tuple[int, int],
+                  name: str = "candidate") -> tuple[bool, str]:
+    """A brand-new worker replays up to `checkpoint` on data whose future is scrambled.
+    Its answers for that week must equal the main pass's answers exactly."""
+    s, w = checkpoint
+    base = preds[(preds["season"] == s) & (preds["week"] == w)].set_index("game_id")
+    scr = _scrambled(data, s, w, seed=s * 100 + w)
+    wk = Worker(cand_path, name, scr)
+    try:
+        for ww in _weeks(scr, s):  # warm the same weeks of the season as the main pass did
+            if ww > w:
+                break
+            again = wk.predict(s, ww)
+    finally:
+        wk.close()
+    again = again.set_index("game_id").loc[base.index]
+    diff = float(np.max(np.abs(again[["pred_margin", "pred_total"]].to_numpy()
+                               - base[["pred_margin", "pred_total"]].to_numpy())))
+    if diff > 1e-6:
+        return False, f"{s} wk{w} predictions moved by {diff:.4f} when later games were scrambled"
     return True, "ok"
-
-
-_STATE: dict = {}
 
 
 def main() -> int:
@@ -337,13 +397,12 @@ def main() -> int:
         return 0
 
     t0 = time.time()
-    data = _STATE["data"] = load()
+    data = load()
     t_load = time.time() - t0
-    mod = load_candidate()
-    preds = walkforward(mod, TUNE, data)
+    preds = walkforward(CANDIDATE_PATH, TUNE, data)
     t_wf = time.time() - t0
     sc = score(preds)
-    ok, why = scramble_test(mod, data, preds)
+    ok, why = scramble_test(CANDIDATE_PATH, data, preds, SCRAMBLE_CHECKPOINT)
     print("---")
     print(f"tune_score:        {sc['score']:.4f}")
     print(f"margin_mae:        {sc['margin_mae']:.4f}")
