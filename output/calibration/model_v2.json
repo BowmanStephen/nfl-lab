@@ -1,0 +1,2579 @@
+{
+  "model_version": "v2-margin-calibration",
+  "status": "PROPOSED. Applies only from 2026 week 6 if the PR is merged. Week 1-5 cards and the 2022-2025 ledger are untouched.",
+  "fit_on_seasons": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ],
+  "fitted_at": "2026-10-05T19:17:29.148154-05:00",
+  "applies_from": {
+    "season": 2026,
+    "week": 6
+  },
+  "selection_rule": "LOSO MAE on 2016-2021; among settings within 0.01 of the best, smallest mean |slope-1| over weeks 1-4/5-8/9+; positive coefficients only. Lines never used.",
+  "buckets": [
+    {
+      "name": "wk1_4",
+      "weeks": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "wk5_8",
+      "weeks": [
+        5,
+        8
+      ]
+    },
+    {
+      "name": "wk9_plus",
+      "weeks": [
+        9,
+        99
+      ]
+    }
+  ],
+  "margin": {
+    "model": "points_per_segment_scale",
+    "kg_games": 32,
+    "prior_regress_points": 0.2,
+    "coefs": {
+      "pt_wk1_4": 2.45657399120243,
+      "pt_wk5_8": 2.8866922191891784,
+      "pt_wk9_plus": 1.9975107385864959,
+      "hfa_flag": 1.581968197242145
+    },
+    "margin_sigma": 13.195431426101756
+  },
+  "total": {
+    "model": "epa_env_plus_points_levels",
+    "kg_games": 2,
+    "prior_regress_points": 1.0,
+    "epa_prior_regress": 0.3,
+    "epa_prior_plays_equiv": 1200,
+    "coefs": {
+      "env_fix": 12.830463868956159,
+      "pts_env": 0.3406944308408179,
+      "one": 14.625104675748481
+    },
+    "total_sigma": 13.707062136429935
+  },
+  "qb": {
+    "adopted": true,
+    "points_per_qb_epa_db": 23.3756837363381,
+    "margin_sigma": 13.195431426101756,
+    "loso_mae_without_qb": 10.348703637303693,
+    "loso_mae_with_qb": 10.288461566837883
+  },
+  "tuning_window_2016_2021": {
+    "margin_current_frozen_model": {
+      "model": "epa_single_scale",
+      "prior_regress": 0.3,
+      "prior_plays_equiv": 1200,
+      "kg": null,
+      "rg": null,
+      "all_coefs_positive": true,
+      "loso_mae": 10.496016043354517,
+      "projected_sd": 5.14104072083446,
+      "slope_actual_on_projected": {
+        "all": 0.9882089502602469,
+        "wk1_4": 1.0156193429673537,
+        "wk5_8": 1.2423130181737616,
+        "wk9_plus": 0.9145745098345656
+      },
+      "calibration_error": 0.11445261710218324,
+      "market_sd": 6.257318337650064,
+      "actual_sd": 14.443502071080363,
+      "week5_projected_sd": 4.2008843446931285
+    },
+    "margin_v2": {
+      "model": "points_per_segment_scale",
+      "prior_regress": 0.3,
+      "prior_plays_equiv": 1200,
+      "kg": 32,
+      "rg": 0.2,
+      "all_coefs_positive": true,
+      "loso_mae": 10.348703637303693,
+      "projected_sd": 5.633697575283055,
+      "slope_actual_on_projected": {
+        "all": 0.9793638835981366,
+        "wk1_4": 0.9411141132970451,
+        "wk5_8": 0.9720914036569106,
+        "wk9_plus": 0.9926937212774792
+      },
+      "calibration_error": 0.031366920589521695,
+      "market_sd": 6.257318337650064,
+      "actual_sd": 14.443502071080363,
+      "week5_projected_sd": 6.066148832093007
+    },
+    "total_current_frozen_model_flipped_sign": {
+      "loso_mae": 11.103747778035698,
+      "projected_sd": 1.3001061234372564,
+      "slope_actual_on_projected": {
+        "all": 0.394075687252097,
+        "wk1_4": -0.6962434096544055,
+        "wk5_8": 0.6332752150188142,
+        "wk9_plus": 0.4981185273184702
+      },
+      "calibration_error": 0.8549498891057071,
+      "market_sd": 4.348266558308083,
+      "actual_sd": 14.021227358369236,
+      "week5_projected_sd": 1.016407245690009
+    },
+    "total_sign_fix_only": {
+      "loso_mae": 11.049666858404867,
+      "projected_sd": 2.181857334599663,
+      "slope_actual_on_projected": {
+        "all": 0.6824970597038332,
+        "wk1_4": 1.1566617276044382,
+        "wk5_8": 0.5532352483454609,
+        "wk9_plus": 0.6375258585478947
+      },
+      "calibration_error": 0.32196687357036086,
+      "market_sd": 4.348266558308083,
+      "actual_sd": 14.021227358369236,
+      "week5_projected_sd": 1.9764211998075931
+    },
+    "total_v2": {
+      "model": "epa_env_plus_points_levels",
+      "kg": 2,
+      "rg": 1.0,
+      "all_coefs_positive": true,
+      "loso_mae": 10.915805105875698,
+      "projected_sd": 2.8965343941702852,
+      "slope_actual_on_projected": {
+        "all": 0.9380967690173226,
+        "wk1_4": 1.0387135249608723,
+        "wk5_8": 0.7835724839436764,
+        "wk9_plus": 0.9811681877085695
+      },
+      "calibration_error": 0.09132428443620881,
+      "market_sd": 4.348266558308083,
+      "actual_sd": 14.021227358369236,
+      "week5_projected_sd": 3.2006538940262432
+    }
+  },
+  "grids": {
+    "margin": [
+      {
+        "model": "epa_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": null,
+        "rg": null,
+        "all_coefs_positive": true,
+        "loso_mae": 10.496016043354517,
+        "projected_sd": 5.14104072083446,
+        "slope_actual_on_projected": {
+          "all": 0.9882089502602469,
+          "wk1_4": 1.0156193429673537,
+          "wk5_8": 1.2423130181737616,
+          "wk9_plus": 0.9145745098345656
+        },
+        "calibration_error": 0.11445261710218324,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.2008843446931285
+      },
+      {
+        "model": "epa_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": null,
+        "rg": null,
+        "all_coefs_positive": true,
+        "loso_mae": 10.507831831439475,
+        "projected_sd": 5.190734808455903,
+        "slope_actual_on_projected": {
+          "all": 0.9729032043224266,
+          "wk1_4": 0.9128771047866739,
+          "wk5_8": 0.9748366721054743,
+          "wk9_plus": 0.9847792042577908
+        },
+        "calibration_error": 0.042502339616687,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.305089320439273
+      },
+      {
+        "model": "epa_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1600,
+        "kg": null,
+        "rg": null,
+        "all_coefs_positive": true,
+        "loso_mae": 10.499892137602602,
+        "projected_sd": 5.132918963720655,
+        "slope_actual_on_projected": {
+          "all": 0.9887125194763932,
+          "wk1_4": 1.0225355171119923,
+          "wk5_8": 1.2338157727992574,
+          "wk9_plus": 0.9154195241249176
+        },
+        "calibration_error": 0.11364392192877737,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.311749766916584
+      },
+      {
+        "model": "epa_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1600,
+        "kg": null,
+        "rg": null,
+        "all_coefs_positive": true,
+        "loso_mae": 10.506014603058071,
+        "projected_sd": 5.183470761585283,
+        "slope_actual_on_projected": {
+          "all": 0.9724737903911346,
+          "wk1_4": 0.9267971991088866,
+          "wk5_8": 0.9672628268700281,
+          "wk9_plus": 0.9869118538019854
+        },
+        "calibration_error": 0.039676040073033304,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.425791501473271
+      },
+      {
+        "model": "epa_single_scale",
+        "prior_regress": 0.45,
+        "prior_plays_equiv": 800,
+        "kg": null,
+        "rg": null,
+        "all_coefs_positive": true,
+        "loso_mae": 10.498622245667514,
+        "projected_sd": 5.15285235142318,
+        "slope_actual_on_projected": {
+          "all": 0.9886823198016054,
+          "wk1_4": 0.9239647941515247,
+          "wk5_8": 1.1909262271419156,
+          "wk9_plus": 0.938033715380146
+        },
+        "calibration_error": 0.10964257253674832,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.479495153866836
+      },
+      {
+        "model": "epa_per_segment_scale",
+        "prior_regress": 0.45,
+        "prior_plays_equiv": 800,
+        "kg": null,
+        "rg": null,
+        "all_coefs_positive": true,
+        "loso_mae": 10.512537219372609,
+        "projected_sd": 5.1874621760087845,
+        "slope_actual_on_projected": {
+          "all": 0.9726592611185256,
+          "wk1_4": 0.9125804296611668,
+          "wk5_8": 0.9744450873336138,
+          "wk9_plus": 0.984926033962754
+        },
+        "calibration_error": 0.04268281634748846,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.422745595908145
+      },
+      {
+        "model": "epa_single_scale",
+        "prior_regress": 0.45,
+        "prior_plays_equiv": 1200,
+        "kg": null,
+        "rg": null,
+        "all_coefs_positive": true,
+        "loso_mae": 10.506236708878578,
+        "projected_sd": 5.126509127496655,
+        "slope_actual_on_projected": {
+          "all": 0.9889799716380161,
+          "wk1_4": 0.9414935776349928,
+          "wk5_8": 1.184131830945343,
+          "wk9_plus": 0.9390010612689121
+        },
+        "calibration_error": 0.10121239734714604,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.596338776680854
+      },
+      {
+        "model": "epa_per_segment_scale",
+        "prior_regress": 0.45,
+        "prior_plays_equiv": 1200,
+        "kg": null,
+        "rg": null,
+        "all_coefs_positive": true,
+        "loso_mae": 10.514583026923257,
+        "projected_sd": 5.162706256275039,
+        "slope_actual_on_projected": {
+          "all": 0.9718716624463642,
+          "wk1_4": 0.9296315349659032,
+          "wk5_8": 0.9634045647658823,
+          "wk9_plus": 0.9880286878700336
+        },
+        "calibration_error": 0.03964507079939361,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.559910578741191
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 4,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.472707294557765,
+        "projected_sd": 5.297931114318327,
+        "slope_actual_on_projected": {
+          "all": 0.9859100367658591,
+          "wk1_4": 0.583919862278603,
+          "wk5_8": 1.227433475881482,
+          "wk9_plus": 0.989704255263763
+        },
+        "calibration_error": 0.2179364527797053,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.691410063827347
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 4,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.471576527997032,
+        "projected_sd": 5.37913685114909,
+        "slope_actual_on_projected": {
+          "all": 0.9738611109126164,
+          "wk1_4": 0.7048082343366584,
+          "wk5_8": 0.9845488874070112,
+          "wk9_plus": 0.9894891471715592
+        },
+        "calibration_error": 0.10705124369492373,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.860176260939927
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 4,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.444944048449152,
+        "projected_sd": 5.3743900064107235,
+        "slope_actual_on_projected": {
+          "all": 0.98659207439775,
+          "wk1_4": 0.640811563404832,
+          "wk5_8": 1.2148011229632196,
+          "wk9_plus": 0.9873269423283774
+        },
+        "calibration_error": 0.19555420574333673,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.832390716368456
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 4,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.447538958934196,
+        "projected_sd": 5.443283625215019,
+        "slope_actual_on_projected": {
+          "all": 0.974970696614146,
+          "wk1_4": 0.7892878142688093,
+          "wk5_8": 0.9830151172239052,
+          "wk9_plus": 0.9896543970761729
+        },
+        "calibration_error": 0.07934755714370419,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.980395020708369
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 4,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.406085095086391,
+        "projected_sd": 5.480940677840151,
+        "slope_actual_on_projected": {
+          "all": 0.9879040949624246,
+          "wk1_4": 0.6960978946330882,
+          "wk5_8": 1.1955340712297806,
+          "wk9_plus": 0.9936359741582952
+        },
+        "calibration_error": 0.16860006747946574,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.078773463490633
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 4,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.40874667789706,
+        "projected_sd": 5.541973319451047,
+        "slope_actual_on_projected": {
+          "all": 0.9764558582017485,
+          "wk1_4": 0.8674191660979759,
+          "wk5_8": 0.9802730689254852,
+          "wk9_plus": 0.990061460845209
+        },
+        "calibration_error": 0.05408210137711,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.1947482822628475
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 4,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.388974749122283,
+        "projected_sd": 5.536157253540534,
+        "slope_actual_on_projected": {
+          "all": 0.9890473603545733,
+          "wk1_4": 0.7051406243640507,
+          "wk5_8": 1.1828774465904088,
+          "wk9_plus": 1.0112733744166993
+        },
+        "calibration_error": 0.16300339888101914,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.27552516072587
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 4,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.383240023369178,
+        "projected_sd": 5.602785194911099,
+        "slope_actual_on_projected": {
+          "all": 0.977105369694271,
+          "wk1_4": 0.8987314541822351,
+          "wk5_8": 0.9778586889798294,
+          "wk9_plus": 0.9905374740995322
+        },
+        "calibration_error": 0.044290794246134434,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.372039010901172
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 8,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.412512575027446,
+        "projected_sd": 5.436948386619906,
+        "slope_actual_on_projected": {
+          "all": 0.9870113237440571,
+          "wk1_4": 0.8150502544921006,
+          "wk5_8": 1.282290369065384,
+          "wk9_plus": 0.9303012893413758
+        },
+        "calibration_error": 0.17897960841063587,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.429944439801625
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 8,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.42309855487798,
+        "projected_sd": 5.496054993044462,
+        "slope_actual_on_projected": {
+          "all": 0.9766420771637925,
+          "wk1_4": 0.8385969827387189,
+          "wk5_8": 0.9820637348449918,
+          "wk9_plus": 0.9898915591132462
+        },
+        "calibration_error": 0.06314924110101439,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.792394812455521
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 8,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.379638752479117,
+        "projected_sd": 5.524531850944227,
+        "slope_actual_on_projected": {
+          "all": 0.9880789687207894,
+          "wk1_4": 0.8563574181613074,
+          "wk5_8": 1.2546545315427813,
+          "wk9_plus": 0.9332485084547786
+        },
+        "calibration_error": 0.15501620164223176,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.674290754108713
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 8,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.390706078373517,
+        "projected_sd": 5.575744486874937,
+        "slope_actual_on_projected": {
+          "all": 0.9778747793395196,
+          "wk1_4": 0.8898546228595995,
+          "wk5_8": 0.979807811236061,
+          "wk9_plus": 0.9903583985738392
+        },
+        "calibration_error": 0.046659722443500105,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.986327070605622
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 8,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.35051640226438,
+        "projected_sd": 5.603538100492538,
+        "slope_actual_on_projected": {
+          "all": 0.9897463170405546,
+          "wk1_4": 0.839003720468467,
+          "wk5_8": 1.2084932429790352,
+          "wk9_plus": 0.9554126683876842
+        },
+        "calibration_error": 0.13802561804096128,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.081547980341691
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 8,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.356179707205523,
+        "projected_sd": 5.646390981380541,
+        "slope_actual_on_projected": {
+          "all": 0.9785853562957697,
+          "wk1_4": 0.9239140339931253,
+          "wk5_8": 0.9757817429304084,
+          "wk9_plus": 0.991420084405643
+        },
+        "calibration_error": 0.036294712890274416,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.274045739848752
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 8,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.356422392198859,
+        "projected_sd": 5.5974820846839455,
+        "slope_actual_on_projected": {
+          "all": 0.9906438687957198,
+          "wk1_4": 0.7922171682815349,
+          "wk5_8": 1.1740093655632586,
+          "wk9_plus": 0.9896176115735922
+        },
+        "calibration_error": 0.13072486190271052,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.371465333943315
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 8,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.354965665713962,
+        "projected_sd": 5.643958159334119,
+        "slope_actual_on_projected": {
+          "all": 0.9780336515852732,
+          "wk1_4": 0.931885127904247,
+          "wk5_8": 0.9716986190307231,
+          "wk9_plus": 0.9925174711100023
+        },
+        "calibration_error": 0.03463292731834252,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.446656897861386
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 12,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.384361125684663,
+        "projected_sd": 5.502115432194572,
+        "slope_actual_on_projected": {
+          "all": 0.9877446182219163,
+          "wk1_4": 0.956692159410807,
+          "wk5_8": 1.3172412235873387,
+          "wk9_plus": 0.9095965029050118
+        },
+        "calibration_error": 0.15031752042383997,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.330380976329871
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 12,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.389359450209046,
+        "projected_sd": 5.573125135182837,
+        "slope_actual_on_projected": {
+          "all": 0.9782375186405347,
+          "wk1_4": 0.891102980860903,
+          "wk5_8": 0.9801929399840057,
+          "wk9_plus": 0.9902966627685806
+        },
+        "calibration_error": 0.04613580546217022,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.823167549250253
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 12,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.352867130724116,
+        "projected_sd": 5.5793463571338435,
+        "slope_actual_on_projected": {
+          "all": 0.989029156862736,
+          "wk1_4": 0.9511577684220186,
+          "wk5_8": 1.2724630580731424,
+          "wk9_plus": 0.9185609784663458
+        },
+        "calibration_error": 0.13424810372825935,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.6554548866462175
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 12,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.360645095714355,
+        "projected_sd": 5.636832181225479,
+        "slope_actual_on_projected": {
+          "all": 0.9790739034224251,
+          "wk1_4": 0.921597722284423,
+          "wk5_8": 0.9773466060480915,
+          "wk9_plus": 0.991096361782587
+        },
+        "calibration_error": 0.03665310329496615,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.051532041824135
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 12,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.350833726198402,
+        "projected_sd": 5.600942864348681,
+        "slope_actual_on_projected": {
+          "all": 0.9905290568198688,
+          "wk1_4": 0.8719951677048835,
+          "wk5_8": 1.201686537426263,
+          "wk9_plus": 0.9536030384439377
+        },
+        "calibration_error": 0.12536277709248064,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.144656954157488
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 12,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.352353210414705,
+        "projected_sd": 5.640906802596045,
+        "slope_actual_on_projected": {
+          "all": 0.9785776822384797,
+          "wk1_4": 0.9360320980716591,
+          "wk5_8": 0.9715420898864381,
+          "wk9_plus": 0.9927583295991863
+        },
+        "calibration_error": 0.03322249414757217,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.320148494802193
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 12,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.374746612053901,
+        "projected_sd": 5.530381530964578,
+        "slope_actual_on_projected": {
+          "all": 0.9907027996658749,
+          "wk1_4": 0.8077757643415671,
+          "wk5_8": 1.1534940865733414,
+          "wk9_plus": 0.9959075961245635
+        },
+        "calibration_error": 0.11660357536907029,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.437098373965396
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 12,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.379818899420881,
+        "projected_sd": 5.5716753237546195,
+        "slope_actual_on_projected": {
+          "all": 0.9770186741444475,
+          "wk1_4": 0.9367612706589941,
+          "wk5_8": 0.9651703917294344,
+          "wk9_plus": 0.994252793807755
+        },
+        "calibration_error": 0.034605181267938843,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.421171916814558
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 16,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.36617986167691,
+        "projected_sd": 5.539162720608438,
+        "slope_actual_on_projected": {
+          "all": 0.9883562287913413,
+          "wk1_4": 1.0325052170844127,
+          "wk5_8": 1.332942150153245,
+          "wk9_plus": 0.9010556561614378
+        },
+        "calibration_error": 0.15479723702540663,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.319320177036698
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 16,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.36755582633342,
+        "projected_sd": 5.619723178551648,
+        "slope_actual_on_projected": {
+          "all": 0.9791313719478767,
+          "wk1_4": 0.9157527477534545,
+          "wk5_8": 0.9785849453180565,
+          "wk9_plus": 0.990737411590117
+        },
+        "calibration_error": 0.03830829844612401,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.881011916958133
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 16,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.34754258242617,
+        "projected_sd": 5.594216794192887,
+        "slope_actual_on_projected": {
+          "all": 0.9897016191341539,
+          "wk1_4": 0.9830641234900772,
+          "wk5_8": 1.2725475377636963,
+          "wk9_plus": 0.9158983912724907
+        },
+        "calibration_error": 0.12452834100037613,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.700516491316969
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 16,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.347588133512728,
+        "projected_sd": 5.6530608645387685,
+        "slope_actual_on_projected": {
+          "all": 0.9793817409150681,
+          "wk1_4": 0.9338338991273577,
+          "wk5_8": 0.9749694363449752,
+          "wk9_plus": 0.9918579893345862
+        },
+        "calibration_error": 0.03311289173102694,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.1126232665839115
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 16,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.365141077450495,
+        "projected_sd": 5.55268285006456,
+        "slope_actual_on_projected": {
+          "all": 0.990693580902693,
+          "wk1_4": 0.8747229153862313,
+          "wk5_8": 1.1853990541462536,
+          "wk9_plus": 0.9599580964210951
+        },
+        "calibration_error": 0.11690601411297574,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.208763516268204
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 16,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.370417825107769,
+        "projected_sd": 5.589192780604074,
+        "slope_actual_on_projected": {
+          "all": 0.9777997516592387,
+          "wk1_4": 0.9389037517045805,
+          "wk5_8": 0.9669380414581747,
+          "wk9_plus": 0.9939708581956883
+        },
+        "calibration_error": 0.03339578288051881,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.318481416522734
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 16,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.406887926741321,
+        "projected_sd": 5.431095095321103,
+        "slope_actual_on_projected": {
+          "all": 0.9900410253516547,
+          "wk1_4": 0.8122933031310545,
+          "wk5_8": 1.1323221140992532,
+          "wk9_plus": 1.0041968178682765
+        },
+        "calibration_error": 0.1080752096121584,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.460569714369283
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 16,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.417326870277293,
+        "projected_sd": 5.468749410515551,
+        "slope_actual_on_projected": {
+          "all": 0.9755187312207761,
+          "wk1_4": 0.9371944601436263,
+          "wk5_8": 0.9586170271699515,
+          "wk9_plus": 0.9955876761388182
+        },
+        "calibration_error": 0.03620027884920137,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.344780519552204
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 24,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.354925302439634,
+        "projected_sd": 5.567616836969281,
+        "slope_actual_on_projected": {
+          "all": 0.9893227609903238,
+          "wk1_4": 1.0772739850668225,
+          "wk5_8": 1.3305748234671395,
+          "wk9_plus": 0.8980907960472451
+        },
+        "calibration_error": 0.1699193374955723,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.407377964386111
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 24,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.346538863870283,
+        "projected_sd": 5.650965147670696,
+        "slope_actual_on_projected": {
+          "all": 0.9796824060296468,
+          "wk1_4": 0.9353386109027184,
+          "wk5_8": 0.9754758375490391,
+          "wk9_plus": 0.9916998311140377
+        },
+        "calibration_error": 0.03249524014473493,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.993188758438182
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 24,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.358185328778308,
+        "projected_sd": 5.5638599069533035,
+        "slope_actual_on_projected": {
+          "all": 0.9904078572364532,
+          "wk1_4": 0.9798407288513455,
+          "wk5_8": 1.2489261490797319,
+          "wk9_plus": 0.9226875202235956
+        },
+        "calibration_error": 0.11546596666826359,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.835499200699654
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 24,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.357313430244995,
+        "projected_sd": 5.615381424383495,
+        "slope_actual_on_projected": {
+          "all": 0.9787641985399975,
+          "wk1_4": 0.9408288122270496,
+          "wk5_8": 0.9697490056965578,
+          "wk9_plus": 0.9933457690766851
+        },
+        "calibration_error": 0.032025470999902494,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.17638273913428
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 24,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.412861169520232,
+        "projected_sd": 5.413038892467075,
+        "slope_actual_on_projected": {
+          "all": 0.9899591083356154,
+          "wk1_4": 0.867107863475231,
+          "wk5_8": 1.1506231338807393,
+          "wk9_plus": 0.9746582589538806
+        },
+        "calibration_error": 0.10295233715054257,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.279459694644331
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 24,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.424011457076023,
+        "projected_sd": 5.44356407087099,
+        "slope_actual_on_projected": {
+          "all": 0.9755943308956765,
+          "wk1_4": 0.9388738522268232,
+          "wk5_8": 0.9576779354812304,
+          "wk9_plus": 0.9958310899364854
+        },
+        "calibration_error": 0.03587237411848702,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.235675212530117
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 24,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.473877846226841,
+        "projected_sd": 5.230547042572487,
+        "slope_actual_on_projected": {
+          "all": 0.9879243643149019,
+          "wk1_4": 0.8214012824179131,
+          "wk5_8": 1.1008154374054144,
+          "wk9_plus": 1.0134529531365697
+        },
+        "calibration_error": 0.09762236937469033,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.425946806447164
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 24,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.488238407126891,
+        "projected_sd": 5.262043308620927,
+        "slope_actual_on_projected": {
+          "all": 0.9723567901890999,
+          "wk1_4": 0.9361182167159289,
+          "wk5_8": 0.9473810521138262,
+          "wk9_plus": 0.9970998650167123
+        },
+        "calibration_error": 0.03980028871784421,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.1598088803177005
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 32,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.358252904364939,
+        "projected_sd": 5.558806346034657,
+        "slope_actual_on_projected": {
+          "all": 0.9899592695743954,
+          "wk1_4": 1.0654886308657696,
+          "wk5_8": 1.308163117497825,
+          "wk9_plus": 0.9027149957409996
+        },
+        "calibration_error": 0.15697891754086502,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.535605822559562
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 32,
+        "rg": 0.2,
+        "all_coefs_positive": true,
+        "loso_mae": 10.348703637303693,
+        "projected_sd": 5.633697575283055,
+        "slope_actual_on_projected": {
+          "all": 0.9793638835981366,
+          "wk1_4": 0.9411141132970451,
+          "wk5_8": 0.9720914036569106,
+          "wk9_plus": 0.9926937212774792
+        },
+        "calibration_error": 0.031366920589521695,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.066148832093007
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 32,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.382073832492898,
+        "projected_sd": 5.495348405127936,
+        "slope_actual_on_projected": {
+          "all": 0.9904565779054998,
+          "wk1_4": 0.9580470153067209,
+          "wk5_8": 1.2179020698031682,
+          "wk9_plus": 0.9335828786160362
+        },
+        "calibration_error": 0.10875739196013705,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 4.950457917986262
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 32,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.386171088783762,
+        "projected_sd": 5.537626132226824,
+        "slope_actual_on_projected": {
+          "all": 0.9775254033660336,
+          "wk1_4": 0.9414256735318154,
+          "wk5_8": 0.9641225892160811,
+          "wk9_plus": 0.9946513670192125
+        },
+        "calibration_error": 0.03326679007763034,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.175082651720667
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 32,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.459814716063573,
+        "projected_sd": 5.269488011534234,
+        "slope_actual_on_projected": {
+          "all": 0.9885716730488247,
+          "wk1_4": 0.8637316619054876,
+          "wk5_8": 1.123991934756453,
+          "wk9_plus": 0.9845690682404147
+        },
+        "calibration_error": 0.09189706820351695,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.28581686492972
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 32,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.474615811311388,
+        "projected_sd": 5.295832970689487,
+        "slope_actual_on_projected": {
+          "all": 0.9732901242283953,
+          "wk1_4": 0.9376661853679016,
+          "wk5_8": 0.9496091795517084,
+          "wk9_plus": 0.9969316387808771
+        },
+        "calibration_error": 0.03859766543317097,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 6.120330546015961
+      },
+      {
+        "model": "points_single_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 32,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.524937486624214,
+        "projected_sd": 5.062189444644476,
+        "slope_actual_on_projected": {
+          "all": 0.9856617395854237,
+          "wk1_4": 0.8335020473502952,
+          "wk5_8": 1.0821523889239468,
+          "wk9_plus": 1.014286389088463
+        },
+        "calibration_error": 0.08764557688737155,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.348362390864223
+      },
+      {
+        "model": "points_per_segment_scale",
+        "prior_regress": 0.3,
+        "prior_plays_equiv": 1200,
+        "kg": 32,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.541010820239919,
+        "projected_sd": 5.088386445009901,
+        "slope_actual_on_projected": {
+          "all": 0.9694289806769202,
+          "wk1_4": 0.9350174362171467,
+          "wk5_8": 0.93898149720089,
+          "wk9_plus": 0.9975103099461455
+        },
+        "calibration_error": 0.04283025221193926,
+        "market_sd": 6.257318337650064,
+        "actual_sd": 14.443502071080363,
+        "week5_projected_sd": 5.995289247608148
+      }
+    ],
+    "total": [
+      {
+        "model": "points_levels",
+        "kg": 1,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.934947139755874,
+        "projected_sd": 2.6516670890183636,
+        "slope_actual_on_projected": {
+          "all": 0.9834737612761278,
+          "wk1_4": 0.7907697236219701,
+          "wk5_8": 0.8591520417674332,
+          "wk9_plus": 1.215477853502587
+        },
+        "calibration_error": 0.1885186960377279,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.107834473238935
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 1,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.933907148687611,
+        "projected_sd": 2.7777646960470386,
+        "slope_actual_on_projected": {
+          "all": 0.9264467686690042,
+          "wk1_4": 0.9217417005096458,
+          "wk5_8": 0.7994781654791636,
+          "wk9_plus": 1.0031691146970552
+        },
+        "calibration_error": 0.0939830829027486,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.0707354575118626
+      },
+      {
+        "model": "points_levels",
+        "kg": 1,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.928215714508523,
+        "projected_sd": 2.693077205879442,
+        "slope_actual_on_projected": {
+          "all": 0.9846421868137116,
+          "wk1_4": 0.8227217147997165,
+          "wk5_8": 0.8526470221546021,
+          "wk9_plus": 1.2033359086715598
+        },
+        "calibration_error": 0.17598905723908043,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.1541059031387113
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 1,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.929348429927856,
+        "projected_sd": 2.803757125649763,
+        "slope_actual_on_projected": {
+          "all": 0.9298551315811264,
+          "wk1_4": 0.9360472052244226,
+          "wk5_8": 0.7968093969973951,
+          "wk9_plus": 1.0059325743306398
+        },
+        "calibration_error": 0.09102532403627402,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.10845286782147
+      },
+      {
+        "model": "points_levels",
+        "kg": 1,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.92233531568345,
+        "projected_sd": 2.7304437277004214,
+        "slope_actual_on_projected": {
+          "all": 0.9856026771068422,
+          "wk1_4": 0.8475774722621662,
+          "wk5_8": 0.8479374368912923,
+          "wk9_plus": 1.194399057031355
+        },
+        "calibration_error": 0.16629471595929882,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.1929173429039186
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 1,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.92517659295569,
+        "projected_sd": 2.8280440047155704,
+        "slope_actual_on_projected": {
+          "all": 0.9326685044085778,
+          "wk1_4": 0.9461911924483262,
+          "wk5_8": 0.7946449736570712,
+          "wk9_plus": 1.0087481898353372
+        },
+        "calibration_error": 0.08930400790997994,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.141377662055586
+      },
+      {
+        "model": "points_levels",
+        "kg": 1,
+        "rg": 0.85,
+        "all_coefs_positive": true,
+        "loso_mae": 10.918353944499817,
+        "projected_sd": 2.7558469387930784,
+        "slope_actual_on_projected": {
+          "all": 0.9862079583125879,
+          "wk1_4": 0.8619588218551854,
+          "wk5_8": 0.8455137030487209,
+          "wk9_plus": 1.1896603759530642
+        },
+        "calibration_error": 0.16072928368305264,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.2171981375578445
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 1,
+        "rg": 0.85,
+        "all_coefs_positive": true,
+        "loso_mae": 10.92239447674852,
+        "projected_sd": 2.845040995777918,
+        "slope_actual_on_projected": {
+          "all": 0.9344167852377098,
+          "wk1_4": 0.9512758038125039,
+          "wk5_8": 0.793392366511242,
+          "wk9_plus": 1.0109561040227548
+        },
+        "calibration_error": 0.08876264456633631,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.1627722147369233
+      },
+      {
+        "model": "points_levels",
+        "kg": 1,
+        "rg": 1.0,
+        "all_coefs_positive": true,
+        "loso_mae": 10.914398728589894,
+        "projected_sd": 2.7790457800156765,
+        "slope_actual_on_projected": {
+          "all": 0.9867270823490455,
+          "wk1_4": 0.8730445544144595,
+          "wk5_8": 0.8439870240490884,
+          "wk9_plus": 1.1865026436809305
+        },
+        "calibration_error": 0.15649035507246087,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.23743288335887
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 1,
+        "rg": 1.0,
+        "all_coefs_positive": true,
+        "loso_mae": 10.91974397719013,
+        "projected_sd": 2.860935276160663,
+        "slope_actual_on_projected": {
+          "all": 0.9358766569678155,
+          "wk1_4": 0.9543935489071282,
+          "wk5_8": 0.792477575795839,
+          "wk9_plus": 1.0132843465482342
+        },
+        "calibration_error": 0.08880440728175565,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.1812680442916883
+      },
+      {
+        "model": "points_levels",
+        "kg": 2,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.932306144861537,
+        "projected_sd": 2.7073671413528193,
+        "slope_actual_on_projected": {
+          "all": 0.9827630405077508,
+          "wk1_4": 0.9150184466161875,
+          "wk5_8": 0.837689978371883,
+          "wk9_plus": 1.11348794455545
+        },
+        "calibration_error": 0.12025983985579318,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.1090709236505263
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 2,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.932499663769718,
+        "projected_sd": 2.801202444702541,
+        "slope_actual_on_projected": {
+          "all": 0.9298486215040922,
+          "wk1_4": 1.0215769384293132,
+          "wk5_8": 0.7934982192694884,
+          "wk9_plus": 0.9734572663399123
+        },
+        "calibration_error": 0.08487381760663752,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.0529264987530786
+      },
+      {
+        "model": "points_levels",
+        "kg": 2,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.92432944610845,
+        "projected_sd": 2.758064209519284,
+        "slope_actual_on_projected": {
+          "all": 0.9840319405010631,
+          "wk1_4": 0.955958826588784,
+          "wk5_8": 0.8310066008394577,
+          "wk9_plus": 1.1015512269961345
+        },
+        "calibration_error": 0.10486193318929764,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.1722225314804295
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 2,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.926832612713099,
+        "projected_sd": 2.833368196857761,
+        "slope_actual_on_projected": {
+          "all": 0.933416227843997,
+          "wk1_4": 1.0370889763311666,
+          "wk5_8": 0.7896030342539794,
+          "wk9_plus": 0.9750153458792855
+        },
+        "calibration_error": 0.09082353206596723,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.106058065304942
+      },
+      {
+        "model": "points_levels",
+        "kg": 2,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.917150739686749,
+        "projected_sd": 2.800765645786747,
+        "slope_actual_on_projected": {
+          "all": 0.98494994457919,
+          "wk1_4": 0.9802398509479165,
+          "wk5_8": 0.8268296163396327,
+          "wk9_plus": 1.0944484667318972
+        },
+        "calibration_error": 0.09579299981478266,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.2226674389491823
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 2,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.92196679760874,
+        "projected_sd": 2.861713553237324,
+        "slope_actual_on_projected": {
+          "all": 0.935958179412692,
+          "wk1_4": 1.0432457256923156,
+          "wk5_8": 0.7865209133446084,
+          "wk9_plus": 0.977013702148368
+        },
+        "calibration_error": 0.09323703673311305,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.150646647708388
+      },
+      {
+        "model": "points_levels",
+        "kg": 2,
+        "rg": 0.85,
+        "all_coefs_positive": true,
+        "loso_mae": 10.912210110404647,
+        "projected_sd": 2.827764613365783,
+        "slope_actual_on_projected": {
+          "all": 0.9854462258036235,
+          "wk1_4": 0.9895312806850367,
+          "wk5_8": 0.8251796483679883,
+          "wk9_plus": 1.0919636813845106
+        },
+        "calibration_error": 0.09241758411049521,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.2524491308653976
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 2,
+        "rg": 0.85,
+        "all_coefs_positive": true,
+        "loso_mae": 10.918776819981485,
+        "projected_sd": 2.8802993328771214,
+        "slope_actual_on_projected": {
+          "all": 0.9372610866495698,
+          "wk1_4": 1.0427441975932068,
+          "wk5_8": 0.7847930219813047,
+          "wk9_plus": 0.9789038199783853
+        },
+        "calibration_error": 0.09301578521117226,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.178202423133357
+      },
+      {
+        "model": "points_levels",
+        "kg": 2,
+        "rg": 1.0,
+        "all_coefs_positive": true,
+        "loso_mae": 10.907518238094072,
+        "projected_sd": 2.850677059931473,
+        "slope_actual_on_projected": {
+          "all": 0.985797270297967,
+          "wk1_4": 0.9927592563013307,
+          "wk5_8": 0.8246767423070849,
+          "wk9_plus": 1.0916749383295576
+        },
+        "calibration_error": 0.09141297990704737,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.2756587929652126
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 2,
+        "rg": 1.0,
+        "all_coefs_positive": true,
+        "loso_mae": 10.915805105875698,
+        "projected_sd": 2.8965343941702852,
+        "slope_actual_on_projected": {
+          "all": 0.9380967690173226,
+          "wk1_4": 1.0387135249608723,
+          "wk5_8": 0.7835724839436764,
+          "wk9_plus": 0.9811681877085695
+        },
+        "calibration_error": 0.09132428443620881,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.2006538940262432
+      },
+      {
+        "model": "points_levels",
+        "kg": 3,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.933088342667297,
+        "projected_sd": 2.730700911820942,
+        "slope_actual_on_projected": {
+          "all": 0.9788541469163116,
+          "wk1_4": 0.9952103673396026,
+          "wk5_8": 0.8356418631040511,
+          "wk9_plus": 1.0625186125564392
+        },
+        "calibration_error": 0.07722212737092853,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.0514910975570397
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 3,
+        "rg": 0.3,
+        "all_coefs_positive": true,
+        "loso_mae": 10.933236083736645,
+        "projected_sd": 2.809636518693539,
+        "slope_actual_on_projected": {
+          "all": 0.9271773617324898,
+          "wk1_4": 1.08095835391341,
+          "wk5_8": 0.7938509838395866,
+          "wk9_plus": 0.9520044040388078
+        },
+        "calibration_error": 0.11170098867833851,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.9973598572879827
+      },
+      {
+        "model": "points_levels",
+        "kg": 3,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.924108856428619,
+        "projected_sd": 2.786215576390121,
+        "slope_actual_on_projected": {
+          "all": 0.9803325118720417,
+          "wk1_4": 1.0396456632711952,
+          "wk5_8": 0.8285078439098847,
+          "wk9_plus": 1.0509171770278698
+        },
+        "calibration_error": 0.0873516654630601,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.1273195017044015
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 3,
+        "rg": 0.5,
+        "all_coefs_positive": true,
+        "loso_mae": 10.92718524470897,
+        "projected_sd": 2.8446785431412733,
+        "slope_actual_on_projected": {
+          "all": 0.9307645053325978,
+          "wk1_4": 1.0955049753057633,
+          "wk5_8": 0.788963296881353,
+          "wk9_plus": 0.9525545571526095
+        },
+        "calibration_error": 0.11799570709060025,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.0609673333877265
+      },
+      {
+        "model": "points_levels",
+        "kg": 3,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.916477797600217,
+        "projected_sd": 2.8292322179693894,
+        "slope_actual_on_projected": {
+          "all": 0.9812971064015421,
+          "wk1_4": 1.057297753550458,
+          "wk5_8": 0.8243459310791541,
+          "wk9_plus": 1.04561425399656
+        },
+        "calibration_error": 0.0928553588226213,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.185248365871515
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 3,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.92223225609139,
+        "projected_sd": 2.8732471885348154,
+        "slope_actual_on_projected": {
+          "all": 0.9328947864424607,
+          "wk1_4": 1.0953910345055735,
+          "wk5_8": 0.7849853174694763,
+          "wk9_plus": 0.9539433965016979
+        },
+        "calibration_error": 0.11882077351146643,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.1122313819499063
+      },
+      {
+        "model": "points_levels",
+        "kg": 3,
+        "rg": 0.85,
+        "all_coefs_positive": true,
+        "loso_mae": 10.911212070489738,
+        "projected_sd": 2.853905316449449,
+        "slope_actual_on_projected": {
+          "all": 0.9817353152376194,
+          "wk1_4": 1.0579248176376281,
+          "wk5_8": 0.822899867995804,
+          "wk9_plus": 1.045171016414389
+        },
+        "calibration_error": 0.09339865535207108,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.217565557744306
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 3,
+        "rg": 0.85,
+        "all_coefs_positive": true,
+        "loso_mae": 10.919106431916253,
+        "projected_sd": 2.8902798492162085,
+        "slope_actual_on_projected": {
+          "all": 0.9336524432228246,
+          "wk1_4": 1.0881567454420877,
+          "wk5_8": 0.7826430033528561,
+          "wk9_plus": 0.9556264793248321
+        },
+        "calibration_error": 0.11662908758813317,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.1422119964013797
+      },
+      {
+        "model": "points_levels",
+        "kg": 3,
+        "rg": 1.0,
+        "all_coefs_positive": true,
+        "loso_mae": 10.906989261863684,
+        "projected_sd": 2.8726399269293905,
+        "slope_actual_on_projected": {
+          "all": 0.9819527937984126,
+          "wk1_4": 1.0511701228161237,
+          "wk5_8": 0.822681112200142,
+          "wk9_plus": 1.0473252943801064
+        },
+        "calibration_error": 0.09193810166536269,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.24102358426011
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 3,
+        "rg": 1.0,
+        "all_coefs_positive": true,
+        "loso_mae": 10.916609805836016,
+        "projected_sd": 2.9035952033863035,
+        "slope_actual_on_projected": {
+          "all": 0.9337711403257707,
+          "wk1_4": 1.0766793896922684,
+          "wk5_8": 0.7808252196398672,
+          "wk9_plus": 0.9578399105217671
+        },
+        "calibration_error": 0.11267141984354472,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 3.1649833409707573
+      },
+      {
+        "model": "points_levels",
+        "kg": 8,
+        "rg": 0.3,
+        "all_coefs_positive": false,
+        "loso_mae": 10.950263198046427,
+        "projected_sd": 2.7440487080088642,
+        "slope_actual_on_projected": {
+          "all": 0.9347035836191518,
+          "wk1_4": 1.0288814248095315,
+          "wk5_8": 0.8227538901080077,
+          "wk9_plus": 0.9699216228677586
+        },
+        "calibration_error": 0.07873530394458839,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.823411788207817
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 8,
+        "rg": 0.3,
+        "all_coefs_positive": false,
+        "loso_mae": 10.952084113864437,
+        "projected_sd": 2.8078511201811147,
+        "slope_actual_on_projected": {
+          "all": 0.8820821732513686,
+          "wk1_4": 1.0682978383860522,
+          "wk5_8": 0.7724816641248069,
+          "wk9_plus": 0.889679246089049
+        },
+        "calibration_error": 0.13537897605739876,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.7942021538230803
+      },
+      {
+        "model": "points_levels",
+        "kg": 8,
+        "rg": 0.5,
+        "all_coefs_positive": false,
+        "loso_mae": 10.940008769778991,
+        "projected_sd": 2.789420604685432,
+        "slope_actual_on_projected": {
+          "all": 0.9406205653967951,
+          "wk1_4": 1.0844552685977082,
+          "wk5_8": 0.8152306548581527,
+          "wk9_plus": 0.9612796742744572
+        },
+        "calibration_error": 0.1026483131550328,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.918989561777966
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 8,
+        "rg": 0.5,
+        "all_coefs_positive": false,
+        "loso_mae": 10.947444037116938,
+        "projected_sd": 2.8307577868221805,
+        "slope_actual_on_projected": {
+          "all": 0.8865573039793083,
+          "wk1_4": 1.0911384320270383,
+          "wk5_8": 0.7644164101457519,
+          "wk9_plus": 0.8871749527069012
+        },
+        "calibration_error": 0.1465156897247951,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.8671784922742076
+      },
+      {
+        "model": "points_levels",
+        "kg": 8,
+        "rg": 0.7,
+        "all_coefs_positive": false,
+        "loso_mae": 10.936191100298021,
+        "projected_sd": 2.7994769730740994,
+        "slope_actual_on_projected": {
+          "all": 0.9445431186929492,
+          "wk1_4": 1.0865763064749498,
+          "wk5_8": 0.8103574682065225,
+          "wk9_plus": 0.9625861540947678
+        },
+        "calibration_error": 0.1045442280578865,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.9701477809437766
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 8,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.946350631837282,
+        "projected_sd": 2.831883597174642,
+        "slope_actual_on_projected": {
+          "all": 0.8877352647819464,
+          "wk1_4": 1.086988423111942,
+          "wk5_8": 0.755968242491436,
+          "wk9_plus": 0.8854819768832547
+        },
+        "calibration_error": 0.14851273457908376,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.9067922332518332
+      },
+      {
+        "model": "points_levels",
+        "kg": 8,
+        "rg": 0.85,
+        "all_coefs_positive": false,
+        "loso_mae": 10.937316487716519,
+        "projected_sd": 2.790004771140863,
+        "slope_actual_on_projected": {
+          "all": 0.9462084693315075,
+          "wk1_4": 1.0728462512435277,
+          "wk5_8": 0.8077319784549674,
+          "wk9_plus": 0.9673234802098815
+        },
+        "calibration_error": 0.09926359752622631,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.9844142191483116
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 8,
+        "rg": 0.85,
+        "all_coefs_positive": true,
+        "loso_mae": 10.948066149455924,
+        "projected_sd": 2.82155131238689,
+        "slope_actual_on_projected": {
+          "all": 0.8865840537533793,
+          "wk1_4": 1.075591332696035,
+          "wk5_8": 0.749347255121291,
+          "wk9_plus": 0.8838732033291861
+        },
+        "calibration_error": 0.14745695808185263,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.9167835245183555
+      },
+      {
+        "model": "points_levels",
+        "kg": 8,
+        "rg": 1.0,
+        "all_coefs_positive": false,
+        "loso_mae": 10.939092227720543,
+        "projected_sd": 2.770238835689045,
+        "slope_actual_on_projected": {
+          "all": 0.9468148769096622,
+          "wk1_4": 1.0546747759168056,
+          "wk5_8": 0.8055332085270601,
+          "wk9_plus": 0.9735603919864393
+        },
+        "calibration_error": 0.09186039180110206,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.9824625662953292
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 8,
+        "rg": 1.0,
+        "all_coefs_positive": true,
+        "loso_mae": 10.950398025846507,
+        "projected_sd": 2.804500447079634,
+        "slope_actual_on_projected": {
+          "all": 0.8838438484811256,
+          "wk1_4": 1.0620118873548763,
+          "wk5_8": 0.7423840888440231,
+          "wk9_plus": 0.8812155274492345
+        },
+        "calibration_error": 0.14613742368720625,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.913155387366205
+      },
+      {
+        "model": "points_levels",
+        "kg": 12,
+        "rg": 0.3,
+        "all_coefs_positive": false,
+        "loso_mae": 10.97356812112008,
+        "projected_sd": 2.7344072162326363,
+        "slope_actual_on_projected": {
+          "all": 0.8761772914942964,
+          "wk1_4": 0.9059237746663957,
+          "wk5_8": 0.7658187225351049,
+          "wk9_plus": 0.9268125481545371
+        },
+        "calibration_error": 0.1338149848813208,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.775727979434721
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 12,
+        "rg": 0.3,
+        "all_coefs_positive": false,
+        "loso_mae": 10.975503217490534,
+        "projected_sd": 2.8077235651531702,
+        "slope_actual_on_projected": {
+          "all": 0.8249551914102294,
+          "wk1_4": 0.9476018168392883,
+          "wk5_8": 0.7166116381597379,
+          "wk9_plus": 0.844153353674879
+        },
+        "calibration_error": 0.16387773044203158,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.7536807846615385
+      },
+      {
+        "model": "points_levels",
+        "kg": 12,
+        "rg": 0.5,
+        "all_coefs_positive": false,
+        "loso_mae": 10.964182375830504,
+        "projected_sd": 2.747337762722251,
+        "slope_actual_on_projected": {
+          "all": 0.8927101337519721,
+          "wk1_4": 0.9952515295909085,
+          "wk5_8": 0.7674722399488827,
+          "wk9_plus": 0.922184275931948
+        },
+        "calibration_error": 0.1050306515094203,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.8423987629035894
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 12,
+        "rg": 0.5,
+        "all_coefs_positive": false,
+        "loso_mae": 10.970784577108441,
+        "projected_sd": 2.801359977746927,
+        "slope_actual_on_projected": {
+          "all": 0.8350265014773632,
+          "wk1_4": 1.0040134566108503,
+          "wk5_8": 0.7122753380074488,
+          "wk9_plus": 0.8410376100258622
+        },
+        "calibration_error": 0.15023350285917977,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.7960465574446753
+      },
+      {
+        "model": "points_levels",
+        "kg": 12,
+        "rg": 0.7,
+        "all_coefs_positive": false,
+        "loso_mae": 10.964886113315005,
+        "projected_sd": 2.714377716759951,
+        "slope_actual_on_projected": {
+          "all": 0.9042564814054206,
+          "wk1_4": 1.0236595498513188,
+          "wk5_8": 0.7689938991586215,
+          "wk9_plus": 0.9257391556460253
+        },
+        "calibration_error": 0.10964216501555735,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.8496326244792853
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 12,
+        "rg": 0.7,
+        "all_coefs_positive": false,
+        "loso_mae": 10.971806718551797,
+        "projected_sd": 2.7663968204765492,
+        "slope_actual_on_projected": {
+          "all": 0.8403974410399072,
+          "wk1_4": 1.0304475028631976,
+          "wk5_8": 0.7063792941932817,
+          "wk9_plus": 0.8364567402754438
+        },
+        "calibration_error": 0.1625371561314907,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.792215250858682
+      },
+      {
+        "model": "points_levels",
+        "kg": 12,
+        "rg": 0.85,
+        "all_coefs_positive": false,
+        "loso_mae": 10.966904572750133,
+        "projected_sd": 2.672978356580774,
+        "slope_actual_on_projected": {
+          "all": 0.9095081757123838,
+          "wk1_4": 1.0272959411105758,
+          "wk5_8": 0.7691383563628397,
+          "wk9_plus": 0.9292938785930874
+        },
+        "calibration_error": 0.10962123538488289,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.8288833064009524
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 12,
+        "rg": 0.85,
+        "all_coefs_positive": true,
+        "loso_mae": 10.974231066742915,
+        "projected_sd": 2.7311576696989315,
+        "slope_actual_on_projected": {
+          "all": 0.8406190191529289,
+          "wk1_4": 1.0392089247211724,
+          "wk5_8": 0.7002477123527021,
+          "wk9_plus": 0.8302691289946219
+        },
+        "calibration_error": 0.1695640277912828,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.769632332684825
+      },
+      {
+        "model": "points_levels",
+        "kg": 12,
+        "rg": 1.0,
+        "all_coefs_positive": false,
+        "loso_mae": 10.969265015156319,
+        "projected_sd": 2.6246252194116564,
+        "slope_actual_on_projected": {
+          "all": 0.9120426213923521,
+          "wk1_4": 1.0249861026642602,
+          "wk5_8": 0.7681133249445745,
+          "wk9_plus": 0.931421601206968
+        },
+        "calibration_error": 0.1084837255042392,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.7941673759292196
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 12,
+        "rg": 1.0,
+        "all_coefs_positive": true,
+        "loso_mae": 10.976943325356345,
+        "projected_sd": 2.693853263711223,
+        "slope_actual_on_projected": {
+          "all": 0.8377829110215593,
+          "wk1_4": 1.0432237520184766,
+          "wk5_8": 0.6926342527166056,
+          "wk9_plus": 0.8211931719660428
+        },
+        "calibration_error": 0.17646544244527607,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.7378550533147843
+      },
+      {
+        "model": "points_levels",
+        "kg": 16,
+        "rg": 0.3,
+        "all_coefs_positive": false,
+        "loso_mae": 11.001474456021768,
+        "projected_sd": 2.7307066629124406,
+        "slope_actual_on_projected": {
+          "all": 0.8038119982430815,
+          "wk1_4": 0.7844988289864208,
+          "wk5_8": 0.6851027212736857,
+          "wk9_plus": 0.8742772169135529
+        },
+        "calibration_error": 0.21870707760878025,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.7855012595814967
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 16,
+        "rg": 0.3,
+        "all_coefs_positive": false,
+        "loso_mae": 10.99978260349655,
+        "projected_sd": 2.8187383941589315,
+        "slope_actual_on_projected": {
+          "all": 0.7605841530770734,
+          "wk1_4": 0.8389727855631145,
+          "wk5_8": 0.6475807746711241,
+          "wk9_plus": 0.790594107424918
+        },
+        "calibration_error": 0.24095077744694782,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.763596904300641
+      },
+      {
+        "model": "points_levels",
+        "kg": 16,
+        "rg": 0.5,
+        "all_coefs_positive": false,
+        "loso_mae": 10.98955964917501,
+        "projected_sd": 2.6962626386898942,
+        "slope_actual_on_projected": {
+          "all": 0.8384517432441991,
+          "wk1_4": 0.9143301890721554,
+          "wk5_8": 0.7058173393798512,
+          "wk9_plus": 0.8777467249128298
+        },
+        "calibration_error": 0.1673685822117212,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.792659747587386
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 16,
+        "rg": 0.5,
+        "all_coefs_positive": false,
+        "loso_mae": 10.992537290652843,
+        "projected_sd": 2.7706149792023145,
+        "slope_actual_on_projected": {
+          "all": 0.7827874516204799,
+          "wk1_4": 0.9366966047635739,
+          "wk5_8": 0.6548772756476248,
+          "wk9_plus": 0.7912093071650784
+        },
+        "calibration_error": 0.2057389374745743,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.7500560255991746
+      },
+      {
+        "model": "points_levels",
+        "kg": 16,
+        "rg": 0.7,
+        "all_coefs_positive": false,
+        "loso_mae": 10.9879673608897,
+        "projected_sd": 2.6176055175502047,
+        "slope_actual_on_projected": {
+          "all": 0.8621212625814834,
+          "wk1_4": 0.9772590903820522,
+          "wk5_8": 0.7205672185643242,
+          "wk9_plus": 0.8835938506567331
+        },
+        "calibration_error": 0.1395266134656302,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.741033216947402
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 16,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 10.99197141538743,
+        "projected_sd": 2.698738741249563,
+        "slope_actual_on_projected": {
+          "all": 0.7967713210625,
+          "wk1_4": 0.998693596753486,
+          "wk5_8": 0.657705889742406,
+          "wk9_plus": 0.7867906550987922
+        },
+        "calibration_error": 0.18560328613510527,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.693474290057465
+      },
+      {
+        "model": "points_levels",
+        "kg": 16,
+        "rg": 0.85,
+        "all_coefs_positive": false,
+        "loso_mae": 10.98997679690667,
+        "projected_sd": 2.549359350201983,
+        "slope_actual_on_projected": {
+          "all": 0.8725539497265933,
+          "wk1_4": 1.0014373165024228,
+          "wk5_8": 0.726794251873354,
+          "wk9_plus": 0.8843852219628362
+        },
+        "calibration_error": 0.1300859475554109,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.6842829948934885
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 16,
+        "rg": 0.85,
+        "all_coefs_positive": true,
+        "loso_mae": 10.993590532806383,
+        "projected_sd": 2.645441989563255,
+        "slope_actual_on_projected": {
+          "all": 0.7999740637398804,
+          "wk1_4": 1.027163631971165,
+          "wk5_8": 0.6551633299253522,
+          "wk9_plus": 0.7780480963800911
+        },
+        "calibration_error": 0.19798406855524056,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.6428364882897655
+      },
+      {
+        "model": "points_levels",
+        "kg": 16,
+        "rg": 1.0,
+        "all_coefs_positive": false,
+        "loso_mae": 10.993714107812325,
+        "projected_sd": 2.481174512316692,
+        "slope_actual_on_projected": {
+          "all": 0.877635449517143,
+          "wk1_4": 1.015620997892593,
+          "wk5_8": 0.7292419192413218,
+          "wk9_plus": 0.8805373871323381
+        },
+        "calibration_error": 0.13528056383964437,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.6218835897684363
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 16,
+        "rg": 1.0,
+        "all_coefs_positive": true,
+        "loso_mae": 10.995605385122666,
+        "projected_sd": 2.5979604108686036,
+        "slope_actual_on_projected": {
+          "all": 0.7979670200864823,
+          "wk1_4": 1.0455145121508704,
+          "wk5_8": 0.6493240867488661,
+          "wk9_plus": 0.7653848357667771
+        },
+        "calibration_error": 0.21026852987840908,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.5933417716485576
+      },
+      {
+        "model": "points_levels",
+        "kg": 24,
+        "rg": 0.3,
+        "all_coefs_positive": false,
+        "loso_mae": 11.060398616993544,
+        "projected_sd": 2.7449797102425846,
+        "slope_actual_on_projected": {
+          "all": 0.6503417584677418,
+          "wk1_4": 0.6124110097565016,
+          "wk5_8": 0.5207282403572472,
+          "wk9_plus": 0.73644645900406
+        },
+        "calibration_error": 0.37680476362739707,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.85398551664944
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 24,
+        "rg": 0.3,
+        "all_coefs_positive": false,
+        "loso_mae": 11.046589768137816,
+        "projected_sd": 2.852448951643151,
+        "slope_actual_on_projected": {
+          "all": 0.6456282799734941,
+          "wk1_4": 0.7033789689272824,
+          "wk5_8": 0.5281629446481858,
+          "wk9_plus": 0.6797789148879874
+        },
+        "calibration_error": 0.3628930571788482,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.8133727903245527
+      },
+      {
+        "model": "points_levels",
+        "kg": 24,
+        "rg": 0.5,
+        "all_coefs_positive": false,
+        "loso_mae": 11.033096683595483,
+        "projected_sd": 2.5879465465908873,
+        "slope_actual_on_projected": {
+          "all": 0.7332749772569659,
+          "wk1_4": 0.8115160074782336,
+          "wk5_8": 0.5898147408916549,
+          "wk9_plus": 0.7717158547955736
+        },
+        "calibration_error": 0.27565113227817933,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.6976724470324696
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 24,
+        "rg": 0.5,
+        "all_coefs_positive": false,
+        "loso_mae": 11.024569864440634,
+        "projected_sd": 2.7033698100281325,
+        "slope_actual_on_projected": {
+          "all": 0.702412336723774,
+          "wk1_4": 0.8746191977191643,
+          "wk5_8": 0.5681502518889961,
+          "wk9_plus": 0.7022076328326734
+        },
+        "calibration_error": 0.2850076391863887,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.6600785064719155
+      },
+      {
+        "model": "points_levels",
+        "kg": 24,
+        "rg": 0.7,
+        "all_coefs_positive": false,
+        "loso_mae": 11.025303320410176,
+        "projected_sd": 2.4289622596697256,
+        "slope_actual_on_projected": {
+          "all": 0.7856900584360151,
+          "wk1_4": 0.9346043341795326,
+          "wk5_8": 0.6359997700058883,
+          "wk9_plus": 0.787022518859622
+        },
+        "calibration_error": 0.2141244589849857,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.5342971324750594
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 24,
+        "rg": 0.7,
+        "all_coefs_positive": true,
+        "loso_mae": 11.017516508741595,
+        "projected_sd": 2.5784473610510763,
+        "slope_actual_on_projected": {
+          "all": 0.7344683097762414,
+          "wk1_4": 0.988944107289691,
+          "wk5_8": 0.5899988721128939,
+          "wk9_plus": 0.7063210691002887
+        },
+        "calibration_error": 0.23824531716570882,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.523623065002245
+      },
+      {
+        "model": "points_levels",
+        "kg": 24,
+        "rg": 0.85,
+        "all_coefs_positive": false,
+        "loso_mae": 11.024882320061545,
+        "projected_sd": 2.3270789594219683,
+        "slope_actual_on_projected": {
+          "all": 0.8064762671784529,
+          "wk1_4": 0.9913470181874001,
+          "wk5_8": 0.6554434944504973,
+          "wk9_plus": 0.7834717699229726
+        },
+        "calibration_error": 0.18991257247970997,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.427120071212312
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 24,
+        "rg": 0.85,
+        "all_coefs_positive": true,
+        "loso_mae": 11.01789328511386,
+        "projected_sd": 2.5121473646433823,
+        "slope_actual_on_projected": {
+          "all": 0.7421373677560402,
+          "wk1_4": 1.0391567424424382,
+          "wk5_8": 0.5939922721429863,
+          "wk9_plus": 0.6983093207444641
+        },
+        "calibration_error": 0.24895171651832926,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.4485037305673534
+      },
+      {
+        "model": "points_levels",
+        "kg": 24,
+        "rg": 1.0,
+        "all_coefs_positive": true,
+        "loso_mae": 11.027824255105282,
+        "projected_sd": 2.240886160482609,
+        "slope_actual_on_projected": {
+          "all": 0.8156660088214595,
+          "wk1_4": 1.0291429481868428,
+          "wk5_8": 0.6650315920180873,
+          "wk9_plus": 0.7697265936692608
+        },
+        "calibration_error": 0.19812825416649826,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.3347268868459063
+      },
+      {
+        "model": "epa_env_plus_points_levels",
+        "kg": 24,
+        "rg": 1.0,
+        "all_coefs_positive": true,
+        "loso_mae": 11.021306890285796,
+        "projected_sd": 2.464053394640071,
+        "slope_actual_on_projected": {
+          "all": 0.741211553849498,
+          "wk1_4": 1.069325052908393,
+          "wk5_8": 0.591681000055954,
+          "wk9_plus": 0.6855604291065874
+        },
+        "calibration_error": 0.26402787458195054,
+        "market_sd": 4.348266558308083,
+        "actual_sd": 14.021227358369236,
+        "week5_projected_sd": 2.392166358999189
+      }
+    ]
+  },
+  "holdout_2022_2025_info_only": {
+    "note": "Information only. v2 settings were frozen on 2016-2021 before this ran; nothing here was used to choose them.",
+    "n_games": 1087,
+    "margin_current": {
+      "mae": 10.103019630130195,
+      "projected_sd": 5.290340950142744,
+      "slope_actual_on_projected": 0.9238292383009526,
+      "market_sd": 5.863248395178136,
+      "market_mae": 9.494480220791168
+    },
+    "margin_v2": {
+      "mae": 10.046600001047803,
+      "projected_sd": 5.29266765914292,
+      "slope_actual_on_projected": 0.9474014247251835,
+      "market_sd": 5.863248395178136,
+      "market_mae": 9.494480220791168
+    },
+    "total_current": {
+      "mae": 10.82028941980107,
+      "projected_sd": 1.25990042184392,
+      "slope_actual_on_projected": 1.5105998063973034,
+      "market_sd": 4.252195183727648,
+      "market_mae": 10.189052437902484
+    },
+    "total_v2": {
+      "mae": 10.54527141732678,
+      "projected_sd": 2.7383533527151878,
+      "slope_actual_on_projected": 0.9513097463703108,
+      "market_sd": 4.252195183727648,
+      "market_mae": 10.189052437902484
+    }
+  }
+}

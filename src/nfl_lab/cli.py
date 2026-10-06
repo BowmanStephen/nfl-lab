@@ -22,6 +22,8 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("backtest", help="Print the frozen 2022–2025 holdout. Does not recompute it.")
     sub.add_parser("refit-totals-signfix",
                    help="Refit the two totals numbers on 2016-2021 after the defense-sign fix.")
+    sub.add_parser("calibrate",
+                   help="Fit margin calibration v2 on 2016-2021 only -> output/calibration/model_v2.json.")
     sub.add_parser("report-card", help="Backtest 2026 weeks 1-4 walk-forward with the frozen model. Not official picks.")
     return parser
 
@@ -43,6 +45,26 @@ def main(argv: list[str] | None = None) -> int:
             TOTALS_SIGNFIX_PATH.parent.mkdir(parents=True, exist_ok=True)
             TOTALS_SIGNFIX_PATH.write_text(json.dumps(out, indent=2) + "\n")
             print(json.dumps(out["tuning_window_before_after"], indent=2))
+            return 0
+        if args.cmd == "calibrate":
+            import json
+            from . import calibration, qb_adjust
+            from .config import OUTPUT_DIR
+            from .data_loader import load_pbp, load_schedules
+            locked = json.loads((OUTPUT_DIR / "backtest" / "locked_model.json").read_text())["locked_model"]
+            tune_years = list(range(2013, 2022))  # 2013-15 only as priors for 2016
+            pbp = load_pbp(tune_years)
+            v2 = calibration.fit_v2(pbp, load_schedules(tune_years), qb_adjust.load_dropbacks(tune_years, pbp=pbp), locked)
+            # Settings are frozen above. Only now look at 2022-2025, for information.
+            hold_years = list(range(2019, 2026))
+            v2["holdout_2022_2025_info_only"] = calibration.holdout_info(
+                load_pbp(hold_years), load_schedules(hold_years), locked, v2)
+            calibration.V2_PATH.parent.mkdir(parents=True, exist_ok=True)
+            calibration.V2_PATH.write_text(json.dumps(v2, indent=2) + "\n")
+            tw = v2["tuning_window_2016_2021"]
+            print(json.dumps({k: {kk: tw[k][kk] for kk in ("loso_mae", "projected_sd", "slope_actual_on_projected")}
+                              for k in tw}, indent=2))
+            print(json.dumps(v2["holdout_2022_2025_info_only"], indent=2))
             return 0
         if args.cmd == "report-card":
             from .report_card import build
