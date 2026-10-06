@@ -16,225 +16,225 @@
     {
       "team": "SF",
       "name": "San Francisco",
-      "rating_epa": 0.068393,
-      "points": 5.55,
+      "rating_epa": 0.067538,
+      "points": 5.49,
       "color": "#AA0000"
     },
     {
       "team": "LA",
       "name": "LA Rams",
-      "rating_epa": 0.061625,
-      "points": 5.01,
+      "rating_epa": 0.061086,
+      "points": 4.96,
       "color": "#003594"
     },
     {
       "team": "KC",
       "name": "Kansas City",
-      "rating_epa": 0.053851,
-      "points": 4.37,
+      "rating_epa": 0.050307,
+      "points": 4.09,
       "color": "#E31837"
-    },
-    {
-      "team": "BAL",
-      "name": "Baltimore",
-      "rating_epa": 0.044175,
-      "points": 3.59,
-      "color": "#241773"
     },
     {
       "team": "JAX",
       "name": "Jacksonville",
-      "rating_epa": 0.044102,
-      "points": 3.58,
+      "rating_epa": 0.046138,
+      "points": 3.75,
       "color": "#006778"
     },
     {
       "team": "DEN",
       "name": "Denver",
-      "rating_epa": 0.040872,
-      "points": 3.32,
+      "rating_epa": 0.040192,
+      "points": 3.26,
       "color": "#FB4F14"
+    },
+    {
+      "team": "BAL",
+      "name": "Baltimore",
+      "rating_epa": 0.036859,
+      "points": 2.99,
+      "color": "#241773"
     },
     {
       "team": "CHI",
       "name": "Chicago",
-      "rating_epa": 0.0345,
-      "points": 2.8,
+      "rating_epa": 0.036073,
+      "points": 2.93,
       "color": "#0B162A"
-    },
-    {
-      "team": "BUF",
-      "name": "Buffalo",
-      "rating_epa": 0.028974,
-      "points": 2.35,
-      "color": "#00338D"
     },
     {
       "team": "SEA",
       "name": "Seattle",
-      "rating_epa": 0.028972,
-      "points": 2.35,
+      "rating_epa": 0.028564,
+      "points": 2.32,
       "color": "#002244"
+    },
+    {
+      "team": "BUF",
+      "name": "Buffalo",
+      "rating_epa": 0.027539,
+      "points": 2.24,
+      "color": "#00338D"
     },
     {
       "team": "MIN",
       "name": "Minnesota",
-      "rating_epa": 0.024061,
-      "points": 1.95,
+      "rating_epa": 0.026607,
+      "points": 2.16,
       "color": "#4F2683"
     },
     {
       "team": "DET",
       "name": "Detroit",
-      "rating_epa": 0.017933,
-      "points": 1.46,
+      "rating_epa": 0.011451,
+      "points": 0.93,
       "color": "#0076B6"
     },
     {
       "team": "CIN",
       "name": "Cincinnati",
-      "rating_epa": -0.000891,
-      "points": -0.07,
+      "rating_epa": 0.001497,
+      "points": 0.12,
       "color": "#FB4F14"
     },
     {
       "team": "NE",
       "name": "New England",
-      "rating_epa": -0.002054,
-      "points": -0.17,
+      "rating_epa": -0.001016,
+      "points": -0.08,
       "color": "#002244"
     },
     {
       "team": "HOU",
       "name": "Houston",
-      "rating_epa": -0.002417,
-      "points": -0.2,
+      "rating_epa": -0.003424,
+      "points": -0.28,
       "color": "#03202F"
-    },
-    {
-      "team": "IND",
-      "name": "Indianapolis",
-      "rating_epa": -0.003606,
-      "points": -0.29,
-      "color": "#002C5F"
-    },
-    {
-      "team": "PHI",
-      "name": "Philadelphia",
-      "rating_epa": -0.004778,
-      "points": -0.39,
-      "color": "#004C54"
-    },
-    {
-      "team": "LAC",
-      "name": "LA Chargers",
-      "rating_epa": -0.007409,
-      "points": -0.6,
-      "color": "#0080C6"
-    },
-    {
-      "team": "TB",
-      "name": "Tampa Bay",
-      "rating_epa": -0.00781,
-      "points": -0.63,
-      "color": "#D50A0A"
-    },
-    {
-      "team": "LV",
-      "name": "Las Vegas",
-      "rating_epa": -0.009225,
-      "points": -0.75,
-      "color": "#000000"
-    },
-    {
-      "team": "NO",
-      "name": "New Orleans",
-      "rating_epa": -0.010166,
-      "points": -0.83,
-      "color": "#D3BC8D"
     },
     {
       "team": "GB",
       "name": "Green Bay",
-      "rating_epa": -0.012614,
-      "points": -1.02,
+      "rating_epa": -0.003694,
+      "points": -0.3,
       "color": "#203731"
+    },
+    {
+      "team": "TB",
+      "name": "Tampa Bay",
+      "rating_epa": -0.003796,
+      "points": -0.31,
+      "color": "#D50A0A"
+    },
+    {
+      "team": "PHI",
+      "name": "Philadelphia",
+      "rating_epa": -0.005023,
+      "points": -0.41,
+      "color": "#004C54"
+    },
+    {
+      "team": "IND",
+      "name": "Indianapolis",
+      "rating_epa": -0.006302,
+      "points": -0.51,
+      "color": "#002C5F"
     },
     {
       "team": "PIT",
       "name": "Pittsburgh",
-      "rating_epa": -0.017574,
-      "points": -1.43,
+      "rating_epa": -0.009155,
+      "points": -0.74,
       "color": "#FFB612"
     },
     {
-      "team": "DAL",
-      "name": "Dallas",
-      "rating_epa": -0.021061,
-      "points": -1.71,
-      "color": "#003594"
-    },
-    {
-      "team": "CAR",
-      "name": "Carolina",
-      "rating_epa": -0.021817,
-      "points": -1.77,
-      "color": "#0085CA"
-    },
-    {
-      "team": "ARI",
-      "name": "Arizona",
-      "rating_epa": -0.021838,
-      "points": -1.77,
-      "color": "#97233F"
-    },
-    {
-      "team": "CLE",
-      "name": "Cleveland",
-      "rating_epa": -0.029119,
-      "points": -2.37,
-      "color": "#311D00"
-    },
-    {
-      "team": "MIA",
-      "name": "Miami",
-      "rating_epa": -0.031966,
-      "points": -2.6,
-      "color": "#008E97"
+      "team": "LAC",
+      "name": "LA Chargers",
+      "rating_epa": -0.00987,
+      "points": -0.8,
+      "color": "#0080C6"
     },
     {
       "team": "ATL",
       "name": "Atlanta",
-      "rating_epa": -0.03256,
-      "points": -2.64,
+      "rating_epa": -0.011833,
+      "points": -0.96,
       "color": "#A71930"
+    },
+    {
+      "team": "CAR",
+      "name": "Carolina",
+      "rating_epa": -0.01418,
+      "points": -1.15,
+      "color": "#0085CA"
+    },
+    {
+      "team": "LV",
+      "name": "Las Vegas",
+      "rating_epa": -0.017931,
+      "points": -1.46,
+      "color": "#000000"
+    },
+    {
+      "team": "ARI",
+      "name": "Arizona",
+      "rating_epa": -0.022928,
+      "points": -1.86,
+      "color": "#97233F"
+    },
+    {
+      "team": "DAL",
+      "name": "Dallas",
+      "rating_epa": -0.023146,
+      "points": -1.88,
+      "color": "#003594"
+    },
+    {
+      "team": "CLE",
+      "name": "Cleveland",
+      "rating_epa": -0.025017,
+      "points": -2.03,
+      "color": "#311D00"
+    },
+    {
+      "team": "NO",
+      "name": "New Orleans",
+      "rating_epa": -0.033847,
+      "points": -2.75,
+      "color": "#D3BC8D"
+    },
+    {
+      "team": "MIA",
+      "name": "Miami",
+      "rating_epa": -0.034011,
+      "points": -2.76,
+      "color": "#008E97"
     },
     {
       "team": "WAS",
       "name": "Washington",
-      "rating_epa": -0.038628,
-      "points": -3.14,
+      "rating_epa": -0.04007,
+      "points": -3.25,
       "color": "#5A1414"
     },
     {
       "team": "NYG",
       "name": "NY Giants",
-      "rating_epa": -0.048512,
-      "points": -3.94,
+      "rating_epa": -0.049778,
+      "points": -4.04,
       "color": "#0B2265"
     },
     {
       "team": "NYJ",
       "name": "NY Jets",
-      "rating_epa": -0.057261,
-      "points": -4.65,
+      "rating_epa": -0.056085,
+      "points": -4.56,
       "color": "#125740"
     },
     {
       "team": "TEN",
       "name": "Tennessee",
-      "rating_epa": -0.069311,
-      "points": -5.63,
+      "rating_epa": -0.070764,
+      "points": -5.75,
       "color": "#0C2340"
     }
   ],
