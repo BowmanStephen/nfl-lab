@@ -19,8 +19,8 @@ inside this file, without touching the live pipeline:
   * Total: sign-fixed EPA scoring environment (offense + defense EPA allowed, both
     teams) plus shrunk points scored / allowed levels.
   * Hyperparameters are PR #7's picks. Unlike PR #7 (leave-one-season-out on
-    2016-2021), coefficients here are refit strictly walk-forward: at week 1 of
-    season S, OLS on every game from TRAIN_FIRST through season S-1.
+    2016-2021), coefficients here are refit strictly walk-forward: before each week,
+    OLS on every game from TRAIN_FIRST up to the previous week.
 """
 from __future__ import annotations
 
@@ -144,7 +144,7 @@ def qb_diff(db: pd.DataFrame, season: int, week: int, g: pd.DataFrame) -> pd.Ser
 # ---------------------------------------------------------------- per-week features
 _SEASON: dict = {}   # season -> data built only from seasons < S
 _FEAT: dict = {}     # (season, week) -> features built only from data before that week
-_COEF: dict = {}     # season -> coefficients fit only on seasons < S
+_COEF: dict = {}     # (season, week) -> coefficients fit only on games before that week
 
 
 def _season_ctx(history, season: int) -> dict:
@@ -194,12 +194,14 @@ def _week_features(history, season: int, week: int, g: pd.DataFrame) -> pd.DataF
     return f
 
 
-def _fit(history, season: int) -> dict:
-    """OLS on every REG game from TRAIN_FIRST through season-1 (all already played)."""
-    if season in _COEF:
-        return _COEF[season]
+def _fit(history, season: int, week: int) -> dict:
+    """OLS on every REG game from TRAIN_FIRST up to the week before (season, week)."""
+    key = (season, week)
+    if key in _COEF:
+        return _COEF[key]
     sch = history.schedule
-    past = sch[(sch["season"] >= TRAIN_FIRST) & (sch["season"] < season) & (sch["game_type"] == "REG")]
+    past = sch[(sch["season"] >= TRAIN_FIRST) & (sch["game_type"] == "REG")
+               & ((sch["season"] < season) | (sch["week"] < week)) & (sch["season"] <= season)]
     rows = []
     for (s, w), g in past.groupby(["season", "week"]):
         f = _week_features(history, int(s), int(w), g)
@@ -209,13 +211,13 @@ def _fit(history, season: int) -> dict:
     yt = (tr["home_score"] + tr["away_score"]).to_numpy(float)
     cm = np.linalg.lstsq(tr[MARGIN_COLS].to_numpy(float), ym, rcond=None)[0]
     ct = np.linalg.lstsq(tr[TOTAL_COLS].to_numpy(float), yt, rcond=None)[0]
-    _COEF[season] = {"margin": cm, "total": ct}
-    return _COEF[season]
+    _COEF[key] = {"margin": cm, "total": ct}
+    return _COEF[key]
 
 
 def predict(history, games: pd.DataFrame) -> pd.DataFrame:
     s, w = history.season, history.week
-    coef = _fit(history, s)
+    coef = _fit(history, s, w)
     f = _week_features(history, s, w, games)
     return pd.DataFrame({
         "game_id": f["game_id"],
