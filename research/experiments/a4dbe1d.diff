@@ -1,0 +1,21 @@
+a4dbe1de29a1635495e5020d2d12f6e2ee2b734c
+exp: recency-weighted fit
+
+
+diff --git a/research/candidate.py b/research/candidate.py
+index 15f4c99..11f36d5 100644
+--- a/research/candidate.py
++++ b/research/candidate.py
+@@ -209,8 +209,11 @@ def _fit(history, season: int, week: int) -> dict:
+     tr = pd.concat(rows, ignore_index=True)
+     ym = (tr["home_score"] - tr["away_score"]).to_numpy(float)
+     yt = (tr["home_score"] + tr["away_score"]).to_numpy(float)
+-    cm = np.linalg.lstsq(tr[MARGIN_COLS].to_numpy(float), ym, rcond=None)[0]
+-    ct = np.linalg.lstsq(tr[TOTAL_COLS].to_numpy(float), yt, rcond=None)[0]
++    # Recency weights: scoring and rules drift, so a game two seasons back counts half.
++    age = (season - tr["season"]) + (week - tr["week"]).clip(lower=0) / 17.0 * (tr["season"] == season)
++    sw = np.sqrt(0.5 ** (age.to_numpy(float) / 2.0))[:, None]
++    cm = np.linalg.lstsq(tr[MARGIN_COLS].to_numpy(float) * sw, ym * sw[:, 0], rcond=None)[0]
++    ct = np.linalg.lstsq(tr[TOTAL_COLS].to_numpy(float) * sw, yt * sw[:, 0], rcond=None)[0]
+     _COEF[key] = {"margin": cm, "total": ct}
+     return _COEF[key]
