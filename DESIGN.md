@@ -104,3 +104,6 @@ animation would get old fast.
   never carry a whole sentence.
 - No `translate="no"` on team codes. That would mean touching content markup on
   every page.
+
+
+**Home Thursday hero.** The home page leads with locked picks and the honest record, not a lab dump. Primary nav keeps Picks, Model, 2026 so far, Week 5 previews, Week 4 recaps, and Glossary; Ledger, Teams, and Freshness sit in the footer. Each pick card puts the side and price largest, then a two-column Line vs Model call block (outline identity for the line, solid ink for the model), then the edge. No-picks stay below and quieter. Charts stay on `/model`.

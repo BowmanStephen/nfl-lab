@@ -48,6 +48,35 @@ function gapChart(model, line) {
   return `<div class="gap">${row("Model", model, "")}${row("Line", line, "line")}</div>`;
 }
 
+function marginPlain(homeMargin, home, away) {
+  const m = Number(homeMargin);
+  if (!Number.isFinite(m)) return "—";
+  if (Math.abs(m) < 0.05) return "pick’em";
+  if (m > 0) return `${home} by ${Math.abs(m).toFixed(1)}`;
+  return `${away} by ${Math.abs(m).toFixed(1)}`;
+}
+
+function pickLineDisplay(game, side) {
+  const line = Number(game.pick_time.home_margin);
+  const signed = side === game.home_team ? -line : line;
+  return `${side} ${fmt(signed)}`;
+}
+
+function compareBlock(lineLabel, lineValue, modelLabel, modelValue) {
+  return `<div class="compare" aria-label="Model versus line">
+    <div class="compare-col compare-line">
+      <span>Line</span>
+      <b>${esc(lineValue)}</b>
+      <em>${esc(lineLabel)}</em>
+    </div>
+    <div class="compare-col compare-model">
+      <span>Model call</span>
+      <b>${esc(modelValue)}</b>
+      <em>${esc(modelLabel)}</em>
+    </div>
+  </div>`;
+}
+
 function spark(weekly) {
   const vals = (weekly || []).map((w) => w.off_epa).filter((v) => v != null);
   if (vals.length < 2) return "";
@@ -76,17 +105,20 @@ function spreadCards(games) {
       const s = g.selection;
       const line = g.pick_time.home_margin;
       const side = s.spread_pick === g.home_team ? g.home_team : g.away_team;
+      const pickPrice = pickLineDisplay(g, side);
       const notes = (s.qb_notes || []).map((n) => `<p class="note">${esc(n)}</p>`).join("");
-      return `<article class="card">
+      const edge = Math.abs(s.spread_edge);
+      return `<article class="card pick-card">
         <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
-        <p class="side">${esc(side)} ${fmt(s.spread_pick === g.home_team ? -line : line)}</p>
-        <div class="nums">
-          <div><span>Model margin, home</span><b>${fmt(s.model_margin)}</b></div>
-          <div><span>ESPN line, home</span><b>${fmt(line)}</b></div>
-          <div><span>Edge</span><b>${fmt(Math.abs(s.spread_edge))}</b></div>
-        </div>
-        ${gapChart(s.model_margin, line)}
-        <p class="meta">Snapshotted ${esc(whenCT(g.pick_time.captured_at))} · ${esc(g.pick_time.provider)} · ${esc(g.pick_time.spread_display || "")}</p>
+        <p class="side">${esc(pickPrice)}</p>
+        ${compareBlock(
+          `home margin ${fmt(line)}`,
+          g.pick_time.spread_display || fmt(line),
+          `home margin ${fmt(s.model_margin)}`,
+          marginPlain(s.model_margin, g.home_team, g.away_team),
+        )}
+        <p class="edge-line"><span>Edge</span><b>${fmt(edge)}</b><em>pts toward ${esc(side)}</em></p>
+        <p class="meta">Snapshotted ${esc(whenCT(g.pick_time.captured_at))} · ${esc(g.pick_time.provider)}</p>
         <p class="meta">Starters used: ${esc(g.away_team)} ${esc(s.away_qb)}, ${esc(g.home_team)} ${esc(s.home_qb)}</p>
         ${notes}
       </article>`;
@@ -99,13 +131,20 @@ function totalCards(games) {
     .sort((a, b) => Math.abs(b.selection.total_edge) - Math.abs(a.selection.total_edge))
     .map((g) => {
       const s = g.selection;
-      return `<article class="card">
-        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(s.total_pick)} ${Number(g.pick_time.total).toFixed(1)}</span></header>
-        <div class="nums">
-          <div><span>Model total</span><b>${Number(s.model_total).toFixed(1)}</b></div>
-          <div><span>ESPN total</span><b>${Number(g.pick_time.total).toFixed(1)}</b></div>
-          <div><span>Edge</span><b>${fmt(Math.abs(s.total_edge))}</b></div>
-        </div>
+      const tot = Number(g.pick_time.total);
+      const modelTot = Number(s.model_total);
+      const edge = Math.abs(s.total_edge);
+      const sideLabel = `${s.total_pick} ${tot.toFixed(1)}`;
+      return `<article class="card pick-card">
+        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
+        <p class="side">${esc(sideLabel)}</p>
+        ${compareBlock(
+          `ESPN total ${tot.toFixed(1)}`,
+          tot.toFixed(1),
+          `Model total ${modelTot.toFixed(1)}`,
+          modelTot.toFixed(1),
+        )}
+        <p class="edge-line"><span>Edge</span><b>${fmt(edge)}</b><em>pts · ${esc(s.total_pick)}</em></p>
       </article>`;
     }).join("");
 }
@@ -121,18 +160,13 @@ function noPickCards(games) {
     .filter((g) => !g.selection.spread_qualifies && !g.selection.total_qualifies)
     .map((g) => {
       const s = g.selection;
-      return `<article class="card">
+      return `<article class="card quiet-card">
         <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">No pick</span></header>
         <p>${esc(noPickReason(g))}</p>
-        <div class="nums">
-          <div><span>Model margin, home</span><b>${fmt(s.model_margin)}</b></div>
-          <div><span>ESPN line, home</span><b>${fmt(g.pick_time.home_margin)}</b></div>
+        <div class="nums nums-compact">
           <div><span>Spread edge</span><b>${fmt(s.spread_edge)}</b></div>
-          <div><span>Model total</span><b>${Number(s.model_total).toFixed(1)}</b></div>
-          <div><span>ESPN total</span><b>${Number(g.pick_time.total).toFixed(1)}</b></div>
           <div><span>Total edge</span><b>${fmt(s.total_edge)}</b></div>
         </div>
-        <p class="meta">Starters used: ${esc(g.away_team)} ${esc(s.away_qb)}, ${esc(g.home_team)} ${esc(s.home_qb)}</p>
       </article>`;
     }).join("");
 }
@@ -141,18 +175,52 @@ function showLock(card) {
   const label = $("lock-label");
   if (label && card.lock_label) label.textContent = card.lock_label;
   const note = $("holdout-note");
-  if (note && card.holdout_note) note.textContent = card.holdout_note;
+  if (note && card.holdout_note) {
+    note.textContent = document.body.dataset.page === "home"
+      ? holdoutCalmLine(card.holdout_note)
+      : card.holdout_note;
+  }
+}
+
+function liveRecordLine(health) {
+  if (!health) return "Live 2026 record: unavailable.";
+  if (!health.settled_picks) {
+    return "Live 2026 record: no settled picks yet.";
+  }
+  const rate = health.cover_rate == null ? "" : ` (${(100 * health.cover_rate).toFixed(1)}%)`;
+  return `Live 2026 record: ${health.wins}–${health.losses}–${health.pushes}${rate}.`;
+}
+
+function holdoutCalmLine(note) {
+  if (!note) return "";
+  const m = String(note).match(/Holdout record\s+[\d.]+%\s+ATS\s+vs\s+[\d.]+%\s+break-even/i);
+  if (m) return `${m[0]}.`;
+  return note;
 }
 
 async function renderHome() {
   const card = await load("picks.json");
   $("kicker").textContent = `Week ${card.week} · ${card.season}`;
   showLock(card);
-  $("health").textContent = card.health.line;
+  if ($("live-record")) $("live-record").textContent = liveRecordLine(card.health);
+  if ($("health")) {
+    $("health").hidden = true;
+    $("health").textContent = card.health.line;
+  }
   const spreads = card.games.filter((g) => g.selection.spread_qualifies);
   const totals = card.games.filter((g) => g.selection.total_qualifies);
   const nopicks = card.games.filter((g) => !g.selection.spread_qualifies && !g.selection.total_qualifies);
-  $("count").textContent = `${spreads.length} spread picks · ${totals.length} total picks · ${card.games.length} games snapshotted`;
+  $("count").textContent = `${spreads.length} spread picks · ${totals.length} total picks · ${card.games.length} games on the card`;
+  if ($("spread-heading")) {
+    $("spread-heading").innerHTML = spreads.length
+      ? `Spread picks <span class="count-pill">${spreads.length}</span>`
+      : "Spread picks";
+  }
+  if ($("total-heading")) {
+    $("total-heading").innerHTML = totals.length
+      ? `Total picks <span class="count-pill">${totals.length}</span>`
+      : "Total picks";
+  }
   $("spreads").innerHTML = spreads.length ? spreadCards(card.games) : "<p>No spread pick cleared 2 points this week.</p>";
   $("totals").innerHTML = totals.length ? totalCards(card.games) : "<p>No total cleared 3 points this week.</p>";
   if ($("nopicks")) {
@@ -548,7 +616,10 @@ const run = {
 }[page];
 if (run) {
   run().catch((err) => {
-    const slot = $("health") || $("when") || $("ratings-caption") || $("rec-caption") || document.querySelector("main");
-    if (slot) slot.textContent = `Could not load the latest JSON (${err.message}).`;
+    const slot = $("health") || $("live-record") || $("when") || $("ratings-caption") || $("rec-caption") || document.querySelector("main");
+    if (slot) {
+      if (slot.hidden) slot.hidden = false;
+      slot.textContent = `Could not load the latest JSON (${err.message}).`;
+    }
   });
 }
