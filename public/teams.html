@@ -3,11 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/></svg>">
   <title>NFL Lab — teams</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="teams">
+  <a class="skip" href="#main">Skip to content</a>
   <div class="wrap">
     <header class="top">
       <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
@@ -23,6 +26,7 @@
         <a href="glossary.html">Glossary</a>
       </nav>
     </header>
+    <main id="main">
     <p class="kicker">Rankings</p>
     <h1>Teams</h1>
     <p id="through">Loading…</p>
@@ -32,6 +36,7 @@
     <p class="gloss">EPA rewards big plays; success rate rewards consistency. A team with high EPA but low success rate is living on explosives. For defense, lower is better.</p>
     <p class="gloss">Opponent-adjusted rating: raw EPA, corrected for who you played. Beating up three bad defenses gets marked down. The bars below are this season's raw EPA. The rating beside the name is the adjusted one.</p>
     <div id="teams"></div>
+    </main>
   </div>
   <script src="assets/site.js"></script>
 </body>

@@ -3,11 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/></svg>">
   <title>NFL Lab — this week</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="home">
+  <a class="skip" href="#main">Skip to content</a>
   <div class="wrap">
     <header class="top">
       <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
@@ -23,6 +26,7 @@
         <a href="glossary.html">Glossary</a>
       </nav>
     </header>
+    <main id="main">
     <p class="kicker" id="kicker">This week</p>
     <h1>This week's picks</h1>
     <p class="lock" id="lock-label">Official week-5 picks, locked Mon Oct 5, DraftKings lines at lock.</p>
@@ -39,6 +43,7 @@
     <h2>No-picks</h2>
     <p class="gloss">Every other game stays on the card and is not scored. A no-pick is the locked rule, unless a line names a different reason.</p>
     <div id="nopicks"></div>
+    </main>
     <footer>
       <p>Lines are ESPN DraftKings, saved when the pick was written. The same book is checked again just before kickoff. That endpoint is unofficial and can change.</p>
       <p>Margin includes a starting-QB adjustment checked on 2016–2021 only. It is not in the 2022–2025 ledger.</p>
