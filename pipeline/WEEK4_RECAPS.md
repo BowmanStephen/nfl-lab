@@ -62,4 +62,4 @@ Atlanta ran for 205 yards at 5.9 a carry, and New Orleans managed 50. Bijan Robi
 There was no official pick list for week 4. The first locked list is week 5, which starts Thursday. For reference only, the walk-forward backtest (what the frozen model would have said before each kickoff, not official picks) went 6–2 with one push against the spread and 4–4 on totals in week 4.
 
 ---
-*All numbers come from nflverse play-by-play. QB points = dropbacks × EPA per dropback, rounded.*
+*Game numbers come from nflverse play-by-play. The backtest record comes from the 2026 report card, graded against nflverse closing lines and final scores. QB points = dropbacks × EPA per dropback, rounded.*
