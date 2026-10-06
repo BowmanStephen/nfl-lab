@@ -1,18 +1,26 @@
-"""Reference: the live model form on main, for research/gate.py only. READ-ONLY.
+"""NFL Lab research candidate. THE ONLY FILE THE LOOP AGENT MAY EDIT.
 
-This is NOT the live pipeline (src/nfl_lab/ is untouched). It rebuilds main's model
-form inside the research harness so gate.py has a fair yardstick on 2020-2021 until
-some candidate passes the gate:
-  * Margin: opponent-adjusted EPA rating difference (shrunk to a 3-season prior,
-    prior_regress 0.3, 1200 plays) + home field + the starting-QB term.
-  * Total: base + scale * (home_off + away_off - home_def - away_def), i.e. main's
-    totals feature WITH its flipped defense sign, as live today.
-  * Coefficients are refit walk-forward once per season, on every regular-season game from 2013
-    through the previous season. That is the closest walk-forward match to the live
-    model, which holds one locked coefficient set all season (main's actual locked
-    numbers were fit on 2016-2021 and would be in-sample on GATE). A candidate that
-    refits more often is free to win the gate that way; that counts as improving on main.
-Same predict(history, games) contract as candidate.py.
+Contract (enforced by research/evaluate.py):
+    predict(history, games) -> DataFrame with columns game_id, pred_margin, pred_total
+      history.season, history.week  the week being predicted
+      history.pbp       every play from earlier weeks/seasons (REG + POST, 2010 on)
+      history.schedule  every completed earlier game with final scores (no betting lines)
+      games             this week's REG matchups, pre-kickoff columns only
+    pred_margin = predicted home_score - away_score; pred_total = home + away.
+Use only what is passed in. No file reads, no network, no betting lines.
+Module-level caches are fine, but must be keyed so an answer depends only on data
+before that week (the scramble test re-asks old weeks after later ones).
+
+Starting model (iteration 0): a reproduction of draft PR #7 ("margin calibration v2")
+inside this file, without touching the live pipeline:
+  * Margin: shrunk scoring-margin rating difference (points for minus against, pulled
+    toward a regressed 3-season prior), with its own scale for weeks 1-4, 5-8 and 9+,
+    plus home field and the starting-QB term.
+  * Total: sign-fixed EPA scoring environment (offense + defense EPA allowed, both
+    teams) plus shrunk points scored / allowed levels.
+  * Hyperparameters are PR #7's picks. Unlike PR #7 (leave-one-season-out on
+    2016-2021), coefficients here are refit strictly walk-forward: at week 1 of
+    season S, OLS on every game from TRAIN_FIRST through season S-1.
 """
 from __future__ import annotations
 
@@ -26,8 +34,8 @@ MARGIN_KG, MARGIN_RG = 32, 0.2     # scoring-margin level: prior games-equivalen
 TOTAL_KG, TOTAL_RG = 2, 1.0        # scoring levels used for totals
 BUCKETS = [("wk1_4", 1, 4), ("wk5_8", 5, 8), ("wk9_plus", 9, 99)]
 QB_K_SHRINK, QB_BACKUP_MAX_DB = 200, 150
-MARGIN_COLS = ["rating_diff", "hfa_flag", "qb_diff"]
-TOTAL_COLS = ["env_old", "one"]
+MARGIN_COLS = [f"pt_{b}" for b, _, _ in BUCKETS] + ["hfa_flag", "qb_diff"]
+TOTAL_COLS = ["env_fix", "pts_env", "one"]
 
 
 # ---------------------------------------------------------------- EPA ratings
@@ -171,7 +179,6 @@ def _week_features(history, season: int, week: int, g: pd.DataFrame) -> pd.DataF
     H, A = g["home_team"], g["away_team"]
     f["rating_diff"] = (H.map(r["off"]) - H.map(r["def"])) - (A.map(r["off"]) - A.map(r["def"]))
     f["env_fix"] = H.map(r["off"]) + A.map(r["off"]) + H.map(r["def"]) + A.map(r["def"])
-    f["env_old"] = H.map(r["off"]) + A.map(r["off"]) - H.map(r["def"]) - A.map(r["def"])  # main's flipped sign
     f["ptdiff"] = (H.map(lm["pf"]) - H.map(lm["pa"])) - (A.map(lm["pf"]) - A.map(lm["pa"]))
     f["pts_env"] = H.map(lt["pf"]) + A.map(lt["pa"]) + A.map(lt["pf"]) + H.map(lt["pa"])
     f["qb_diff"] = qb_diff(db, season, week, g)
@@ -212,3 +219,4 @@ def predict(history, games: pd.DataFrame) -> pd.DataFrame:
         "pred_margin": f[MARGIN_COLS].to_numpy(float) @ coef["margin"],
         "pred_total": f[TOTAL_COLS].to_numpy(float) @ coef["total"],
     })
+

@@ -16,7 +16,10 @@ Rules applied here (not by the agent):
     Anything but keep is reverted with `git reset --hard HEAD~1` (the experiment commit only).
   * Saves the experiment's diff to research/experiments/<commit>.diff, appends one row
     to research/results.tsv, and commits just those files.
-The first run on an empty log is the baseline: HEAD is scored as is and kept.
+The first run on an empty log is the baseline: HEAD is scored as is and kept. After a
+harness change (humans only), `--rebaseline` scores HEAD as a fresh baseline; best
+scores are then compared only from that row on. Baseline rows snapshot the whole
+candidate to research/experiments/<commit>.candidate.py.
 GATE (2020-2021) is never run here.
 """
 from __future__ import annotations
@@ -57,6 +60,12 @@ def rows() -> list[dict]:
     return [dict(zip(HEADER, l.split("\t"))) for l in lines[1:]]
 
 
+def current_kept(log: list[dict]) -> list[dict]:
+    """Kept rows since the last rebaseline (scores across a harness change don't compare)."""
+    start = max((i for i, r in enumerate(log) if r["status"] == "rebaseline"), default=0)
+    return [r for r in log[start:] if r["status"] in ("keep", "rebaseline")]
+
+
 def append(row: dict) -> None:
     if not RESULTS.exists() or not RESULTS.read_text().strip():
         RESULTS.write_text("\t".join(HEADER) + "\n")
@@ -69,6 +78,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("description")
     ap.add_argument("--simplification", action="store_true")
+    ap.add_argument("--rebaseline", action="store_true",
+                    help="HUMANS ONLY, after a harness change: score HEAD as the new baseline")
     a = ap.parse_args()
 
     if git("status", "--porcelain", "--untracked-files=no"):
@@ -81,18 +92,21 @@ def main() -> int:
             raise SystemExit(f"harness files differ from origin/main ({changed}); restore them")
 
     log = rows()
-    kept = [r for r in log if r["status"] == "keep"]
-    baseline = not kept
+    kept = current_kept(log)
+    baseline = not kept or a.rebaseline
     if not baseline:
         files = git("diff", "--name-only", "HEAD~1", "HEAD").split()
         if files != ["research/candidate.py"]:
             raise SystemExit(f"HEAD must change only research/candidate.py (it changes {files})")
     commit = git("rev-parse", "--short=7", "HEAD")
     logged = ["research/results.tsv"]
-    if not baseline:
+    EXPERIMENTS.mkdir(exist_ok=True)
+    if baseline:  # snapshot the whole starting file
+        (EXPERIMENTS / f"{commit}.candidate.py").write_text(git("show", "HEAD:research/candidate.py") + "\n")
+        logged.append(f"research/experiments/{commit}.candidate.py")
+    else:
         # Archive the experiment's diff so every row stays reproducible after a revert
         # or a squash merge (the commit itself may become unreachable).
-        EXPERIMENTS.mkdir(exist_ok=True)
         (EXPERIMENTS / f"{commit}.diff").write_text(
             git("show", "--format=%H%n%s%n", "HEAD", "--", "research/candidate.py") + "\n")
         logged.append(f"research/experiments/{commit}.diff")
@@ -118,7 +132,7 @@ def main() -> int:
         score = float(vals["tune_score"])
         best = min(float(r["tune_score"]) for r in kept) if kept else None
         if baseline:
-            status = "keep"
+            status = "rebaseline" if a.rebaseline else "keep"
         elif score < best - MIN_GAIN or (a.simplification and score <= best + MIN_GAIN):
             status = "keep"
         else:
@@ -129,11 +143,11 @@ def main() -> int:
         row.update({"tune_score": "0", "margin_mae": "0", "total_mae": "0"})
     row["status"] = status
 
-    if baseline and status == "keep" and not log:
+    if baseline and status in ("keep", "rebaseline"):
         append({"commit": "market", "time_ct": row["time_ct"], "tune_score": vals.get("market_score", ""),
                 "margin_mae": vals.get("market_margin_mae", ""), "total_mae": vals.get("market_total_mae", ""),
                 "status": "reference", "description": "closing lines on the same TUNE games (reference, not a target)"})
-    if status != "keep":
+    if status not in ("keep", "rebaseline"):
         if baseline:
             raise SystemExit(f"baseline run failed ({status}); see {RUN_LOG}")
         git("reset", "--hard", "HEAD~1")
@@ -141,7 +155,7 @@ def main() -> int:
     git("add", *logged)
     git("commit", "-q", "-m", f"research log: {status} {commit} {a.description}"[:120], "--", *logged)
 
-    best_now = min((r for r in rows() if r["status"] == "keep"), key=lambda r: float(r["tune_score"]))
+    best_now = min(current_kept(rows()), key=lambda r: float(r["tune_score"]))
     print(f"{status}: {commit} tune_score={row.get('tune_score')} (best {best_now['tune_score']} @ {best_now['commit']}) "
           f"in {secs:.0f}s")
     return 0

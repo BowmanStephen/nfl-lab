@@ -43,6 +43,8 @@ unless the person who started you gave other numbers. Count only your own rows
   worker sandbox, or use betting lines. The harness blocks most of this and the
   scramble test catches peeking; a `leak` row is a serious failure, not a near miss.
 - Hard-code answers for particular games, teams or seasons.
+- Use game-time weather (`temp`, `wind`) of past games as a stand-in for this week's: this
+  week's weather is not passed in because nflverse only records what actually happened.
 
 ## The loop
 
@@ -52,7 +54,8 @@ Repeat until the budget is spent:
 2. Edit `research/candidate.py`.
 3. `git commit -q -m "exp: <idea>" -- research/candidate.py`
 4. `uv run python research/step.py "<one-line description of the idea>"`
-   (add `--simplification` only when the change removes code or settings).
+   (add `--simplification` only when the change removes code or settings; never use
+   `--rebaseline`, which is for humans after a harness change).
    It runs `research/evaluate.py` (TUNE = 2016-2019, about 1 minute, hard timeout 10 min),
    writes the full output to `research/run.log`, and then, by rule:
    - **keep** if `tune_score` beats the best kept score by more than 0.001 points

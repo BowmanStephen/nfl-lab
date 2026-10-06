@@ -35,7 +35,7 @@ TOTAL_KG, TOTAL_RG = 2, 1.0        # scoring levels used for totals
 BUCKETS = [("wk1_4", 1, 4), ("wk5_8", 5, 8), ("wk9_plus", 9, 99)]
 QB_K_SHRINK, QB_BACKUP_MAX_DB = 200, 150
 MARGIN_COLS = [f"pt_{b}" for b, _, _ in BUCKETS] + ["hfa_flag", "qb_diff"]
-TOTAL_COLS = ["env_fix", "pts_env", "indoor", "wind", "one"]
+TOTAL_COLS = ["env_fix", "pts_env", "indoor", "one"]
 
 
 # ---------------------------------------------------------------- EPA ratings
@@ -182,9 +182,8 @@ def _week_features(history, season: int, week: int, g: pd.DataFrame) -> pd.DataF
     f["ptdiff"] = (H.map(lm["pf"]) - H.map(lm["pa"])) - (A.map(lm["pf"]) - A.map(lm["pa"]))
     f["pts_env"] = H.map(lt["pf"]) + A.map(lt["pa"]) + A.map(lt["pf"]) + H.map(lt["pa"])
     f["qb_diff"] = qb_diff(db, season, week, g)
-    # Weather: closed roofs play faster/cleaner; wind (mph) hurts passing and kicking.
+    # Closed roofs play faster and cleaner (roof status is known before kickoff).
     f["indoor"] = g["roof"].isin(["dome", "closed"]).astype(float)
-    f["wind"] = pd.to_numeric(g["wind"], errors="coerce").where(f["indoor"] == 0, 0.0)
     f["hfa_flag"] = np.where(g["location"].eq("Neutral"), 0.0, 1.0)
     for b, lo, hi in BUCKETS:
         f[f"pt_{b}"] = f["ptdiff"] * float(lo <= week <= hi)

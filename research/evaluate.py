@@ -18,7 +18,9 @@ What it does
     network sockets, subprocesses and ctypes are refused.
   * After scoring, a scramble test starts a brand-new worker on data whose future
     (plays, scores, lines) is scrambled and replays to a checkpoint week. Its answers
-    must match the main pass exactly; any change = leakage.
+    must match the main pass exactly. Because the worker is only fed past rows, this
+    mainly proves the harness itself never forwards a later row (and that the
+    candidate is deterministic); if a harness change ever leaked, it would fail.
 
 Score (lower is better), on every REG-season TUNE game:
 
@@ -77,14 +79,17 @@ PBP_COLS = [
     "kick_distance", "extra_point_result", "special", "drive", "fixed_drive", "fixed_drive_result",
     "shotgun", "no_huddle",
 ]
-# Schedule columns known before kickoff (given for the target week).
+# Schedule columns known before kickoff (given for the target week). temp/wind are left
+# out: nflverse records the game-time weather, not the pre-kickoff forecast (past games
+# in history.schedule still carry them). home_qb_id/away_qb_id are the actual starters,
+# the same stand-in for the announced starter that src/nfl_lab/qb_adjust.py was
+# validated with; a late QB switch is the one known soft spot.
 PREGAME_COLS = [
     "game_id", "season", "game_type", "week", "gameday", "weekday", "gametime", "away_team",
-    "home_team", "location", "away_rest", "home_rest", "div_game", "roof", "surface", "temp",
-    "wind", "away_qb_id", "home_qb_id", "away_qb_name", "home_qb_name", "away_coach",
+    "home_team", "location", "away_rest", "home_rest", "div_game", "roof", "surface", "away_qb_id", "home_qb_id", "away_qb_name", "home_qb_name", "away_coach",
     "home_coach", "referee", "stadium_id",
 ]
-OUTCOME_COLS = ["away_score", "home_score", "result", "total", "overtime"]
+OUTCOME_COLS = ["away_score", "home_score", "result", "total", "overtime", "temp", "wind"]
 LINE_COLS = ["spread_line", "total_line"]  # grading reference only, never passed in
 
 
@@ -245,7 +250,10 @@ def _worker_main(conn, cand_path: str, name: str) -> None:
             continue
         _, season, week, games = msg
         try:
-            out = pd.DataFrame(mod.predict(History(season, week, pbp, sch), games))
+            # Shallow copies (copy-on-write): in-place edits by the candidate cannot alter
+            # the history the worker keeps for later weeks.
+            h = History(season, week, pbp.copy(deep=False), sch.copy(deep=False))
+            out = pd.DataFrame(mod.predict(h, games))
             conn.send(("ok", out))
         except BaseException as e:  # noqa: BLE001
             conn.send(("err", _tb_text(e)))
@@ -264,7 +272,10 @@ class Worker:
         self._reply(f"loading {cand_path.name}")
 
     def _reply(self, what: str):
-        status, payload = self.conn.recv()
+        try:
+            status, payload = self.conn.recv()
+        except (EOFError, OSError) as e:
+            raise RuntimeError(f"candidate worker died while {what} (exit code {self.proc.exitcode})") from e
         if status != "ok":
             raise RuntimeError(f"candidate failed while {what}:\n{payload}")
         return payload
@@ -366,7 +377,9 @@ def _scrambled(data: Data, season: int, week: int, seed: int) -> Data:
 def scramble_test(cand_path: Path, data: Data, preds: pd.DataFrame, checkpoint: tuple[int, int],
                   name: str = "candidate") -> tuple[bool, str]:
     """A brand-new worker replays up to `checkpoint` on data whose future is scrambled.
-    Its answers for that week must equal the main pass's answers exactly."""
+    Its answers for that week must equal the main pass's answers exactly. With the
+    time-ordered worker this checks the harness's own slicing and the candidate's
+    determinism; the isolation itself is what keeps the future out of reach."""
     s, w = checkpoint
     base = preds[(preds["season"] == s) & (preds["week"] == w)].set_index("game_id")
     scr = _scrambled(data, s, w, seed=s * 100 + w)
