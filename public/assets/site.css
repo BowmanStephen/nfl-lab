@@ -29,7 +29,6 @@
 
   --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
   --mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-  --ease: cubic-bezier(0.23, 1, 0.32, 1);
   --measure: 40rem;
   color-scheme: light;
 }
@@ -79,6 +78,7 @@ a {
 }
 a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+main:focus { outline: none; } /* skip-link target, not a control */
 p { margin: 0.6rem 0; max-width: var(--measure); text-wrap: pretty; }
 strong { font-weight: 700; }
 code { font-family: var(--mono); font-size: 0.82em; overflow-wrap: anywhere; }
@@ -607,6 +607,7 @@ footer p { max-width: 52rem; }
 .rate-bar .break, .mae-bar .break { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 3 3; }
 .rate-bar .axis, .mae-bar .axis { fill: var(--muted); font-size: 11px; }
 .rate-bar .val, .mae-bar .val { fill: var(--paper); font-size: 14px; font-variant-numeric: tabular-nums; }
+.rate-bar .val.out, .mae-bar .val.out { fill: var(--ink); }
 .rate-bar .label, .mae-bar .label { fill: var(--ink); font-size: 14px; font-family: var(--serif); }
 .rate-bar .base, .mae-bar .base { stroke: var(--ink); stroke-width: 1; }
 

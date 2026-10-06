@@ -50,8 +50,9 @@ modes.
   settings still apply.
 - Labels: monospace, small caps, used for short labels only. Long sentences
   never go in uppercase mono.
-- Numbers in data (pick cards, tables, charts): monospace with tabular figures
-  so columns line up.
+- Numbers in data (the figures under each pick, tables, chart values):
+  monospace with tabular figures so columns line up. Display numbers, like the
+  pick itself or a season record, keep the Georgia display type.
 
 ## Layout
 
@@ -92,9 +93,11 @@ animation would get old fast.
 
 - Headings stay in sentence case, and the copy stays as written. The site's
   plain-English voice wins over Title Case and copy rules.
-- Async page loads have no `aria-live` region. Everything loads once with the
-  page, so announcing it would only add noise.
-- Monospace labels are 11–13.5px, under the 14px some guides suggest.
-  They are short, high-contrast and never carry a whole sentence.
+- No `aria-live` region. Pages fill in from JSON right after the HTML loads.
+  Announcing whole pick cards and charts as they arrive would be noise, and a
+  failed load replaces the loading text in place, where a reader finds it.
+- Some monospace labels are 11–13.5px, under the 14px some guides suggest
+  (navigation and status lines are 14–15px). They are short, high-contrast and
+  never carry a whole sentence.
 - No `translate="no"` on team codes. That would mean touching content markup on
   every page.

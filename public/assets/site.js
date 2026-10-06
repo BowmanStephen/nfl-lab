@@ -296,7 +296,7 @@ function winRateChart(holdout) {
     const below = r.rate < holdout.breakeven;
     return `
       <rect class="${below ? "bar-miss" : "bar-fill"}" x="${x}" y="${top}" width="${barW}" height="${h}"/>
-      <text class="val" x="${x + barW / 2}" y="${top + 20}" text-anchor="middle">${fmtPct(r.rate)}</text>
+      <text class="val${h < 26 ? " out" : ""}" x="${x + barW / 2}" y="${h < 26 ? top - 8 : top + 20}" text-anchor="middle">${fmtPct(r.rate)}</text>
       <text class="label" x="${x + barW / 2}" y="${H - 18}" text-anchor="middle">${esc(r.label)}</text>
       <text class="axis" x="${x + barW / 2}" y="${H - 4}" text-anchor="middle">${esc(r.detail)}</text>`;
   }).join("");
@@ -331,7 +331,7 @@ function maeChart(holdout) {
     const cls = i === 0 ? "bar-miss" : "bar-fill";
     return `
       <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}"/>
-      <text class="val" x="${x + barW / 2}" y="${top + 20}" text-anchor="middle">${r.val.toFixed(2)}</text>
+      <text class="val${h < 26 ? " out" : ""}" x="${x + barW / 2}" y="${h < 26 ? top - 8 : top + 20}" text-anchor="middle">${r.val.toFixed(2)}</text>
       <text class="label" x="${x + barW / 2}" y="${H - 14}" text-anchor="middle">${esc(r.label)}</text>`;
   }).join("");
 
@@ -425,7 +425,7 @@ function rcRateChart(rc) {
     const cls = row.r.win_rate < rc.breakeven ? "bar-miss" : "bar-fill";
     return `
       <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}"/>
-      <text class="val" x="${x + barW / 2}" y="${top + 20}" text-anchor="middle">${fmtPct(row.r.win_rate)}</text>
+      <text class="val${h < 26 ? " out" : ""}" x="${x + barW / 2}" y="${h < 26 ? top - 8 : top + 20}" text-anchor="middle">${fmtPct(row.r.win_rate)}</text>
       <text class="label" x="${x + barW / 2}" y="${H - 18}" text-anchor="middle">${esc(row.label)}</text>
       <text class="axis" x="${x + barW / 2}" y="${H - 4}" text-anchor="middle">${esc(rcRec(row.r))}</text>`;
   }).join("");
