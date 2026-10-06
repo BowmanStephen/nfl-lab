@@ -3,11 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/><path d='M5 12.5 11 3.5' stroke='%23f2efe7' stroke-width='2'/></svg>">
   <title>NFL Lab — ledger</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="ledger">
+  <a class="skip" href="#main">Skip to content</a>
   <div class="wrap">
     <header class="top">
       <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
@@ -23,6 +26,7 @@
         <a href="glossary.html">Glossary</a>
       </nav>
     </header>
+    <main id="main" tabindex="-1">
     <p class="kicker">Spent holdout · graded once</p>
     <h1>2022–2025 did not clear the bar</h1>
     <p class="gloss">Standard bets cost $110 to win $100. You need to win 52.4% just to break even. Below that loses money.</p>
@@ -34,20 +38,25 @@
       <p>Not a target. These seasons were graded once under the locked rule. Pushes are counted and left out of the rate.</p>
     </div>
     <h2>By season</h2>
+    <div class="table-scroll" role="region" tabindex="0" aria-label="Holdout record by season">
     <table>
       <thead><tr><th>Season</th><th>Spreads</th><th>Totals</th></tr></thead>
       <tbody id="seasons"></tbody>
     </table>
+    </div>
     <h2>Live 2026</h2>
     <p class="lock" id="lock-label">Official week-5 picks, DraftKings lines at lock.</p>
     <p id="holdout-note">2026 live record starts with these picks. Holdout record 48.8% ATS vs 52.4% break-even stays as-is.</p>
     <p id="live-health">…</p>
     <p class="gloss">Did the line move toward our pick between when we picked and kickoff? Sharp bettors consistently get better numbers than the close. It's the earliest honest sign of a real edge, long before win-loss means anything.</p>
     <p class="gloss">Here that move is ESPN DraftKings at pick time versus ESPN DraftKings again before kickoff. Not the nflverse close.</p>
+    <div class="table-scroll" role="region" tabindex="0" aria-label="Live 2026 picks">
     <table>
       <thead><tr><th>Game</th><th>Pick</th><th>Saved</th></tr></thead>
       <tbody id="live"></tbody>
     </table>
+    </div>
+    </main>
     <footer>The frozen game list is <code>output/backtest/ledger.json</code> in the repo.</footer>
   </div>
   <script src="assets/site.js"></script>

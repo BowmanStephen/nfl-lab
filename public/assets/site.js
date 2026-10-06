@@ -221,62 +221,34 @@ function fmtPct(rate) {
 }
 
 function powerChart(ratings) {
+  // HTML rows instead of a scaled SVG, so team labels stay a readable size on phones.
   const maxAbs = Math.max(6, ...ratings.map((r) => Math.abs(r.points)));
-  const rowH = 22;
-  const padL = 36;
-  const padR = 48;
-  const padT = 8;
-  const padB = 22;
-  const W = 640;
-  const H = padT + ratings.length * rowH + padB;
-  const mid = padL + (W - padL - padR) / 2;
-  const usable = (W - padL - padR) / 2;
-  const x = (pts) => mid + (pts / maxAbs) * usable;
-
-  const bars = ratings.map((r, i) => {
-    const y = padT + i * rowH + 4;
-    const x0 = mid;
-    const x1 = x(r.points);
-    const left = Math.min(x0, x1);
-    const width = Math.max(2, Math.abs(x1 - x0));
-    return `
-      <rect class="track" x="${padL}" y="${y}" width="${W - padL - padR}" height="12" rx="6"/>
-      <rect x="${left.toFixed(1)}" y="${y}" width="${width.toFixed(1)}" height="12" rx="6" fill="${esc(r.color)}" opacity="0.92"/>
-      <text class="team-abbr" x="${padL - 8}" y="${y + 10}" text-anchor="end">${esc(r.team)}</text>
-      <text class="pts" x="${W - padR + 8}" y="${y + 10}">${r.points > 0 ? "+" : ""}${r.points.toFixed(1)}</text>`;
-  }).join("");
-
+  const pos = (pts) => 50 + (pts / maxAbs) * 50;
   const ticks = [-6, -3, 0, 3, 6].filter((t) => Math.abs(t) <= maxAbs + 0.01);
-  const tickMarks = ticks.map((t) => {
-    const tx = x(t);
-    return `<line class="axis-line" x1="${tx}" y1="${padT}" x2="${tx}" y2="${H - padB + 2}"/>
-      <text class="pts" x="${tx}" y="${H - 6}" text-anchor="middle">${t > 0 ? "+" : ""}${t}</text>`;
+  const tickMarks = ticks.map((t) => `<i class="tick${t === 0 ? " zero" : ""}" style="left:${pos(t).toFixed(2)}%"></i>`).join("");
+  const rows = ratings.map((r) => {
+    const left = Math.min(50, pos(r.points));
+    const width = Math.max(0.4, Math.abs(pos(r.points) - 50));
+    const value = `${r.points > 0 ? "+" : ""}${r.points.toFixed(1)}`;
+    return `<li class="pw-row">
+      <span class="pw-team" aria-hidden="true">${esc(r.team)}</span>
+      <span class="pw-track" aria-hidden="true">${tickMarks}<i class="pw-bar ${r.points >= 0 ? "up" : "down"}" style="left:${left.toFixed(2)}%;width:${width.toFixed(2)}%"></i></span>
+      <span class="pw-val"><span class="sr">${esc(r.name || r.team)} </span>${value}</span>
+    </li>`;
   }).join("");
-
-  return `<svg class="power-chart" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
-    ${tickMarks}
-    <line class="zero" x1="${mid}" y1="${padT - 2}" x2="${mid}" y2="${H - padB + 4}"/>
-    <text class="zero-label" x="${mid - 8}" y="${H - 6}" text-anchor="end">worse</text>
-    <text class="zero-label" x="${mid + 8}" y="${H - 6}" text-anchor="start">better</text>
-    ${bars}
-  </svg>`;
+  const scale = ticks.map((t) => `<span style="left:${pos(t).toFixed(2)}%">${t > 0 ? "+" : ""}${t}</span>`).join("");
+  return `<ol class="power" aria-label="Team power ratings, best to worst">${rows}</ol>
+    <div class="pw-axis" aria-hidden="true"><span></span><div class="pw-axis-scale">${scale}<span class="dir worse">worse</span><span class="dir better">better</span></div><span></span></div>`;
 }
 
 function gameScale(market, model) {
   const maxAbs = Math.max(12, Math.abs(market), Math.abs(model)) + 1;
-  const W = 320, H = 36, y = 16;
-  const pad = 18;
-  const x = (v) => pad + ((v + maxAbs) / (2 * maxAbs)) * (W - 2 * pad);
-  const mid = x(0);
-  // draw market under, model on top when close
-  return `<svg class="game-scale" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
-    <line class="rail" x1="${pad}" y1="${y}" x2="${W - pad}" y2="${y}"/>
-    <line class="zero" x1="${mid}" y1="6" x2="${mid}" y2="26"/>
-    <circle class="dot-market" cx="${x(market).toFixed(1)}" cy="${y}" r="5.5"/>
-    <circle class="dot-model" cx="${x(model).toFixed(1)}" cy="${y}" r="5.5"/>
-    <text class="tick-label" x="${pad}" y="34" text-anchor="start">away</text>
-    <text class="tick-label" x="${W - pad}" y="34" text-anchor="end">home</text>
-  </svg>`;
+  const pos = (v) => (((v + maxAbs) / (2 * maxAbs)) * 100).toFixed(2);
+  // the line is an outline ring, the model a solid ink dot; drawn market under, model on top
+  return `<div class="gs" aria-hidden="true">
+    <div class="gs-rail"><i class="gs-zero" style="left:${pos(0)}%"></i><i class="gs-dot market" style="left:${pos(market)}%"></i><i class="gs-dot model" style="left:${pos(model)}%"></i></div>
+    <div class="gs-ends"><span>away</span><span>home</span></div>
+  </div>`;
 }
 
 function gamesChart(games) {
@@ -323,15 +295,17 @@ function winRateChart(holdout) {
     const h = padT + chartH - top;
     const below = r.rate < holdout.breakeven;
     return `
-      <rect class="${below ? "bar-miss" : "bar-fill"}" x="${x}" y="${top}" width="${barW}" height="${h}" rx="8"/>
-      <text class="val" x="${x + barW / 2}" y="${top - 8}" text-anchor="middle">${fmtPct(r.rate)}</text>
+      <rect class="${below ? "bar-miss" : "bar-fill"}" x="${x}" y="${top}" width="${barW}" height="${h}"/>
+      <text class="val${h < 26 ? " out" : ""}" x="${x + barW / 2}" y="${h < 26 ? top - 8 : top + 20}" text-anchor="middle">${fmtPct(r.rate)}</text>
       <text class="label" x="${x + barW / 2}" y="${H - 18}" text-anchor="middle">${esc(r.label)}</text>
       <text class="axis" x="${x + barW / 2}" y="${H - 4}" text-anchor="middle">${esc(r.detail)}</text>`;
   }).join("");
 
-  return `<svg class="rate-bar" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
+  const label = rows.map((r) => `${r.label} ${fmtPct(r.rate)} (${r.detail})`).join(", ") + `. Break-even ${fmtPct(holdout.breakeven)}.`;
+  return `<svg class="rate-bar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">
     <line class="break" x1="${padL}" y1="${breakY}" x2="${W - padR}" y2="${breakY}"/>
     <text class="axis" x="${W - padR}" y="${breakY - 6}" text-anchor="end">Break-even ${fmtPct(holdout.breakeven)}</text>
+    <line class="base" x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}"/>
     ${bars}
   </svg>`;
 }
@@ -356,13 +330,15 @@ function maeChart(holdout) {
     const h = padT + chartH - top;
     const cls = i === 0 ? "bar-miss" : "bar-fill";
     return `
-      <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}" rx="8"/>
-      <text class="val" x="${x + barW / 2}" y="${top - 8}" text-anchor="middle">${r.val.toFixed(2)}</text>
+      <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}"/>
+      <text class="val${h < 26 ? " out" : ""}" x="${x + barW / 2}" y="${h < 26 ? top - 8 : top + 20}" text-anchor="middle">${r.val.toFixed(2)}</text>
       <text class="label" x="${x + barW / 2}" y="${H - 14}" text-anchor="middle">${esc(r.label)}</text>`;
   }).join("");
 
-  return `<svg class="mae-bar" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
+  const label = `Avg miss on final margin (pts): ${rows.map((r) => `${r.label} ${r.val.toFixed(2)}`).join(", ")}.`;
+  return `<svg class="mae-bar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">
     <text class="axis" x="${padL}" y="14">Avg miss on final margin (pts)</text>
+    <line class="base" x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}"/>
     ${bars}
   </svg>`;
 }
@@ -448,14 +424,16 @@ function rcRateChart(rc) {
     const h = padT + chartH - top;
     const cls = row.r.win_rate < rc.breakeven ? "bar-miss" : "bar-fill";
     return `
-      <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}" rx="8"/>
-      <text class="val" x="${x + barW / 2}" y="${top - 8}" text-anchor="middle">${fmtPct(row.r.win_rate)}</text>
+      <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}"/>
+      <text class="val${h < 26 ? " out" : ""}" x="${x + barW / 2}" y="${h < 26 ? top - 8 : top + 20}" text-anchor="middle">${fmtPct(row.r.win_rate)}</text>
       <text class="label" x="${x + barW / 2}" y="${H - 18}" text-anchor="middle">${esc(row.label)}</text>
       <text class="axis" x="${x + barW / 2}" y="${H - 4}" text-anchor="middle">${esc(rcRec(row.r))}</text>`;
   }).join("");
-  return `<svg class="rate-bar" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
+  const label = rows.map((row) => `${row.label} ${fmtPct(row.r.win_rate)} (${rcRec(row.r)})`).join(", ") + `. Break-even ${fmtPct(rc.breakeven)}.`;
+  return `<svg class="rate-bar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">
     <line class="break" x1="${padL}" y1="${breakY}" x2="${W - padR}" y2="${breakY}"/>
     <text class="axis" x="${W - padR}" y="${breakY - 6}" text-anchor="end">Break-even ${fmtPct(rc.breakeven)}</text>
+    <line class="base" x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}"/>
     ${bars}
   </svg>`;
 }
