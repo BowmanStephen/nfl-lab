@@ -8,7 +8,7 @@
     3,
     4
   ],
-  "generated_at": "2026-10-05T18:40:44.136317-05:00",
+  "generated_at": "2026-10-05T23:54:26.547217-05:00",
   "breakeven": 0.5238095238095238,
   "rule": {
     "spread_edge_min": 2.0,
@@ -32,26 +32,21 @@
     "note": "Same frozen model and path as the 2022-2025 holdout. The live card adds a starting-QB term; this backtest does not."
   },
   "lines": "nflverse closing spread_line / total_line (home margin, positive = home favored)",
-  "games_graded": 63,
-  "pending": [
-    {
-      "game_id": "2026_04_ATL_NO",
-      "matchup": "Atlanta Falcons at New Orleans Saints"
-    }
-  ],
+  "games_graded": 64,
+  "pending": [],
   "spread": {
-    "bets": 34,
+    "bets": 35,
     "wins": 18,
-    "losses": 14,
+    "losses": 15,
     "pushes": 2,
-    "win_rate": 0.5625,
+    "win_rate": 0.5454545454545454,
     "win_rate_ci95": [
-      0.3932559113685198,
-      0.7183466888495963
+      0.37985938536217456,
+      0.7015706148612388
     ],
-    "p_value_vs_breakeven_one_sided": 0.3982310499586118,
-    "roi_at_minus_110": 0.0695187165775401,
-    "units_at_minus_110": 2.3636363636363633,
+    "p_value_vs_breakeven_one_sided": 0.47141826600409376,
+    "roi_at_minus_110": 0.03896103896103895,
+    "units_at_minus_110": 1.3636363636363633,
     "beats_breakeven": true
   },
   "total": {
@@ -153,18 +148,18 @@
     "beats_breakeven": true
   },
   "spread_favorite_calls": {
-    "bets": 3,
+    "bets": 4,
     "wins": 1,
-    "losses": 1,
+    "losses": 2,
     "pushes": 1,
-    "win_rate": 0.5,
+    "win_rate": 0.3333333333333333,
     "win_rate_ci95": [
-      0.09453120573423074,
-      0.9054687942657693
+      0.06149194472039626,
+      0.7923403991979523
     ],
-    "p_value_vs_breakeven_one_sided": 0.7732426303854876,
-    "roi_at_minus_110": -0.030303030303030314,
-    "units_at_minus_110": -0.09090909090909094,
+    "p_value_vs_breakeven_one_sided": 0.8920203001835655,
+    "roi_at_minus_110": -0.2727272727272727,
+    "units_at_minus_110": -1.0909090909090908,
     "beats_breakeven": false
   },
   "proj_total_range": [
@@ -177,39 +172,39 @@
   ],
   "all_games_model_side": {
     "spread": {
-      "bets": 63,
+      "bets": 64,
       "wins": 27,
-      "losses": 31,
+      "losses": 32,
       "pushes": 5,
-      "win_rate": 0.46551724137931033,
+      "win_rate": 0.4576271186440678,
       "win_rate_ci95": [
-        0.34332022325286266,
-        0.591998249560048
+        0.3370130585185591,
+        0.5834216338989653
       ],
-      "p_value_vs_breakeven_one_sided": 0.8462070986660277,
-      "roi_at_minus_110": -0.10245310245310249,
-      "units_at_minus_110": -6.454545454545457,
+      "p_value_vs_breakeven_one_sided": 0.8745239475692256,
+      "roi_at_minus_110": -0.11647727272727276,
+      "units_at_minus_110": -7.454545454545457,
       "beats_breakeven": false
     },
     "total": {
-      "bets": 63,
+      "bets": 64,
       "wins": 26,
-      "losses": 37,
+      "losses": 38,
       "pushes": 0,
-      "win_rate": 0.4126984126984127,
+      "win_rate": 0.40625,
       "win_rate_ci95": [
-        0.29958465626751724,
-        0.5358468230257742
+        0.2945690924971961,
+        0.5285479187139549
       ],
-      "p_value_vs_breakeven_one_sided": 0.9708374288116932,
-      "roi_at_minus_110": -0.21212121212121213,
-      "units_at_minus_110": -13.363636363636363,
+      "p_value_vs_breakeven_one_sided": 0.9777916055805584,
+      "roi_at_minus_110": -0.22443181818181818,
+      "units_at_minus_110": -14.363636363636363,
       "beats_breakeven": false
     }
   },
-  "straight_up_accuracy": 0.6666666666666666,
-  "model_mae_margin": 9.609495963077327,
-  "market_mae_margin": 9.428571428571429,
+  "straight_up_accuracy": 0.65625,
+  "model_mae_margin": 9.85215597063211,
+  "market_mae_margin": 9.6328125,
   "weekly": [
     {
       "week": 1,
@@ -315,20 +310,20 @@
     },
     {
       "week": 4,
-      "games_graded": 15,
+      "games_graded": 16,
       "spread": {
-        "bets": 8,
+        "bets": 9,
         "wins": 6,
-        "losses": 1,
+        "losses": 2,
         "pushes": 1,
-        "win_rate": 0.8571428571428571,
+        "win_rate": 0.75,
         "win_rate_ci95": [
-          0.4868721707256811,
-          0.9743203756552565
+          0.40927543031016883,
+          0.9285207872478909
         ],
-        "p_value_vs_breakeven_one_sided": 0.07967206371782698,
-        "roi_at_minus_110": 0.5568181818181818,
-        "units_at_minus_110": 4.454545454545454,
+        "p_value_vs_breakeven_one_sided": 0.17803263620897136,
+        "roi_at_minus_110": 0.3838383838383838,
+        "units_at_minus_110": 3.454545454545454,
         "beats_breakeven": true
       },
       "total": {
@@ -468,31 +463,31 @@
   "leak_check": [
     {
       "week": 1,
-      "plays_poisoned": 10979,
+      "plays_poisoned": 11155,
       "week_unchanged_when_future_poisoned": true,
       "week_moves_when_past_poisoned": null,
       "games": 16
     },
     {
       "week": 2,
-      "plays_poisoned": 8223,
+      "plays_poisoned": 8399,
       "week_unchanged_when_future_poisoned": true,
       "week_moves_when_past_poisoned": null,
       "games": 16
     },
     {
       "week": 3,
-      "plays_poisoned": 5490,
+      "plays_poisoned": 5666,
       "week_unchanged_when_future_poisoned": true,
       "week_moves_when_past_poisoned": true,
       "games": 16
     },
     {
       "week": 4,
-      "plays_poisoned": 2668,
+      "plays_poisoned": 2844,
       "week_unchanged_when_future_poisoned": true,
       "week_moves_when_past_poisoned": true,
-      "games": 15
+      "games": 16
     }
   ],
   "games": [
@@ -1475,6 +1470,26 @@
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "win"
+    },
+    {
+      "game_id": "2026_04_ATL_NO",
+      "week": 4,
+      "away_team": "ATL",
+      "home_team": "NO",
+      "away_score": 45.0,
+      "home_score": 24.0,
+      "spread_line": 1.5,
+      "proj_margin": 4.1397364466,
+      "spread_edge": 2.6397364466,
+      "spread_pick": "NO",
+      "spread_bet_locked_rule": true,
+      "spread_outcome": "loss",
+      "total_line": 47.5,
+      "proj_total": 45.2533316925,
+      "total_edge": -2.2466683075,
+      "total_pick": "under",
+      "total_bet_locked_rule": false,
+      "total_outcome": "loss"
     },
     {
       "game_id": "2026_04_DAL_HOU",
