@@ -52,7 +52,7 @@ Repeat until the budget is spent:
 3. `git commit -q -m "exp: <idea>" -- research/candidate.py`
 4. `uv run python research/step.py "<one-line description of the idea>"`
    (add `--simplification` only when the change removes code or settings).
-   It runs `research/evaluate.py` (TUNE = 2016-2019, about 30 s, hard timeout 10 min),
+   It runs `research/evaluate.py` (TUNE = 2016-2019, about 40 s, hard timeout 10 min),
    writes the full output to `research/run.log`, and then, by rule:
    - **keep** if `tune_score` beats the last kept score by more than 0.001 points
      (with `--simplification`: if it is no worse than last kept + 0.001);

@@ -7,7 +7,7 @@ before kickoff. After every change a fixed scorer, `evaluate.py`, replays the 20
 seasons week by week, handing the model only earlier plays and scores, never betting lines and
 never the week's results. The score is the average miss on margins plus the average miss on
 totals, in points. If the change lowers that score it is kept; otherwise it is undone. Each
-try is one row in `results.tsv`, and one replay takes about 30 seconds.
+try is one row in `results.tsv`, and one replay takes about 40 seconds on the box. The commit ids in `results.tsv` point at commits on that night's `autoresearch/...` branch.
 
 The seasons are split on purpose. 2016–2019 is the practice set the agent sees all night.
 2020–2021 is a check it never sees: once per night, after the agent stops, `gate.py` replays

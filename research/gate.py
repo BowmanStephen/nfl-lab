@@ -7,8 +7,8 @@ started the loop, on the night's best candidate. THE LOOP AGENT MUST NEVER RUN T
 It walks forward through 2020-2021 with the same harness as evaluate.py (same data
 rules, same sandbox, same scramble test) for two models:
   * the candidate, and
-  * the reference: the candidate from the most recent `pass` row in
-    research/gate_log.tsv, or research/reference_main.py (main's live model form)
+  * the reference: the candidate.py version (by git blob id) from the most recent
+    `pass` row in research/gate_log.tsv, or research/reference_main.py (main's live model form)
     if nothing has passed yet.
 PASS means the candidate's 2020-2021 score (margin MAE + total MAE) is no worse than
 the reference's and its scramble test passed. Only a commit with a PASS row may be
@@ -33,7 +33,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import evaluate as E  # noqa: E402
 
 LOG = E.RESEARCH / "gate_log.tsv"
-HEADER = ["date_ct", "candidate", "reference", "result", "note"]
+HEADER = ["date_ct", "candidate", "candidate_blob", "reference", "result", "note"]
 GATE_SCRAMBLE = ((2020, 6), (2021, 12))
 
 
@@ -51,9 +51,10 @@ def log_rows() -> list[dict]:
     return [dict(zip(HEADER, l.split("\t"))) for l in lines[1:]]
 
 
-def module_at(rev: str, name: str, tmp: Path):
+def module_from_blob(blob: str, name: str, tmp: Path):
+    """Load a candidate.py version by its git blob id (survives squash merges)."""
     path = tmp / f"{name}.py"
-    path.write_text(git("show", f"{rev}:research/candidate.py") + "\n")
+    path.write_text(git("cat-file", "-p", blob) + "\n")
     return E.load_candidate(path, name)
 
 
@@ -74,15 +75,17 @@ def main() -> int:
     if not a.force and any(r["date_ct"].startswith(today) for r in log_rows()):
         raise SystemExit(f"the gate already ran on {today}; it runs once per night")
 
-    cand = git("rev-parse", "--short=7", a.candidate)
+    # Label with the commit that last changed candidate.py, and pin the exact file by blob id.
+    cand = git("log", "-1", "--format=%h", "--abbrev=7", a.candidate, "--", "research/candidate.py")
+    blob = git("rev-parse", "--short=12", f"{a.candidate}:research/candidate.py")
     passed = [r for r in log_rows() if r["result"] == "pass"]
     data = E._STATE["data"] = E.load()
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
-        c_mod = module_at(cand, "gate_candidate", tmp)
+        c_mod = module_from_blob(blob, "gate_candidate", tmp)
         if passed:
-            ref_label = passed[-1]["candidate"]
-            r_mod = module_at(ref_label, "gate_reference", tmp)
+            ref_label = f"{passed[-1]['candidate']} (last pass)"
+            r_mod = module_from_blob(passed[-1]["candidate_blob"], "gate_reference", tmp)
         else:
             ref_label = "main-model-form"
             r_mod = E.load_candidate(E.RESEARCH / "reference_main.py", "gate_reference")
@@ -98,7 +101,7 @@ def main() -> int:
     if not LOG.exists() or not LOG.read_text().strip():
         LOG.write_text("\t".join(HEADER) + "\n")
     with LOG.open("a") as fh:
-        fh.write("\t".join([now.strftime("%Y-%m-%d %H:%M"), cand, ref_label, result, note]) + "\n")
+        fh.write("\t".join([now.strftime("%Y-%m-%d %H:%M"), cand, blob, ref_label, result, note]) + "\n")
     git("add", "research/gate_log.tsv")
     git("commit", "-q", "-m", f"research gate: {result} {cand} vs {ref_label}")
     print(f"GATE {result}: {cand} vs {ref_label} ({note})")
