@@ -4,3 +4,4 @@ market	2026-10-06 15:46	20.4521	9.8257	10.6265			reference		closing lines on the
 06232d1	2026-10-06 15:47	20.9367	10.0472	10.8895	0.5181	0.4789	keep	27	totals: add indoor (dome/closed roof) flag and wind mph
 9100dc6	2026-10-06 15:47	20.9375	10.0480	10.8895	0.5101	0.4789	discard	26	margin: add EPA rating difference alongside the points rating
 d53b63e	2026-10-06 15:48	20.9248	10.0444	10.8804	0.5131	0.4858	keep	40	refit coefficients every week, adding this season's finished games (was once per season)
+f256e28	2026-10-06 15:49	20.9276	10.0472	10.8804	0.5131	0.4858	discard	40	margin: add capped rest-day difference (byes, short weeks)
