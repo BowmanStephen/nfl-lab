@@ -49,5 +49,8 @@ Deshaun Watson's passing was worth about **+11**. Aaron Rodgers was sacked 5 tim
 ### Ravens 24, Titans 18
 Lamar Jackson's passing was worth about **+13**, and Cam Ward's cost about **4**. Baltimore had 8 explosive plays and no turnovers.
 
+### Falcons 45, Saints 24
+Atlanta ran for 205 yards at 5.9 a carry, and New Orleans managed 50. Bijan Robinson broke a 59-yard touchdown on the opening drive and finished with 145 yards, and Michael Penix Jr. needed only 21 dropbacks, worth about **+11 points**. The Saints ran 13 more plays and still lost by 21, because only 36% of their plays succeeded (gained enough to keep the offense on schedule), compared with 59% of Atlanta's. **Lesson:** more plays only help if they go somewhere.
+
 ---
 *All numbers come from nflverse play-by-play. QB points = dropbacks × EPA per dropback, rounded.*
