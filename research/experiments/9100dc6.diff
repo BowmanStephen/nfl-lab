@@ -1,0 +1,18 @@
+9100dc607deaa876d93a317d3ae043b122d9776a
+exp: EPA rating diff in margin
+
+
+diff --git a/research/candidate.py b/research/candidate.py
+index 162035f..3c78766 100644
+--- a/research/candidate.py
++++ b/research/candidate.py
+@@ -34,7 +34,7 @@ MARGIN_KG, MARGIN_RG = 32, 0.2     # scoring-margin level: prior games-equivalen
+ TOTAL_KG, TOTAL_RG = 2, 1.0        # scoring levels used for totals
+ BUCKETS = [("wk1_4", 1, 4), ("wk5_8", 5, 8), ("wk9_plus", 9, 99)]
+ QB_K_SHRINK, QB_BACKUP_MAX_DB = 200, 150
+-MARGIN_COLS = [f"pt_{b}" for b, _, _ in BUCKETS] + ["hfa_flag", "qb_diff"]
++MARGIN_COLS = [f"pt_{b}" for b, _, _ in BUCKETS] + ["rating_diff", "hfa_flag", "qb_diff"]
+ TOTAL_COLS = ["env_fix", "pts_env", "indoor", "wind", "one"]
+ 
+ 
+
