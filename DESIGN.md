@@ -94,8 +94,11 @@ animation would get old fast.
 - Headings stay in sentence case, and the copy stays as written. The site's
   plain-English voice wins over Title Case and copy rules.
 - No `aria-live` region. Pages fill in from JSON right after the HTML loads.
-  Announcing whole pick cards and charts as they arrive would be noise, and a
-  failed load replaces the loading text in place, where a reader finds it.
+  Announcing whole pick cards and charts as they arrive would be noise. If a
+  load fails, the error message takes the place of the loading text (on the
+  ledger, which has no loading slot, it takes the place of the page body).
+- The skip link's target (`main`) gets no focus ring. Focus does move there, and
+  a ring around the whole page body would look like an error.
 - Some monospace labels are 11–13.5px, under the 14px some guides suggest
   (navigation and status lines are 14–15px). They are short, high-contrast and
   never carry a whole sentence.
