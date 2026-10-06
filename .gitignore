@@ -8,3 +8,5 @@ output/previews/
 /output/recaps/
 .DS_Store
 .playwright-mcp/
+research/.cache/
+research/run.log
