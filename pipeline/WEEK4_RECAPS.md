@@ -2,6 +2,11 @@
 
 **The one stat you need: EPA (expected points added).** Before every snap, the down, distance and field spot are worth some number of points. EPA is how much one play moved that number. Add up a QB's throws and you get roughly how many points his passing was worth. Plus is good, minus is bad. College PPA is the same idea.
 
+### What mattered this week
+Third downs sank three offenses. The Eagles went 0 for 12, the Jets 0 for 7 and the Commanders 2 for 15, and all three lost.
+Running more plays only paid off when the plays worked. Dallas and New England won with extra snaps, but the Raiders ran 18 more plays than Kansas City and the Saints 13 more than Atlanta, and both lost.
+Bryce Young's passing, worth about **+21 points**, was the biggest quarterback game of the week, and it beat a good Jared Goff day.
+
 ---
 
 ### Bears 23, Jets 12
@@ -52,5 +57,9 @@ Lamar Jackson's passing was worth about **+13**, and Cam Ward's cost about **4**
 ### Falcons 45, Saints 24
 Atlanta ran for 205 yards at 5.9 a carry, and New Orleans managed 50. Bijan Robinson broke a 59-yard touchdown on the opening drive and finished with 145 yards, and Michael Penix Jr. needed only 21 dropbacks, worth about **+11 points**. The Saints ran 13 more plays and still lost by 21, because only 36% of their plays succeeded (gained enough to keep the offense on schedule), compared with 59% of Atlanta's. **Lesson:** more plays only help if they go somewhere.
 
+
+### How the picks did
+There was no official pick list for week 4. The first locked list is week 5, which starts Thursday. For reference only, the walk-forward backtest (what the frozen model would have said before each kickoff, not official picks) went 6–2 with one push against the spread and 4–4 on totals in week 4.
+
 ---
-*All numbers come from nflverse play-by-play. QB points = dropbacks × EPA per dropback, rounded.*
+*Game numbers come from nflverse play-by-play. The backtest record comes from the 2026 report card, graded against nflverse closing lines and final scores. QB points = dropbacks × EPA per dropback, rounded.*
