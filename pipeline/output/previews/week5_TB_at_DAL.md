@@ -4,29 +4,30 @@
 
 ## Model projection
 
-- Projected spread (home): **-0.4**
+- Projected spread (home): **0.1**
 - Projected total: **45.6**
-- Model favorite (base): **DAL**
-- Home rating: -0.0211 · Away rating: -0.0078
+- Model favorite (base): **TB**
+- Home rating: -0.0231 · Away rating: -0.0038
 
 ## Starting-QB adjustment (secondary)
 
 - Projected starters: TB **Jalon Daniels**, DAL **Dak Prescott**
-- QB adjustment: +3.6 pts to home margin → QB-adjusted home margin **+4.0**
-- ⚠️ TB: schedule lists Jalon Daniels, latest depth chart QB1 is Baker Mayfield
-- ⚠️ TB: Baker Mayfield listed Out (Thumb) on week 5 report
+- QB adjustment: +3.6 pts to home margin → QB-adjusted home margin **+3.5**
+- ⚠️ ESPN lists Baker Mayfield Out (thumb, return date 2026-10-25). Depth-chart QB1 is still Mayfield.
+- ⚠️ nflverse week-5 report_status for Mayfield is blank; he did not practice. The default resolver would keep him.
+- ⚠️ Schedule lists Jalon Daniels. The QB adjustment above is rerun with Daniels.
 
 _The pre-registered backtest headline grades the base model; the QB adjustment was validated on 2016–2021 only._
 
 ## Market (for reference)
 
-- Current DraftKings (ESPN): DAL -10 · Total: 47.5
-- Model minus market (home margin, QB-adjusted): -6.0 pts · Total edge: -1.9 pts
-- Locked-rule picks: TB +10 / none
+- Current DraftKings (ESPN): DAL -8.5 · Total: 47.5
+- Model minus market (home margin, QB-adjusted): -5.0 pts · Total edge: -1.9 pts
+- Preview lean (spread) / (total): TB +8.5 / none
 
 ## Snapshot
 
-- ESPN lines pulled: 2026-10-05 15:45 CT
-- Updated Mon Oct 5, 4 PM CT
+- ESPN lines pulled: 2026-10-07 18:30 CT
+- Updated Wed Oct 7, 6:30 PM CT
 
-_Numbers from nflverse play-by-play via NFL Lab. Not betting advice. Not the official scored card._
+_Numbers from nflverse play-by-play via NFL Lab. Not betting advice. Not the official scored card. These leans do not change the Monday Oct 5 lock._
