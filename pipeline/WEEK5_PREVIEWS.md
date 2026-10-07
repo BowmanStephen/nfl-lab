@@ -4,7 +4,7 @@
 
 **Honest note up top.** The model has not beaten the market in its holdout test (2022–2025 holdout: **48.8%** ATS, **51.0%** on totals, below the **52.4%** break-even at −110). That test only counted edges of 2+ points on the side or 3+ on the total.
 
-This file is a Wednesday refresh of the week-5 previews. The official week-5 card is the Monday Oct 5 lock in `output/live/2026-week-05.json`. These leans do not change it. The rows for this refresh are `pipeline/previews/2026_week5_preview_lines_wed.csv` and `pipeline/previews/2026_week5_preview_lines_wed.json`. The Monday file `pipeline/previews/2026_wk05_preview_lines.csv` stays as history. Kansas City and Carolina are on bye. Fifteen games, Thursday through Monday.
+This file is a Wednesday refresh of the week-5 previews. The official week-5 card is the Monday Oct 5 lock in `output/live/2026-week-05.json`. These leans do not change it. Not bets, not advice. The rows for this refresh are `pipeline/previews/2026_week5_preview_lines_wed.csv` and `pipeline/previews/2026_week5_preview_lines_wed.json`. The Monday file `pipeline/previews/2026_wk05_preview_lines.csv` stays as history. Kansas City and Carolina are on bye. Fifteen games, Thursday through Monday.
 
 **How to read a card.** Kickoff is Central Time. “Market” is the current DraftKings line on ESPN, pulled **2026-10-07 18:30 CT**. “Model” is the QB-adjusted projected margin (positive means the home team wins by that many) and the projected total. A **preview lean** appears only when the locked rule fires: spread edge = |model spread − market spread| ≥ 2 points, or total edge ≥ 3 points. Every model figure is from the NFL Lab code on main (nflverse through 2026 week 4, walk-forward ratings, the locked starting-QB adjustment).
 
@@ -188,7 +188,7 @@ This is a toss-up on the model, with Baltimore a tenth of a point in front. Team
 
 Lamar Jackson is not on the ESPN injury report for this game. On Monday he was listed questionable. Michael Penix Jr. is Atlanta’s depth-chart QB1 and is not listed either. The schedule and the depth chart agree on both starters, so this projection uses them. The line moved about six points toward Atlanta anyway.
 
-**Newcomer tip — walk-forward:** each week’s rating uses only games already played. Week 5 has not been played. Early-season numbers still move when the play-by-play gets a correction, which is why a few margins here differ from Monday even when the quarterbacks did not.
+**Newcomer tip — walk-forward:** each week’s rating uses only games already played. Wednesday’s ratings include Monday night’s completed week-4 game, Falcons 45, Saints 24. That game is why Atlanta’s rating rose and New Orleans’s fell. Opponent adjustment then shifted the other teams a little.
 
 **Preview lean (spread):** BAL +3.5 — edge 3.6 pts · **Preview lean (total):** OVER 43.5 — edge 3.1 pts
 
