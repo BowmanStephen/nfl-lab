@@ -1,0 +1,16 @@
+game,kickoff_ct,market_spread_home,market_total,market_details,model_margin_home_qb,model_total,spread_edge,total_edge,spread_lean,total_lean,is_lean,away_qb,home_qb,qb_note,espn_snapshot_ct,espn_event_id
+TB@DAL,2026-10-08 19:15 CT,-8.5,47.5,DAL -8.5,3.46,45.63,-5.04,-1.87,TB +8.5,,yes,Jalon Daniels,Dak Prescott,"ESPN lists Baker Mayfield Out (dislocated thumb, return date 2026-10-25). Depth chart QB1 is still Mayfield, and the nflverse week-5 report_status is blank (he did not practice). Schedule lists Jalon Daniels. Projection uses Daniels.",2026-10-07 18:30 CT,401872980
+PHI@JAX,2026-10-11 08:30 CT,-7.0,42.5,JAX -7,5.59,46.95,-1.41,4.45,,OVER 42.5,yes,Jalen Hurts,Trevor Lawrence,,2026-10-07 18:30 CT,401872981
+CHI@GB,2026-10-11 12:00 CT,2.5,45.5,CHI -2.5,-3.08,46.78,-0.58,1.28,,,no,Caleb Williams,Jordan Love,"Schedule lists Tyson Bagent. Depth chart QB1 is Caleb Williams, and he is not on the ESPN injury report. Projection uses Williams.",2026-10-07 18:30 CT,401872990
+CIN@MIA,2026-10-11 12:00 CT,6.5,42.5,CIN -6.5,-1.41,45.52,5.09,3.02,MIA +6.5,OVER 42.5,yes,Joe Burrow,Malik Willis,,2026-10-07 18:30 CT,401872982
+CLE@NYJ,2026-10-11 12:00 CT,-1.5,39.5,NYJ -1.5,-1.07,44.58,-2.57,5.08,CLE +1.5,OVER 39.5,yes,Deshaun Watson,Geno Smith,,2026-10-07 18:30 CT,401872983
+HOU@TEN,2026-10-11 12:00 CT,7.5,37.5,HOU -7.5,-4.02,44.71,3.48,7.21,TEN +7.5,OVER 37.5,yes,C.J. Stroud,Cam Ward,,2026-10-07 18:30 CT,401872984
+IND@PIT,2026-10-11 12:00 CT,-2.5,44.5,PIT -2.5,1.27,45.85,-1.23,1.35,,,no,Daniel Jones,Aaron Rodgers,,2026-10-07 18:30 CT,401872985
+LV@NE,2026-10-11 12:00 CT,-3.5,45.5,NE -3.5,3.14,45.78,-0.36,0.28,,,no,Kirk Cousins,Drake Maye,,2026-10-07 18:30 CT,401872986
+MIN@NO,2026-10-11 12:00 CT,1.5,42.5,MIN -1.5,-4.34,46.01,-2.84,3.51,MIN -1.5,OVER 42.5,yes,Kyler Murray,Tyler Shough,Tyler Shough is Questionable (hand) on the ESPN injury report. Projection assumes he starts.,2026-10-07 18:30 CT,401872987
+NYG@WAS,2026-10-11 12:00 CT,-3.5,42.5,WSH -3.5,5.12,44.41,1.62,1.91,,,no,Jameis Winston,Jayden Daniels,Jayden Daniels is depth-chart QB1 and is not on the ESPN injury report. ESPN reports he fully practiced and is expected to play. Monday's preview used Athan Kaliakmanis.,2026-10-07 18:30 CT,401872988
+DEN@LAC,2026-10-11 15:05 CT,3.5,41.5,DEN -3.5,-2.57,46.74,0.93,5.24,,OVER 41.5,yes,Bo Nix,Justin Herbert,,2026-10-07 18:30 CT,401872989
+DET@ARI,2026-10-11 15:25 CT,5.5,54.5,DET -5.5,-1.32,45.93,4.18,-8.57,ARI +5.5,UNDER 54.5,yes,Jared Goff,Jacoby Brissett,,2026-10-07 18:30 CT,401872991
+SF@SEA,2026-10-11 15:25 CT,-2.5,45.5,SEA -2.5,-0.26,48.02,-2.76,2.52,SF +2.5,,yes,Brock Purdy,Sam Darnold,"Schedule lists Drew Lock. Depth chart QB1 is Sam Darnold, and he is not on the ESPN injury report. Projection uses Darnold.",2026-10-07 18:30 CT,401872992
+BAL@ATL,2026-10-11 19:20 CT,-3.5,43.5,ATL -3.5,-0.12,46.64,-3.62,3.14,BAL +3.5,OVER 43.5,yes,Lamar Jackson,Michael Penix Jr.,Lamar Jackson is not on the ESPN injury report (listed Questionable on Monday). Michael Penix Jr. is Atlanta's depth-chart QB1 and is not listed either. Schedule and depth chart agree on both starters.,2026-10-07 18:30 CT,401872993
+BUF@LA,2026-10-12 19:15 CT,-3.0,54.5,LAR -3,4.33,47.87,1.33,-6.63,,UNDER 54.5,yes,Josh Allen,Matthew Stafford,,2026-10-07 18:30 CT,401872994
