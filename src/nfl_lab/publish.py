@@ -8,6 +8,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from .config import OUTPUT_DIR, PUBLIC_API, TEAM_NAMES
+from .picks import total_is_active
 
 CT = ZoneInfo("America/Chicago")
 
@@ -98,7 +99,7 @@ def publish_card(card: dict, generated_at: datetime) -> None:
         "health": card["health"],
         "n_games": len(card["games"]),
         "n_spread_picks": sum(1 for g in card["games"] if g["selection"]["spread_qualifies"]),
-        "n_total_picks": sum(1 for g in card["games"] if g["selection"]["total_qualifies"]),
+        "n_total_picks": sum(1 for g in card["games"] if total_is_active(g["selection"])),
     })
     _write(summary_path, summary)
     _refresh_freshness(generated_at)
@@ -141,7 +142,7 @@ def model_game_from_card(game: dict) -> dict:
         points = -home_margin if sel["spread_pick"] == game["home_team"] else home_margin
         spread_pick = f"{sel['spread_pick']} {_signed_points(points)}"
     total_pick = None
-    if sel["total_qualifies"]:
+    if total_is_active(sel):
         word = "OVER" if sel["total_pick"] == "over" else "UNDER"
         total_pick = f"{word} {float(game['pick_time']['total']):.1f}"
     row = {
@@ -157,7 +158,7 @@ def model_game_from_card(game: dict) -> dict:
         "total_edge": sel["total_edge"],
         "spread_pick": spread_pick,
         "total_pick": total_pick,
-        "is_pick": bool(sel["spread_qualifies"] or sel["total_qualifies"]),
+        "is_pick": bool(sel["spread_qualifies"] or total_is_active(sel)),
         "away_qb": sel.get("away_qb"),
         "home_qb": sel.get("home_qb"),
     }
@@ -217,7 +218,7 @@ def write_site(card: dict, ratings, stats, through_week: int, weekly: list[dict]
         "health": card["health"],
         "n_games": len(card["games"]),
         "n_spread_picks": sum(1 for g in card["games"] if g["selection"]["spread_qualifies"]),
-        "n_total_picks": sum(1 for g in card["games"] if g["selection"]["total_qualifies"]),
+        "n_total_picks": sum(1 for g in card["games"] if total_is_active(g["selection"])),
     }
     _write(summary_path, summary)
     sync_model_page(card, ratings)

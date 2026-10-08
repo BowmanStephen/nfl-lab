@@ -147,6 +147,15 @@ def grade_total(pick: str, actual_total: float, line_total: float) -> str:
     return "win" if went_over == (pick == "over") else "loss"
 
 
+def total_is_active(selection: dict) -> bool:
+    """A totals pick is scored only when it cleared the locked rule and was not voided.
+
+    ``total_qualifies`` stays as the lock wrote it. ``total_voided`` is a later
+    decision on that market alone, so a spread on the same game still counts.
+    """
+    return bool(selection.get("total_qualifies")) and not selection.get("total_voided")
+
+
 def _line_block(captured_at: str, line: dict) -> dict:
     if line.get("missing") or line.get("home_margin") is None or line.get("total") is None:
         raise MissingLineError(
@@ -274,14 +283,14 @@ def grade_game(game: dict, home_score, away_score) -> dict | None:
             grading["spread_outcome"] = grade_spread(
                 sel["spread_pick"], game["home_team"], actual_margin, line["home_margin"]
             )
-        if sel["total_qualifies"]:
+        if total_is_active(sel):
             grading["total_outcome"] = grade_total(sel["total_pick"], actual_total, line["total"])
     if pre:
         if sel["spread_qualifies"]:
             clv = spread_clv(sel["spread_pick"], game["home_team"], line["home_margin"], pre["home_margin"])
             grading["spread_clv"] = clv
             grading["spread_moved_toward"] = clv > 0
-        if sel["total_qualifies"]:
+        if total_is_active(sel):
             clv = total_clv(sel["total_pick"], line["total"], pre["total"])
             grading["total_clv"] = clv
             grading["total_moved_toward"] = clv > 0
@@ -349,12 +358,12 @@ def health_summary(games: list[dict]) -> dict:
         sel = game["selection"]
         if sel["spread_qualifies"] and grading.get("spread_outcome"):
             settled.append(grading["spread_outcome"])
-        if sel["total_qualifies"] and grading.get("total_outcome"):
+        if total_is_active(sel) and grading.get("total_outcome"):
             settled.append(grading["total_outcome"])
         if sel["spread_qualifies"] and grading.get("spread_moved_toward") is not None:
             moved.append(bool(grading["spread_moved_toward"]))
             clvs.append(float(grading["spread_clv"]))
-        if sel["total_qualifies"] and grading.get("total_moved_toward") is not None:
+        if total_is_active(sel) and grading.get("total_moved_toward") is not None:
             moved.append(bool(grading["total_moved_toward"]))
             clvs.append(float(grading["total_clv"]))
     wins = settled.count("win")

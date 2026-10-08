@@ -270,8 +270,8 @@
       "spread_edge": -1.0980709913000002,
       "total_edge": 4.4152715675,
       "spread_pick": null,
-      "total_pick": "OVER 42.5",
-      "is_pick": true,
+      "total_pick": null,
+      "is_pick": false,
       "away_qb": "Jalen Hurts",
       "home_qb": "Trevor Lawrence"
     },
@@ -304,7 +304,7 @@
       "spread_edge": 5.9463775631,
       "total_edge": 3.014190691099998,
       "spread_pick": "MIA +7",
-      "total_pick": "OVER 42.5",
+      "total_pick": null,
       "is_pick": true,
       "away_qb": "Joe Burrow",
       "home_qb": "Malik Willis"
@@ -321,7 +321,7 @@
       "spread_edge": -3.3280760727,
       "total_edge": 4.975273796099998,
       "spread_pick": "CLE +2.5",
-      "total_pick": "OVER 39.5",
+      "total_pick": null,
       "is_pick": true,
       "away_qb": "Deshaun Watson",
       "home_qb": "Geno Smith"
@@ -338,7 +338,7 @@
       "spread_edge": 3.0117082742,
       "total_edge": 5.2596730112,
       "spread_pick": "TEN +7",
-      "total_pick": "OVER 39.5",
+      "total_pick": null,
       "is_pick": true,
       "away_qb": "C.J. Stroud",
       "home_qb": "Cam Ward"
@@ -389,8 +389,8 @@
       "spread_edge": -0.7064558211,
       "total_edge": 4.921671312000001,
       "spread_pick": null,
-      "total_pick": "OVER 41.5",
-      "is_pick": true,
+      "total_pick": null,
+      "is_pick": false,
       "away_qb": "Kyler Murray",
       "home_qb": "Tyler Shough"
     },
@@ -424,8 +424,8 @@
       "spread_edge": 1.0795674076,
       "total_edge": 4.301502915100002,
       "spread_pick": null,
-      "total_pick": "OVER 42.5",
-      "is_pick": true,
+      "total_pick": null,
+      "is_pick": false,
       "away_qb": "Bo Nix",
       "home_qb": "Justin Herbert"
     },
@@ -441,7 +441,7 @@
       "spread_edge": 2.7401577916999997,
       "total_edge": -8.423825694400001,
       "spread_pick": "ARI +4.5",
-      "total_pick": "UNDER 54.5",
+      "total_pick": null,
       "is_pick": true,
       "away_qb": "Jared Goff",
       "home_qb": "Jacoby Brissett"
@@ -492,8 +492,8 @@
       "spread_edge": 1.7530603844000003,
       "total_edge": -6.589439607999999,
       "spread_pick": null,
-      "total_pick": "UNDER 54.5",
-      "is_pick": true,
+      "total_pick": null,
+      "is_pick": false,
       "away_qb": "Josh Allen",
       "home_qb": "Matthew Stafford"
     }
