@@ -35,7 +35,17 @@
         "kickoff_utc": "2026-10-09T00:15Z",
         "espn_id": "401872980"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-08T22:28:16.780235+00:00",
+        "captured_at_ct": "2026-10-08T17:28:16.780235-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "home_margin": 9.5,
+        "total": 48.5,
+        "spread_display": "DAL -9.5",
+        "kickoff_utc": "2026-10-09T00:15Z",
+        "espn_id": "401872980"
+      },
       "selection": {
         "model_margin": 3.9556056092,
         "base_margin": 0.3940995601,
@@ -58,7 +68,18 @@
           "TB: Baker Mayfield listed Out (Thumb) on week 4 report"
         ]
       },
-      "grading": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": -1.0,
+        "total_clv": null,
+        "spread_moved_toward": false,
+        "total_moved_toward": null
+      }
     },
     {
       "game_id": "2026_05_PHI_JAX",
@@ -682,8 +703,8 @@
     "losses": 0,
     "pushes": 0,
     "cover_rate": null,
-    "clv_samples": 0,
-    "moved_toward_rate": null,
-    "average_clv": null
+    "clv_samples": 1,
+    "moved_toward_rate": 0.0,
+    "average_clv": -1.0
   }
 }

@@ -1,42 +1,42 @@
 {
-  "generated_at": "2026-10-08T06:26:49.514449-05:00",
-  "stale_after": "2026-10-09T18:26:49.514449-05:00",
+  "generated_at": "2026-10-08T17:28:17.044121-05:00",
+  "stale_after": "2026-10-10T05:28:17.044121-05:00",
   "files": [
     {
       "path": "api/baseline.json",
       "bytes": 4704,
       "sha256": "99c3be16425e12796a9ad9e458a5c9a2f28a3466dc8ac87c8bf52277a0ec6344",
-      "updated_at": "2026-10-08T06:26:49.514449-05:00"
+      "updated_at": "2026-10-08T17:28:17.044121-05:00"
     },
     {
       "path": "api/model.json",
-      "bytes": 13309,
-      "sha256": "4936cdf6dde8d23056c346fe34ab54215b8e52734934b99627023da92b5292b3",
-      "updated_at": "2026-10-08T06:26:49.514449-05:00"
+      "bytes": 15037,
+      "sha256": "b10ddb20e8f2f77c02a76f7578185fef04c3511ed77e06d622436181cb6729e1",
+      "updated_at": "2026-10-08T17:28:17.044121-05:00"
     },
     {
       "path": "api/picks.json",
-      "bytes": 23325,
-      "sha256": "91401a80e4c968fb6196438df83b7ebec9fc6f095e46d823a09edadb2ac8163d",
-      "updated_at": "2026-10-08T06:26:49.514449-05:00"
+      "bytes": 23998,
+      "sha256": "fbad7284fd08f2a4376ad52787b06c35816ac290efddeb4b184bc3525dfbf849",
+      "updated_at": "2026-10-08T17:28:17.044121-05:00"
     },
     {
       "path": "api/report_card.json",
       "bytes": 48810,
       "sha256": "40fb20883563347c351f6c0a62991bd5eb3cda915bd5decd3251a6e5e00c0b58",
-      "updated_at": "2026-10-08T06:26:49.514449-05:00"
+      "updated_at": "2026-10-08T17:28:17.044121-05:00"
     },
     {
       "path": "api/summary.json",
-      "bytes": 479,
-      "sha256": "ea3f25ea5357d2d3f60de4282cfc91f8ffca68065846bc7aa6e74b0360edc097",
-      "updated_at": "2026-10-08T06:26:49.514449-05:00"
+      "bytes": 478,
+      "sha256": "adbc151c840d9c22426e50cefac213a0a1a7aeb3149c55405f494c2eafe2ff02",
+      "updated_at": "2026-10-08T17:28:17.044121-05:00"
     },
     {
       "path": "api/teams.json",
       "bytes": 29854,
       "sha256": "5a78f5d1d1cc67a1b73bee51c719533fe70322c1febf459899974f52049e5604",
-      "updated_at": "2026-10-08T06:26:49.514449-05:00"
+      "updated_at": "2026-10-08T17:28:17.044121-05:00"
     }
   ]
 }
