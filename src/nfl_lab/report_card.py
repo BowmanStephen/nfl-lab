@@ -23,7 +23,7 @@ import pandas as pd
 from .config import OUTPUT_DIR, TEAM_NAMES
 from .data_loader import load_pbp, load_schedules
 from .ratings import shrink_to_prior
-from .walkforward import BREAKEVEN, _record, apply_coefs, features, grade, precompute
+from .walkforward import BREAKEVEN, _record, apply_coefs, features, grade, precompute, with_signfix_totals
 
 SEASON = 2026
 WEEKS = [1, 2, 3, 4]
@@ -33,7 +33,8 @@ SITE_JSON = OUTPUT_DIR.parent / "public" / "api" / "report_card.json"
 
 def _locked() -> tuple[dict, dict]:
     bt = OUTPUT_DIR / "backtest"
-    locked = json.loads((bt / "locked_model.json").read_text())["locked_model"]
+    # Totals coefficients refit for the defense-sign fix (margin coefficients unchanged).
+    locked = with_signfix_totals(json.loads((bt / "locked_model.json").read_text())["locked_model"])
     prereg = json.loads((bt / "preregistration.json").read_text())
     return locked, prereg
 

@@ -31,9 +31,10 @@ from .picks import (
     save_card,
 )
 from .publish import publish_card, write_site
-from . import qb_adjust
+from . import calibration, qb_adjust
 from .ratings import build_current_ratings
 from .team_stats import compute_season_team_stats
+from .walkforward import with_signfix_totals
 
 UTC = ZoneInfo("UTC")
 CT = ZoneInfo("America/Chicago")
@@ -89,7 +90,8 @@ def weekly_team_epa(pbp: pd.DataFrame, through_week: int) -> list[dict]:
 
 
 def _locked_params() -> tuple[ModelParams, dict]:
-    locked = json.loads((OUTPUT_DIR / "backtest" / "locked_model.json").read_text())["locked_model"]
+    locked = with_signfix_totals(
+        json.loads((OUTPUT_DIR / "backtest" / "locked_model.json").read_text())["locked_model"])
     qb = json.loads((OUTPUT_DIR / "backtest" / "qb_adjustment_validation.json").read_text())
     if not qb.get("adopt"):
         raise RuntimeError("QB adjustment was not adopted on the 2016–2021 check")
@@ -117,7 +119,14 @@ def _project(schedules, pbp, depth, injuries, week: int):
         prior_regress=locked["prior_regress"],
     )
     slate = slate_for(schedules, week)
-    proj = project_games(slate, ratings, params)
+    v2 = calibration.load_v2()
+    if calibration.applies(v2, LIVE_SEASON, week):
+        # Margin calibration v2 (fit on 2016-2021 only), from 2026 week 6 on. See CHANGES.md.
+        log(f"week {week}: using {v2['model_version']} (fit on 2016-2021)")
+        proj = calibration.project_slate(slate, schedules, ratings, v2, LIVE_SEASON, week)
+        coefs = {"points_per_qb_epa_db": v2["qb"]["points_per_qb_epa_db"], "margin_sigma": v2["qb"]["margin_sigma"]}
+    else:
+        proj = project_games(slate, ratings, params)
     db = qb_adjust.load_dropbacks(range(LIVE_SEASON - 3, LIVE_SEASON + 1), pbp=pbp)
     proj = qb_adjust.apply_to_slate(
         proj, slate, db, LIVE_SEASON, week, coefs, depth=depth, injuries=injuries
@@ -209,6 +218,12 @@ def run(mode: str = "refresh") -> dict:
             apply_pre_kickoff(games, lines, captured_at, now)
         games = _with_grades(games, slate)
         card = new_card(LIVE_SEASON, week, games, captured_at)
+        if calibration.applies(calibration.load_v2(), LIVE_SEASON, week):
+            card["model_version"] = "v2-margin-calibration"
+            card["model_note"] = (
+                "Margin and total are model v2 (scoring-margin rating with a per-season-segment scale; "
+                "totals from sign-fixed EPA plus scoring levels), all fit on 2016-2021 only, plus the "
+                "starting-QB adjustment refit on 2016-2021. v2 is not in the 2022-2025 ledger.")
     else:
         log(f"pick card already frozen ({existing['created_at']}); leaving picks and pick-time lines")
         incoming = json.loads(json.dumps(existing["games"]))

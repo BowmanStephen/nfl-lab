@@ -1,0 +1,29 @@
+{
+  "fit_on_seasons": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ],
+  "fitted_at": "2026-10-05T19:12:25.472752-05:00",
+  "feature": "home_off + away_off + home_def + away_def (shrunk EPA/play; def = EPA allowed)",
+  "points_per_combined_off": 36.01451640614665,
+  "base_total": 46.1282012331322,
+  "total_sigma": 13.860328397330532,
+  "n_fit_games": 1550,
+  "tuning_window_before_after": {
+    "before_flipped_sign": {
+      "loso_mae": 11.103747778035698,
+      "projected_total_sd": 1.3001061234372562,
+      "slope_actual_on_projected": 0.39407568725209724
+    },
+    "after_sign_fix": {
+      "loso_mae": 11.049666858404867,
+      "projected_total_sd": 2.1818573345996626,
+      "slope_actual_on_projected": 0.6824970597038336
+    },
+    "market_total_sd": 4.348266558308083
+  }
+}
