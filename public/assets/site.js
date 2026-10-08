@@ -48,6 +48,35 @@ function gapChart(model, line) {
   return `<div class="gap">${row("Model", model, "")}${row("Line", line, "line")}</div>`;
 }
 
+function marginPlain(homeMargin, home, away) {
+  const m = Number(homeMargin);
+  if (!Number.isFinite(m)) return "—";
+  if (Math.abs(m) < 0.05) return "pick’em";
+  if (m > 0) return `${home} by ${Math.abs(m).toFixed(1)}`;
+  return `${away} by ${Math.abs(m).toFixed(1)}`;
+}
+
+function pickLineDisplay(game, side) {
+  const line = Number(game.pick_time.home_margin);
+  const signed = side === game.home_team ? -line : line;
+  return `${side} ${fmt(signed)}`;
+}
+
+function compareBlock(lineLabel, lineValue, modelLabel, modelValue) {
+  return `<div class="compare" aria-label="Model versus line">
+    <div class="compare-col compare-line">
+      <span>Line</span>
+      <b>${esc(lineValue)}</b>
+      <em>${esc(lineLabel)}</em>
+    </div>
+    <div class="compare-col compare-model">
+      <span>Model call</span>
+      <b>${esc(modelValue)}</b>
+      <em>${esc(modelLabel)}</em>
+    </div>
+  </div>`;
+}
+
 function spark(weekly) {
   const vals = (weekly || []).map((w) => w.off_epa).filter((v) => v != null);
   if (vals.length < 2) return "";
@@ -76,63 +105,77 @@ function spreadCards(games) {
       const s = g.selection;
       const line = g.pick_time.home_margin;
       const side = s.spread_pick === g.home_team ? g.home_team : g.away_team;
+      const pickPrice = pickLineDisplay(g, side);
       const notes = (s.qb_notes || []).map((n) => `<p class="note">${esc(n)}</p>`).join("");
-      return `<article class="card">
+      const edge = Math.abs(s.spread_edge);
+      return `<article class="card pick-card">
         <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
-        <p class="side">${esc(side)} ${fmt(s.spread_pick === g.home_team ? -line : line)}</p>
-        <div class="nums">
-          <div><span>Model margin, home</span><b>${fmt(s.model_margin)}</b></div>
-          <div><span>ESPN line, home</span><b>${fmt(line)}</b></div>
-          <div><span>Edge</span><b>${fmt(Math.abs(s.spread_edge))}</b></div>
-        </div>
-        ${gapChart(s.model_margin, line)}
-        <p class="meta">Snapshotted ${esc(whenCT(g.pick_time.captured_at))} · ${esc(g.pick_time.provider)} · ${esc(g.pick_time.spread_display || "")}</p>
+        <p class="side">${esc(pickPrice)}</p>
+        ${compareBlock(
+          `home margin ${fmt(line)}`,
+          g.pick_time.spread_display || fmt(line),
+          `home margin ${fmt(s.model_margin)}`,
+          marginPlain(s.model_margin, g.home_team, g.away_team),
+        )}
+        <p class="edge-line"><span>Edge</span><b>${fmt(edge)}</b><em>pts toward ${esc(side)}</em></p>
+        <p class="meta">Snapshotted ${esc(whenCT(g.pick_time.captured_at))} · ${esc(g.pick_time.provider)}</p>
         <p class="meta">Starters used: ${esc(g.away_team)} ${esc(s.away_qb)}, ${esc(g.home_team)} ${esc(s.home_qb)}</p>
         ${notes}
       </article>`;
     }).join("");
 }
 
+function totalIsActive(selection) {
+  return Boolean(selection.total_qualifies) && !selection.total_voided;
+}
+
 function totalCards(games) {
   return games
-    .filter((g) => g.selection.total_qualifies)
+    .filter((g) => totalIsActive(g.selection))
     .sort((a, b) => Math.abs(b.selection.total_edge) - Math.abs(a.selection.total_edge))
     .map((g) => {
       const s = g.selection;
-      return `<article class="card">
-        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(s.total_pick)} ${Number(g.pick_time.total).toFixed(1)}</span></header>
-        <div class="nums">
-          <div><span>Model total</span><b>${Number(s.model_total).toFixed(1)}</b></div>
-          <div><span>ESPN total</span><b>${Number(g.pick_time.total).toFixed(1)}</b></div>
-          <div><span>Edge</span><b>${fmt(Math.abs(s.total_edge))}</b></div>
-        </div>
+      const tot = Number(g.pick_time.total);
+      const modelTot = Number(s.model_total);
+      const edge = Math.abs(s.total_edge);
+      const sideLabel = `${s.total_pick} ${tot.toFixed(1)}`;
+      return `<article class="card pick-card">
+        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
+        <p class="side">${esc(sideLabel)}</p>
+        ${compareBlock(
+          `ESPN total ${tot.toFixed(1)}`,
+          tot.toFixed(1),
+          `Model total ${modelTot.toFixed(1)}`,
+          modelTot.toFixed(1),
+        )}
+        <p class="edge-line"><span>Edge</span><b>${fmt(edge)}</b><em>pts · ${esc(s.total_pick)}</em></p>
       </article>`;
     }).join("");
 }
 
 function noPickReason(game) {
   const s = game.selection;
+  if (s.total_voided && !s.spread_qualifies) {
+    const recorded = `${s.total_pick} ${Number(game.pick_time.total).toFixed(1)}`;
+    return `Recorded total was ${recorded}. Voided and not scored.`;
+  }
   if (s.no_pick_reason) return s.no_pick_reason;
   return `No pick: locked rule (|spread edge| ${Math.abs(s.spread_edge).toFixed(1)} < 2 and |total edge| ${Math.abs(s.total_edge).toFixed(1)} < 3).`;
 }
 
 function noPickCards(games) {
   return games
-    .filter((g) => !g.selection.spread_qualifies && !g.selection.total_qualifies)
+    .filter((g) => !g.selection.spread_qualifies && !totalIsActive(g.selection))
     .map((g) => {
       const s = g.selection;
-      return `<article class="card">
-        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">No pick</span></header>
+      const label = s.total_voided ? "Voided total" : "No pick";
+      return `<article class="card quiet-card">
+        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(label)}</span></header>
         <p>${esc(noPickReason(g))}</p>
-        <div class="nums">
-          <div><span>Model margin, home</span><b>${fmt(s.model_margin)}</b></div>
-          <div><span>ESPN line, home</span><b>${fmt(g.pick_time.home_margin)}</b></div>
+        <div class="nums nums-compact">
           <div><span>Spread edge</span><b>${fmt(s.spread_edge)}</b></div>
-          <div><span>Model total</span><b>${Number(s.model_total).toFixed(1)}</b></div>
-          <div><span>ESPN total</span><b>${Number(g.pick_time.total).toFixed(1)}</b></div>
           <div><span>Total edge</span><b>${fmt(s.total_edge)}</b></div>
         </div>
-        <p class="meta">Starters used: ${esc(g.away_team)} ${esc(s.away_qb)}, ${esc(g.home_team)} ${esc(s.home_qb)}</p>
       </article>`;
     }).join("");
 }
@@ -141,20 +184,66 @@ function showLock(card) {
   const label = $("lock-label");
   if (label && card.lock_label) label.textContent = card.lock_label;
   const note = $("holdout-note");
-  if (note && card.holdout_note) note.textContent = card.holdout_note;
+  if (note && card.holdout_note) {
+    note.textContent = document.body.dataset.page === "home"
+      ? holdoutCalmLine(card.holdout_note)
+      : card.holdout_note;
+  }
+  const voidNote = $("totals-void-note");
+  if (voidNote) {
+    if (card.totals_void_note) {
+      voidNote.hidden = false;
+      voidNote.textContent = card.totals_void_note;
+    } else {
+      voidNote.hidden = true;
+    }
+  }
+}
+
+function liveRecordLine(health) {
+  if (!health) return "Live 2026 record: unavailable.";
+  if (!health.settled_picks) {
+    return "Live 2026 record: no settled picks yet.";
+  }
+  const rate = health.cover_rate == null ? "" : ` (${(100 * health.cover_rate).toFixed(1)}%)`;
+  return `Live 2026 record: ${health.wins}–${health.losses}–${health.pushes}${rate}.`;
+}
+
+function holdoutCalmLine(note) {
+  if (!note) return "";
+  const m = String(note).match(/Holdout record\s+[\d.]+%\s+ATS\s+vs\s+[\d.]+%\s+break-even/i);
+  if (m) return `${m[0]}.`;
+  return note;
 }
 
 async function renderHome() {
   const card = await load("picks.json");
   $("kicker").textContent = `Week ${card.week} · ${card.season}`;
   showLock(card);
-  $("health").textContent = card.health.line;
+  if ($("live-record")) $("live-record").textContent = liveRecordLine(card.health);
+  if ($("health")) {
+    $("health").hidden = true;
+    $("health").textContent = card.health.line;
+  }
   const spreads = card.games.filter((g) => g.selection.spread_qualifies);
-  const totals = card.games.filter((g) => g.selection.total_qualifies);
-  const nopicks = card.games.filter((g) => !g.selection.spread_qualifies && !g.selection.total_qualifies);
-  $("count").textContent = `${spreads.length} spread picks · ${totals.length} total picks · ${card.games.length} games snapshotted`;
+  const totals = card.games.filter((g) => totalIsActive(g.selection));
+  const nopicks = card.games.filter((g) => !g.selection.spread_qualifies && !totalIsActive(g.selection));
+  $("count").textContent = `${spreads.length} spread picks · ${totals.length} total picks · ${card.games.length} games on the card`;
+  if ($("spread-heading")) {
+    $("spread-heading").innerHTML = spreads.length
+      ? `Spread picks <span class="count-pill">${spreads.length}</span>`
+      : "Spread picks";
+  }
+  if ($("total-heading")) {
+    $("total-heading").innerHTML = totals.length
+      ? `Total picks <span class="count-pill">${totals.length}</span>`
+      : "Total picks";
+  }
   $("spreads").innerHTML = spreads.length ? spreadCards(card.games) : "<p>No spread pick cleared 2 points this week.</p>";
-  $("totals").innerHTML = totals.length ? totalCards(card.games) : "<p>No total cleared 3 points this week.</p>";
+  const totalsEmpty = card.totals_void_note
+    ? "<p>No active total picks. The voided totals stay on the card and are not scored.</p>"
+    : "<p>No total cleared 3 points this week.</p>";
+  $("totals").innerHTML = totals.length ? totalCards(card.games) : totalsEmpty;
   if ($("nopicks")) {
     $("nopicks").innerHTML = nopicks.length ? noPickCards(card.games) : "<p>Every snapshotted game cleared a pick.</p>";
   }
@@ -174,12 +263,12 @@ async function renderLedger() {
   ).join("");
   showLock(card);
   $("live-health").textContent = card.health.line;
-  const picks = card.games.filter((g) => g.selection.spread_qualifies || g.selection.total_qualifies);
+  const picks = card.games.filter((g) => g.selection.spread_qualifies || totalIsActive(g.selection));
   $("live").innerHTML = picks.map((g) => {
     const s = g.selection;
     const bits = [];
     if (s.spread_qualifies) bits.push(`${s.spread_pick}, ${Math.abs(s.spread_edge).toFixed(1)} pts off the spread`);
-    if (s.total_qualifies) bits.push(`${s.total_pick}, ${Math.abs(s.total_edge).toFixed(1)} pts off the total`);
+    if (totalIsActive(s)) bits.push(`${s.total_pick}, ${Math.abs(s.total_edge).toFixed(1)} pts off the total`);
     return `<tr><td>${esc(g.away_team)} at ${esc(g.home_team)}</td><td>${esc(bits.join("; "))}</td><td>${esc(whenCT(g.pick_time.captured_at))}</td></tr>`;
   }).join("");
 }
@@ -220,63 +309,47 @@ function fmtPct(rate) {
   return `${(100 * rate).toFixed(1)}%`;
 }
 
+function pointsLabel(value) {
+  const shown = Number(value.toFixed(1));
+  if (shown === 0) return "0.0";
+  return `${shown > 0 ? "+" : ""}${shown.toFixed(1)}`;
+}
+
 function powerChart(ratings) {
-  const maxAbs = Math.max(6, ...ratings.map((r) => Math.abs(r.points)));
-  const rowH = 22;
-  const padL = 36;
-  const padR = 48;
-  const padT = 8;
-  const padB = 22;
-  const W = 640;
-  const H = padT + ratings.length * rowH + padB;
-  const mid = padL + (W - padL - padR) / 2;
-  const usable = (W - padL - padR) / 2;
-  const x = (pts) => mid + (pts / maxAbs) * usable;
-
-  const bars = ratings.map((r, i) => {
-    const y = padT + i * rowH + 4;
-    const x0 = mid;
-    const x1 = x(r.points);
-    const left = Math.min(x0, x1);
-    const width = Math.max(2, Math.abs(x1 - x0));
-    return `
-      <rect class="track" x="${padL}" y="${y}" width="${W - padL - padR}" height="12" rx="6"/>
-      <rect x="${left.toFixed(1)}" y="${y}" width="${width.toFixed(1)}" height="12" rx="6" fill="${esc(r.color)}" opacity="0.92"/>
-      <text class="team-abbr" x="${padL - 8}" y="${y + 10}" text-anchor="end">${esc(r.team)}</text>
-      <text class="pts" x="${W - padR + 8}" y="${y + 10}">${r.points > 0 ? "+" : ""}${r.points.toFixed(1)}</text>`;
+  // HTML rows instead of a scaled SVG, so team labels stay a readable size on phones.
+  // points_rating is the weeks 5–8 scoring-margin scale (positive = points above average).
+  const ranked = ratings.slice().sort((a, b) => b.points_rating - a.points_rating || a.team.localeCompare(b.team));
+  const peak = Math.max(...ranked.map((r) => Math.abs(r.points_rating)));
+  const step = peak <= 6 ? 3 : 4;
+  const maxAbs = Math.max(6, Math.ceil(peak / step) * step);
+  const pos = (pts) => 50 + (pts / maxAbs) * 50;
+  const ticks = [];
+  for (let t = -maxAbs; t <= maxAbs + 0.01; t += step) ticks.push(t);
+  const tickMarks = ticks.map((t) => `<i class="tick${t === 0 ? " zero" : ""}" style="left:${pos(t).toFixed(2)}%"></i>`).join("");
+  const rows = ranked.map((r) => {
+    const pts = r.points_rating;
+    const left = Math.min(50, pos(pts));
+    const width = Math.max(0.4, Math.abs(pos(pts) - 50));
+    const value = pointsLabel(pts);
+    return `<li class="pw-row">
+      <span class="pw-team" aria-hidden="true">${esc(r.team)}</span>
+      <span class="pw-track" aria-hidden="true">${tickMarks}<i class="pw-bar ${pts >= 0 ? "up" : "down"}" style="left:${left.toFixed(2)}%;width:${width.toFixed(2)}%"></i></span>
+      <span class="pw-val"><span class="sr">${esc(r.name || r.team)} </span>${value}</span>
+    </li>`;
   }).join("");
-
-  const ticks = [-6, -3, 0, 3, 6].filter((t) => Math.abs(t) <= maxAbs + 0.01);
-  const tickMarks = ticks.map((t) => {
-    const tx = x(t);
-    return `<line class="axis-line" x1="${tx}" y1="${padT}" x2="${tx}" y2="${H - padB + 2}"/>
-      <text class="pts" x="${tx}" y="${H - 6}" text-anchor="middle">${t > 0 ? "+" : ""}${t}</text>`;
-  }).join("");
-
-  return `<svg class="power-chart" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
-    ${tickMarks}
-    <line class="zero" x1="${mid}" y1="${padT - 2}" x2="${mid}" y2="${H - padB + 4}"/>
-    <text class="zero-label" x="${mid - 8}" y="${H - 6}" text-anchor="end">worse</text>
-    <text class="zero-label" x="${mid + 8}" y="${H - 6}" text-anchor="start">better</text>
-    ${bars}
-  </svg>`;
+  const scale = ticks.map((t) => `<span style="left:${pos(t).toFixed(2)}%">${t > 0 ? "+" : ""}${t}</span>`).join("");
+  return `<ol class="power" aria-label="Points ratings, best to worst. Positive means points above an average team.">${rows}</ol>
+    <div class="pw-axis" aria-hidden="true"><span></span><div class="pw-axis-scale">${scale}<span class="dir worse">worse</span><span class="dir better">better</span></div><span></span></div>`;
 }
 
 function gameScale(market, model) {
   const maxAbs = Math.max(12, Math.abs(market), Math.abs(model)) + 1;
-  const W = 320, H = 36, y = 16;
-  const pad = 18;
-  const x = (v) => pad + ((v + maxAbs) / (2 * maxAbs)) * (W - 2 * pad);
-  const mid = x(0);
-  // draw market under, model on top when close
-  return `<svg class="game-scale" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
-    <line class="rail" x1="${pad}" y1="${y}" x2="${W - pad}" y2="${y}"/>
-    <line class="zero" x1="${mid}" y1="6" x2="${mid}" y2="26"/>
-    <circle class="dot-market" cx="${x(market).toFixed(1)}" cy="${y}" r="5.5"/>
-    <circle class="dot-model" cx="${x(model).toFixed(1)}" cy="${y}" r="5.5"/>
-    <text class="tick-label" x="${pad}" y="34" text-anchor="start">away</text>
-    <text class="tick-label" x="${W - pad}" y="34" text-anchor="end">home</text>
-  </svg>`;
+  const pos = (v) => (((v + maxAbs) / (2 * maxAbs)) * 100).toFixed(2);
+  // the line is an outline ring, the model a solid ink dot; drawn market under, model on top
+  return `<div class="gs" aria-hidden="true">
+    <div class="gs-rail"><i class="gs-zero" style="left:${pos(0)}%"></i><i class="gs-dot market" style="left:${pos(market)}%"></i><i class="gs-dot model" style="left:${pos(model)}%"></i></div>
+    <div class="gs-ends"><span>away</span><span>home</span></div>
+  </div>`;
 }
 
 function gamesChart(games) {
@@ -285,11 +358,11 @@ function gamesChart(games) {
     if (g.spread_pick) pickBits.push(g.spread_pick);
     if (g.total_pick) pickBits.push(g.total_pick.replace("OVER", "Over").replace("UNDER", "Under"));
     const edgeBits = [];
-    if (Math.abs(g.spread_edge) >= 2) edgeBits.push(`${Math.abs(g.spread_edge).toFixed(1)} off spread`);
-    if (Math.abs(g.total_edge) >= 3) edgeBits.push(`${Math.abs(g.total_edge).toFixed(1)} off total`);
-    const tag = g.is_pick
-      ? (pickBits.join(" · ") || "Pick")
-      : "No pick";
+    if (g.spread_pick) edgeBits.push(`${Math.abs(g.spread_edge).toFixed(1)} off spread`);
+    if (g.total_pick) edgeBits.push(`${Math.abs(g.total_edge).toFixed(1)} off total`);
+    let tag = "No pick";
+    if (g.is_pick) tag = pickBits.join(" · ") || "Pick";
+    else if (g.total_voided) tag = "Voided total";
     // market_margin_home is the home spread (negative = home favored); flip it to a home margin for plotting
     const mktHome = -g.market_margin_home;
     const byLine = (m) => Math.abs(m) < 0.05 ? "even" : `${m > 0 ? g.home : g.away} by ${Math.abs(m).toFixed(1).replace(/\.0$/, "")}`;
@@ -323,15 +396,17 @@ function winRateChart(holdout) {
     const h = padT + chartH - top;
     const below = r.rate < holdout.breakeven;
     return `
-      <rect class="${below ? "bar-miss" : "bar-fill"}" x="${x}" y="${top}" width="${barW}" height="${h}" rx="8"/>
-      <text class="val" x="${x + barW / 2}" y="${top - 8}" text-anchor="middle">${fmtPct(r.rate)}</text>
+      <rect class="${below ? "bar-miss" : "bar-fill"}" x="${x}" y="${top}" width="${barW}" height="${h}"/>
+      <text class="val${h < 26 ? " out" : ""}" x="${x + barW / 2}" y="${h < 26 ? top - 8 : top + 20}" text-anchor="middle">${fmtPct(r.rate)}</text>
       <text class="label" x="${x + barW / 2}" y="${H - 18}" text-anchor="middle">${esc(r.label)}</text>
       <text class="axis" x="${x + barW / 2}" y="${H - 4}" text-anchor="middle">${esc(r.detail)}</text>`;
   }).join("");
 
-  return `<svg class="rate-bar" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
+  const label = rows.map((r) => `${r.label} ${fmtPct(r.rate)} (${r.detail})`).join(", ") + `. Break-even ${fmtPct(holdout.breakeven)}.`;
+  return `<svg class="rate-bar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">
     <line class="break" x1="${padL}" y1="${breakY}" x2="${W - padR}" y2="${breakY}"/>
     <text class="axis" x="${W - padR}" y="${breakY - 6}" text-anchor="end">Break-even ${fmtPct(holdout.breakeven)}</text>
+    <line class="base" x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}"/>
     ${bars}
   </svg>`;
 }
@@ -356,13 +431,15 @@ function maeChart(holdout) {
     const h = padT + chartH - top;
     const cls = i === 0 ? "bar-miss" : "bar-fill";
     return `
-      <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}" rx="8"/>
-      <text class="val" x="${x + barW / 2}" y="${top - 8}" text-anchor="middle">${r.val.toFixed(2)}</text>
+      <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}"/>
+      <text class="val${h < 26 ? " out" : ""}" x="${x + barW / 2}" y="${h < 26 ? top - 8 : top + 20}" text-anchor="middle">${r.val.toFixed(2)}</text>
       <text class="label" x="${x + barW / 2}" y="${H - 14}" text-anchor="middle">${esc(r.label)}</text>`;
   }).join("");
 
-  return `<svg class="mae-bar" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
+  const label = `Avg miss on final margin (pts): ${rows.map((r) => `${r.label} ${r.val.toFixed(2)}`).join(", ")}.`;
+  return `<svg class="mae-bar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">
     <text class="axis" x="${padL}" y="14">Avg miss on final margin (pts)</text>
+    <line class="base" x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}"/>
     ${bars}
   </svg>`;
 }
@@ -378,7 +455,7 @@ function officialGames(card) {
       spreadPick = `${s.spread_pick} ${text}`;
     }
     let totalPick = null;
-    if (s.total_qualifies) {
+    if (totalIsActive(s)) {
       const word = s.total_pick === "over" ? "Over" : "Under";
       totalPick = `${word} ${Number(g.pick_time.total).toFixed(1)}`;
     }
@@ -391,7 +468,8 @@ function officialGames(card) {
       total_edge: s.total_edge,
       spread_pick: spreadPick,
       total_pick: totalPick,
-      is_pick: Boolean(s.spread_qualifies || s.total_qualifies),
+      total_voided: Boolean(s.total_voided),
+      is_pick: Boolean(s.spread_qualifies || totalIsActive(s)),
     };
   });
 }
@@ -399,12 +477,21 @@ function officialGames(card) {
 async function renderModel() {
   const [data, card] = await Promise.all([load("model.json"), load("picks.json")]);
   $("ratings-caption").textContent =
-    "Points better than an average team on a neutral field. Built from EPA per play, adjusted for who each team played.";
+    "Points ratings. Positive means points above an average team. Weeks 5–8 scale, from scores through week 4.";
   $("ratings-chart").innerHTML = powerChart(data.ratings);
   $("games-chart").innerHTML = gamesChart(officialGames(card));
   const caption = $("week5-caption");
   if (caption && card.lock_label) {
     caption.textContent = `${card.lock_label}. A pick lights up only when that card clears 2 points on the spread or 3 on the total.`;
+  }
+  const voidNote = $("totals-void-note");
+  if (voidNote) {
+    if (card.totals_void_note) {
+      voidNote.hidden = false;
+      voidNote.textContent = card.totals_void_note;
+    } else {
+      voidNote.hidden = true;
+    }
   }
   $("winrate-chart").innerHTML = winRateChart(data.holdout);
   $("mae-chart").innerHTML = maeChart(data.holdout);
@@ -448,14 +535,16 @@ function rcRateChart(rc) {
     const h = padT + chartH - top;
     const cls = row.r.win_rate < rc.breakeven ? "bar-miss" : "bar-fill";
     return `
-      <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}" rx="8"/>
-      <text class="val" x="${x + barW / 2}" y="${top - 8}" text-anchor="middle">${fmtPct(row.r.win_rate)}</text>
+      <rect class="${cls}" x="${x}" y="${top}" width="${barW}" height="${h}"/>
+      <text class="val${h < 26 ? " out" : ""}" x="${x + barW / 2}" y="${h < 26 ? top - 8 : top + 20}" text-anchor="middle">${fmtPct(row.r.win_rate)}</text>
       <text class="label" x="${x + barW / 2}" y="${H - 18}" text-anchor="middle">${esc(row.label)}</text>
       <text class="axis" x="${x + barW / 2}" y="${H - 4}" text-anchor="middle">${esc(rcRec(row.r))}</text>`;
   }).join("");
-  return `<svg class="rate-bar" viewBox="0 0 ${W} ${H}" role="presentation" aria-hidden="true">
+  const label = rows.map((row) => `${row.label} ${fmtPct(row.r.win_rate)} (${rcRec(row.r)})`).join(", ") + `. Break-even ${fmtPct(rc.breakeven)}.`;
+  return `<svg class="rate-bar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">
     <line class="break" x1="${padL}" y1="${breakY}" x2="${W - padR}" y2="${breakY}"/>
     <text class="axis" x="${W - padR}" y="${breakY - 6}" text-anchor="end">Break-even ${fmtPct(rc.breakeven)}</text>
+    <line class="base" x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}"/>
     ${bars}
   </svg>`;
 }
@@ -570,7 +659,10 @@ const run = {
 }[page];
 if (run) {
   run().catch((err) => {
-    const slot = $("health") || $("when") || $("ratings-caption") || $("rec-caption") || document.querySelector("main");
-    if (slot) slot.textContent = `Could not load the latest JSON (${err.message}).`;
+    const slot = $("health") || $("live-record") || $("when") || $("ratings-caption") || $("rec-caption") || document.querySelector("main");
+    if (slot) {
+      if (slot.hidden) slot.hidden = false;
+      slot.textContent = `Could not load the latest JSON (${err.message}).`;
+    }
   });
 }

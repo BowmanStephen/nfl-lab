@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f4f0e8" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#12110e" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/><path d='M5 12.5 11 3.5' stroke='%23f2efe7' stroke-width='2'/></svg>">
   <title>NFL Lab — Model</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="model">
   <a class="skip" href="#main">Skip to content</a>
-  <div class="wrap wide">
+  <div class="wrap">
     <header class="top">
       <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
       <nav>
@@ -27,20 +27,21 @@
       </nav>
     </header>
 
-    <main id="main">
+    <main id="main" tabindex="-1">
       <p class="kicker">How the model thinks</p>
       <h1>The model</h1>
       <p class="lede">Three straight answers: who is good, where we disagree with the line this week, and how often we have been right.</p>
 
       <section class="model-sec" aria-labelledby="ratings-h">
         <h2 id="ratings-h">Team power</h2>
-        <p class="caption" id="ratings-caption">Loading…</p>
-        <div class="chart-card" id="ratings-chart" role="img" aria-label="Team power ratings ranked as horizontal bars"></div>
+        <p class="caption" id="ratings-caption">Points ratings. Positive means points above an average team. Weeks 5–8 scale, from scores through week 4.</p>
+        <div class="chart-card" id="ratings-chart"></div>
       </section>
 
       <section class="model-sec" aria-labelledby="week5-h">
         <h2 id="week5-h">Week 5 · model vs the line</h2>
         <p class="caption" id="week5-caption">Official week-5 picks, DraftKings lines at lock. A pick lights up when the locked card clears 2 points on the spread or 3 on the total.</p>
+        <p class="void-note" id="totals-void-note">The 8 week-5 totals picks were voided Oct 8: the totals formula had the defense sign flipped, which biased them toward overs. The spread picks stand.</p>
         <div class="chart-card games-panel" id="games-chart"></div>
         <p class="legend-row" aria-hidden="true">
           <span class="swatch market"></span> Market
@@ -53,8 +54,8 @@
         <h2 id="record-h">How often it has been right</h2>
         <p class="caption">2022–2025 holdout, locked rule only. Break-even at −110 is 52.4%. These numbers are not dressed up.</p>
         <div class="chart-grid">
-          <div class="chart-card" id="winrate-chart" role="img" aria-label="Win rates against break-even"></div>
-          <div class="chart-card" id="mae-chart" role="img" aria-label="Average miss vs market"></div>
+          <div class="chart-card" id="winrate-chart"></div>
+          <div class="chart-card" id="mae-chart"></div>
         </div>
         <div class="live-slot" id="live-slot">
           <p class="kicker">2026 live record</p>
@@ -65,7 +66,7 @@
     </main>
 
     <footer>
-      <p>Ratings from nflverse plays through 2026 week 4. The week-5 chart uses the official DraftKings lock, not the preview file. Research record, not a bet slip.</p>
+      <p>Points ratings from scores through 2026 week 4. The week-5 chart uses the official DraftKings lock, not the preview file. Research record, not a bet slip.</p>
     </footer>
   </div>
   <script src="assets/site.js"></script>

@@ -215,7 +215,7 @@
       "off_pass_rate": 0.6491228070175439,
       "off_proe": 1.0094331309460758,
       "def_plays": 251,
-      "def_epa": -0.09773579347993762,
+      "def_epa": -0.0977357934799376,
       "def_success": 0.40239043824701193,
       "def_pass_epa": -0.07495559942743552,
       "def_rush_epa": -0.12993472161183964,
@@ -223,7 +223,7 @@
       "def_explosive_rate": 0.027888446215139442,
       "season": 2026,
       "through_week": 4,
-      "net_epa": 0.10372232644922488
+      "net_epa": 0.10372232644922487
     },
     {
       "team": "BUF",
@@ -290,15 +290,40 @@
       "off_pass_rate": 0.6980392156862745,
       "off_proe": 5.624898715930827,
       "def_plays": 253,
-      "def_epa": -0.02250034348490337,
+      "def_epa": -0.022500343484903356,
       "def_success": 0.4308300395256917,
       "def_pass_epa": 0.011802473416339013,
-      "def_rush_epa": -0.09946179166076763,
+      "def_rush_epa": -0.0994617916607676,
       "def_early_epa": 0.01638685721488785,
       "def_explosive_rate": 0.07905138339920949,
       "season": 2026,
       "through_week": 4,
-      "net_epa": 0.06814478008420267
+      "net_epa": 0.06814478008420266
+    },
+    {
+      "team": "ATL",
+      "off_plays": 253,
+      "off_epa": -0.02492688627315636,
+      "off_success": 0.48616600790513836,
+      "off_pass_epa": -0.17444946748684365,
+      "off_rush_epa": 0.10998070579934348,
+      "off_pass_success": 0.45,
+      "off_rush_success": 0.518796992481203,
+      "off_early_epa": -0.005385542574039588,
+      "off_early_success": 0.5,
+      "off_explosive_rate": 0.06719367588932806,
+      "off_pass_rate": 0.4743083003952569,
+      "off_proe": -10.259220905838506,
+      "def_plays": 270,
+      "def_epa": -0.054819685410313165,
+      "def_success": 0.37777777777777777,
+      "def_pass_epa": 0.03498415848087931,
+      "def_rush_epa": -0.3065234168799935,
+      "def_early_epa": -0.11951421863108408,
+      "def_explosive_rate": 0.05925925925925926,
+      "season": 2026,
+      "through_week": 4,
+      "net_epa": 0.029892799137156804
     },
     {
       "team": "DAL",
@@ -399,31 +424,6 @@
       "season": 2026,
       "through_week": 4,
       "net_epa": -0.028552752104950046
-    },
-    {
-      "team": "NO",
-      "off_plays": 230,
-      "off_epa": 0.023802314458617378,
-      "off_success": 0.47391304347826085,
-      "off_pass_epa": 0.04815078695729346,
-      "off_rush_epa": -0.026517862038646516,
-      "off_pass_success": 0.5032258064516129,
-      "off_rush_success": 0.41333333333333333,
-      "off_early_epa": -0.018144560459053344,
-      "off_early_success": 0.44508670520231214,
-      "off_explosive_rate": 0.06521739130434782,
-      "off_pass_rate": 0.6739130434782609,
-      "off_proe": 2.319281564672613,
-      "def_plays": 202,
-      "def_epa": 0.0667767766397334,
-      "def_success": 0.5,
-      "def_pass_epa": 0.13408173931206102,
-      "def_rush_epa": -0.03801449435642225,
-      "def_early_epa": 0.07315730974920794,
-      "def_explosive_rate": 0.04950495049504951,
-      "season": 2026,
-      "through_week": 4,
-      "net_epa": -0.04297446218111602
     },
     {
       "team": "DET",
@@ -603,10 +603,10 @@
     {
       "team": "HOU",
       "off_plays": 265,
-      "off_epa": -0.029812210378377422,
+      "off_epa": -0.029812210378377415,
       "off_success": 0.42641509433962266,
       "off_pass_epa": 0.07169439213501899,
-      "off_rush_epa": -0.24476736864204046,
+      "off_rush_epa": -0.24476736864204043,
       "off_pass_success": 0.4888888888888889,
       "off_rush_success": 0.29411764705882354,
       "off_early_epa": 0.07071998781518259,
@@ -624,31 +624,6 @@
       "season": 2026,
       "through_week": 4,
       "net_epa": -0.09429802583903876
-    },
-    {
-      "team": "ATL",
-      "off_plays": 198,
-      "off_epa": -0.1619898782504119,
-      "off_success": 0.45454545454545453,
-      "off_pass_epa": -0.3532574451752095,
-      "off_rush_epa": 0.025452337335889787,
-      "off_pass_success": 0.41836734693877553,
-      "off_rush_success": 0.49,
-      "off_early_epa": -0.1492335029146074,
-      "off_early_success": 0.46835443037974683,
-      "off_explosive_rate": 0.05555555555555555,
-      "off_pass_rate": 0.494949494949495,
-      "off_proe": -10.966153321834991,
-      "def_plays": 196,
-      "def_epa": -0.06237928847645409,
-      "def_success": 0.37755102040816324,
-      "def_pass_epa": 0.0299792889659366,
-      "def_rush_epa": -0.3115731861040365,
-      "def_early_epa": -0.09717800425308157,
-      "def_explosive_rate": 0.0663265306122449,
-      "season": 2026,
-      "through_week": 4,
-      "net_epa": -0.0996105897739578
     },
     {
       "team": "ARI",
@@ -724,6 +699,31 @@
       "season": 2026,
       "through_week": 4,
       "net_epa": -0.12542516192849254
+    },
+    {
+      "team": "NO",
+      "off_plays": 304,
+      "off_epa": 0.009538019098955412,
+      "off_success": 0.4506578947368421,
+      "off_pass_epa": 0.048048252104012014,
+      "off_rush_epa": -0.07783466008456012,
+      "off_pass_success": 0.4786729857819905,
+      "off_rush_success": 0.3870967741935484,
+      "off_early_epa": -0.05662495182679795,
+      "off_early_success": 0.41409691629955947,
+      "off_explosive_rate": 0.05921052631578947,
+      "off_pass_rate": 0.694078947368421,
+      "off_proe": 2.18546915787003,
+      "def_plays": 257,
+      "def_epa": 0.15274864804552196,
+      "def_success": 0.5214007782101168,
+      "def_pass_epa": 0.20811963768367445,
+      "def_rush_epa": 0.08106299181755665,
+      "def_early_epa": 0.1646166711221282,
+      "def_explosive_rate": 0.0622568093385214,
+      "season": 2026,
+      "through_week": 4,
+      "net_epa": -0.14321062894656655
     },
     {
       "team": "GB",
@@ -913,16 +913,6 @@
       "success": 0.46923076923076923
     },
     {
-      "passer_id": "00-0038416",
-      "passer": "T.Bagent",
-      "team": "CHI",
-      "dropbacks": 44,
-      "qb_epa": 0.1203030394699859,
-      "cpoe": 7.969335662691217,
-      "epa_cpoe": 0.19999639609689807,
-      "success": 0.5681818181818182
-    },
-    {
       "passer_id": "00-0033873",
       "passer": "P.Mahomes",
       "team": "KC",
@@ -963,16 +953,6 @@
       "success": 0.49606299212598426
     },
     {
-      "passer_id": "00-0040743",
-      "passer": "T.Shough",
-      "team": "NO",
-      "dropbacks": 142,
-      "qb_epa": 0.04450631104508589,
-      "cpoe": 4.527141394153718,
-      "epa_cpoe": 0.08977772498662306,
-      "success": 0.5
-    },
-    {
       "passer_id": "00-0026498",
       "passer": "M.Stafford",
       "team": "LA",
@@ -981,6 +961,16 @@
       "cpoe": -0.08439731364156686,
       "epa_cpoe": 0.07683068075400942,
       "success": 0.4666666666666667
+    },
+    {
+      "passer_id": "00-0040743",
+      "passer": "T.Shough",
+      "team": "NO",
+      "dropbacks": 192,
+      "qb_epa": 0.03639399847473365,
+      "cpoe": 3.229529589240314,
+      "epa_cpoe": 0.06868929436713679,
+      "success": 0.4739583333333333
     },
     {
       "passer_id": "00-0039910",
@@ -1003,16 +993,6 @@
       "success": 0.46540880503144655
     },
     {
-      "passer_id": "00-0032950",
-      "passer": "C.Wentz",
-      "team": "MIN",
-      "dropbacks": 46,
-      "qb_epa": 0.11957424732993951,
-      "cpoe": -7.790953705185338,
-      "epa_cpoe": 0.04166471027808613,
-      "success": 0.41304347826086957
-    },
-    {
       "passer_id": "00-0034869",
       "passer": "S.Darnold",
       "team": "SEA",
@@ -1028,8 +1008,8 @@
       "team": "ARI",
       "dropbacks": 158,
       "qb_epa": -0.03834768649815857,
-      "cpoe": 2.1488538364300855,
-      "epa_cpoe": -0.016859148133857714,
+      "cpoe": 2.303399216081645,
+      "epa_cpoe": -0.015313694337342115,
       "success": 0.4620253164556962
     },
     {
@@ -1151,16 +1131,6 @@
       "cpoe": -9.684364517013748,
       "epa_cpoe": -0.3095898073906062,
       "success": 0.32954545454545453
-    },
-    {
-      "passer_id": "00-0033662",
-      "passer": "C.Rush",
-      "team": "ATL",
-      "dropbacks": 44,
-      "qb_epa": -0.6353550795227038,
-      "cpoe": -13.435909234815174,
-      "epa_cpoe": -0.7697141718708556,
-      "success": 0.3409090909090909
     }
   ]
 }

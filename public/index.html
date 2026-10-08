@@ -3,43 +3,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
-  <title>NFL Lab — this week</title>
+  <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="This week’s locked NFL Lab picks: model call next to the line, live 2026 record, and the holdout ATS vs break-even.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/><path d='M5 12.5 11 3.5' stroke='%23f2efe7' stroke-width='2'/></svg>">
+  <title>NFL Lab — this week’s picks</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="home">
+  <a class="skip" href="#main">Skip to content</a>
   <div class="wrap">
     <header class="top">
       <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
-      <nav>
+      <nav aria-label="Primary">
         <a href="index.html" aria-current="page">Picks</a>
         <a href="model.html">Model</a>
         <a href="report-card.html">2026 so far</a>
-        <a href="ledger.html">Ledger</a>
-        <a href="teams.html">Teams</a>
-        <a href="freshness.html">Freshness</a>
-        <a href="recaps/week4.html">Week 4</a>
-        <a href="previews/week5.html">Week 5</a>
+        <a href="previews/week5.html">Week 5 previews</a>
+        <a href="recaps/week4.html">Week 4 recaps</a>
         <a href="glossary.html">Glossary</a>
       </nav>
     </header>
-    <p class="kicker" id="kicker">This week</p>
-    <h1>This week's picks</h1>
-    <p class="lock" id="lock-label">Official week-5 picks, locked Mon Oct 5, DraftKings lines at lock.</p>
-    <p>Only the games where the model is at least 2 points off the spread, or 3 off the total. Research record, not a bet slip.</p>
-    <p id="holdout-note">2026 live record starts with these picks. Holdout record 48.8% ATS vs 52.4% break-even stays as-is.</p>
-    <p class="trail"><a href="previews/week5.html">Week 5 previews</a> · <a href="recaps/week4-nyj-chi.html">Bears 23, Jets 12</a> · <a href="recaps/week4.html">Week 4 recaps</a></p>
-    <div class="health" id="health">Loading this week's card…</div>
-    <p class="meta" id="count"></p>
-    <h2>Spread picks</h2>
-    <p class="gloss">The spread is the market's guess at the final margin. The model's <strong>edge</strong> = model margin minus market margin. NFL Lab only makes a pick when the edge is <strong>2+ points on the spread</strong> or <strong>3+ points on the total</strong>.</p>
-    <div id="spreads"></div>
-    <h2>Total picks</h2>
-    <div id="totals"></div>
-    <h2>No-picks</h2>
-    <p class="gloss">Every other game stays on the card and is not scored. A no-pick is the locked rule, unless a line names a different reason.</p>
-    <div id="nopicks"></div>
+
+    <main id="main" tabindex="-1">
+      <div class="home-hero">
+        <p class="kicker" id="kicker">This week</p>
+        <h1>This week’s picks</h1>
+        <p class="lock" id="lock-label">Official week-5 picks, locked Mon Oct 5, DraftKings lines at lock.</p>
+        <div class="record-strip" id="record-strip" aria-label="Honest record">
+          <p class="record-line" id="live-record">Loading live record…</p>
+          <p class="record-line caution" id="holdout-note">Holdout record 48.8% ATS vs 52.4% break-even.</p>
+        </div>
+        <p class="void-note" id="totals-void-note">The 8 week-5 totals picks were voided Oct 8: the totals formula had the defense sign flipped, which biased them toward overs. The spread picks stand.</p>
+        <p class="meta home-count" id="count"></p>
+      </div>
+
+      <div class="health" id="health" hidden>Loading this week’s card…</div>
+
+      <h2 id="spread-heading">Spread picks</h2>
+      <div id="spreads"></div>
+
+      <h2 id="total-heading">Total picks</h2>
+      <div id="totals"></div>
+
+      <p class="home-lede">Only games where the model is at least 2 points off the spread, or 3 off the total. Research record, not a bet slip.</p>
+
+      <h2 id="nopick-heading">No pick this week</h2>
+      <p class="gloss">Games that stay on the card and are not scored. A no-pick is the locked rule, unless a line names a different reason.</p>
+      <div id="nopicks"></div>
+    </main>
+
     <footer>
+      <nav class="foot-nav" aria-label="More pages">
+        <a href="ledger.html">Ledger</a>
+        <a href="teams.html">Teams</a>
+        <a href="freshness.html">Freshness</a>
+        <a href="previews/week5.html">Week 5 previews</a>
+        <a href="recaps/week4.html">Week 4 recaps</a>
+        <a href="glossary.html">Glossary</a>
+      </nav>
       <p>Lines are ESPN DraftKings, saved when the pick was written. The same book is checked again just before kickoff. That endpoint is unofficial and can change.</p>
       <p>Margin includes a starting-QB adjustment checked on 2016–2021 only. It is not in the 2022–2025 ledger.</p>
     </footer>

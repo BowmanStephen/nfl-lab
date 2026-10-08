@@ -3,11 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/><path d='M5 12.5 11 3.5' stroke='%23f2efe7' stroke-width='2'/></svg>">
   <title>NFL Lab — freshness</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="freshness">
+  <a class="skip" href="#main">Skip to content</a>
   <div class="wrap">
     <header class="top">
       <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
@@ -23,14 +26,18 @@
         <a href="glossary.html">Glossary</a>
       </nav>
     </header>
+    <main id="main" tabindex="-1">
     <h1>What updated when</h1>
     <p>Last refresh: <strong id="when">…</strong></p>
     <p id="stale" class="stale" hidden></p>
     <p class="gloss">If this timestamp is older than 36 hours, the page says so, even when nobody has shipped a new deploy.</p>
+    <div class="table-scroll" role="region" tabindex="0" aria-label="Files and when they updated">
     <table>
       <thead><tr><th>File</th><th>Updated</th><th>Bytes</th><th>Hash</th></tr></thead>
       <tbody id="files"></tbody>
     </table>
+    </div>
+    </main>
   </div>
   <script src="assets/site.js"></script>
 </body>

@@ -3,11 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230c6b52'/></svg>">
+  <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/><path d='M5 12.5 11 3.5' stroke='%23f2efe7' stroke-width='2'/></svg>">
   <title>Week 4 recaps — NFL Lab</title>
   <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
+  <a class="skip" href="#main">Skip to content</a>
   <div class="wrap">
     <header class="top">
       <a class="mark" href="../index.html">NFL<span>/</span>LAB</a>
@@ -23,10 +26,19 @@
         <a href="../glossary.html">Glossary</a>
       </nav>
     </header>
+    <main id="main" tabindex="-1">
     <p class="kicker">2026 · plain English</p>
     <h1>Week 4</h1>
     <p class="more"><a href="../previews/week5.html">Week 5 previews</a></p>
     <p class="epa-lead"><strong>The one stat you need: EPA (expected points added).</strong> Before every snap, the down, distance and field spot are worth some number of points. EPA is how much one play moved that number. Add up a QB's throws and you get roughly how many points his passing was worth. Plus is good, minus is bad. College PPA is the same idea.</p>
+
+    <section class="game summary" id="what-mattered" aria-labelledby="what-mattered-h">
+      <p class="kicker">This week</p>
+      <h2 id="what-mattered-h">What mattered this week</h2>
+      <p>Third downs sank three offenses. The Eagles went 0 for 12, the Jets 0 for 7 and the Commanders 2 for 15, and all three lost.</p>
+      <p>Running more plays only paid off when the plays worked. Dallas and New England won with extra snaps, but the Raiders ran 18 more plays than Kansas City and the Saints 13 more than Atlanta, and both lost.</p>
+      <p>Bryce Young's passing, worth about 21 points, was the biggest quarterback game of the week, and it beat a good Jared Goff day.</p>
+    </section>
 
     <article class="game" id="bears">
       <h2><a href="week4-nyj-chi.html">Bears 23, Jets 12</a></h2>
@@ -107,8 +119,26 @@
       <p>Lamar Jackson's passing was worth about 13 points, and Cam Ward's cost about 4. Baltimore had 8 explosive plays and no turnovers.</p>
     </article>
 
+    <article class="game" id="falcons">
+      <h2>Falcons 45, Saints 24</h2>
+      <p>Atlanta ran for 205 yards at 5.9 a carry, and New Orleans managed 50. Bijan Robinson broke a 59-yard touchdown on the opening drive and finished with 145 yards, and Michael Penix Jr. needed only 21 dropbacks, worth about +11 points. The Saints ran 13 more plays and still lost by 21, because only 36% of their plays succeeded (gained enough to keep the offense on schedule), compared with 59% of Atlanta's.</p>
+      <p class="lesson"><span>Lesson</span> More plays only help if they go somewhere.</p>
+    </article>
+
+
+    <section class="game summary" id="picks" aria-labelledby="picks-h">
+      <p class="kicker">Picks</p>
+      <h2 id="picks-h">How the picks did</h2>
+      <p>There was no official pick list for week 4. The first locked list is week 5, which starts Thursday.</p>
+      <aside class="backtest-note" aria-label="This is a backtest">
+        <strong>Not official picks</strong>
+        <p>For reference, the walk-forward backtest, which is what the frozen model would have said before each kickoff, went 6–2 with one push against the spread and 4–4 on totals in week 4. <a href="../report-card.html">See 2026 so far</a>.</p>
+      </aside>
+    </section>
+
+    </main>
     <footer>
-      <p>All numbers come from nflverse play-by-play. QB points are dropbacks times EPA per dropback, rounded. Source: <code>pipeline/WEEK4_RECAPS.md</code>.</p>
+      <p>Game numbers come from nflverse play-by-play. QB points are dropbacks times EPA per dropback, rounded. Source: <code>pipeline/WEEK4_RECAPS.md</code>. Falcons–Saints yardage and play counts come from ESPN's box score. The backtest record comes from the 2026 report card, graded against nflverse closing lines and final scores.</p>
     </footer>
   </div>
 </body>
