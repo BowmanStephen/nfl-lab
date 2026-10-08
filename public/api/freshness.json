@@ -1,42 +1,42 @@
 {
-  "generated_at": "2026-10-07T06:25:00.063530-05:00",
-  "stale_after": "2026-10-08T18:25:00.063530-05:00",
+  "generated_at": "2026-10-08T06:26:49.514449-05:00",
+  "stale_after": "2026-10-09T18:26:49.514449-05:00",
   "files": [
     {
       "path": "api/baseline.json",
       "bytes": 4704,
       "sha256": "99c3be16425e12796a9ad9e458a5c9a2f28a3466dc8ac87c8bf52277a0ec6344",
-      "updated_at": "2026-10-07T06:25:00.063530-05:00"
+      "updated_at": "2026-10-08T06:26:49.514449-05:00"
     },
     {
       "path": "api/model.json",
       "bytes": 13363,
       "sha256": "983ef833715c16bfe8d06837cbbd72603c907aaa1c8f6a3e9535fdc8115c5bee",
-      "updated_at": "2026-10-07T06:25:00.063530-05:00"
+      "updated_at": "2026-10-08T06:26:49.514449-05:00"
     },
     {
       "path": "api/picks.json",
       "bytes": 21718,
       "sha256": "4f395599bfca0491ff6bd8ef512910b27acaa1d9a3dce5aaef8273fc399b908a",
-      "updated_at": "2026-10-07T06:25:00.063530-05:00"
+      "updated_at": "2026-10-08T06:26:49.514449-05:00"
     },
     {
       "path": "api/report_card.json",
       "bytes": 48810,
       "sha256": "40fb20883563347c351f6c0a62991bd5eb3cda915bd5decd3251a6e5e00c0b58",
-      "updated_at": "2026-10-07T06:25:00.063530-05:00"
+      "updated_at": "2026-10-08T06:26:49.514449-05:00"
     },
     {
       "path": "api/summary.json",
       "bytes": 479,
-      "sha256": "313886f7ca4b5335618e8d441a292d439bc98b5cea35f2b6e5d18d4708f98521",
-      "updated_at": "2026-10-07T06:25:00.063530-05:00"
+      "sha256": "40e661c194c086c27bd11fd187545a31bfb2dba3053c6c8a4312c23014fe564f",
+      "updated_at": "2026-10-08T06:26:49.514449-05:00"
     },
     {
       "path": "api/teams.json",
       "bytes": 29854,
       "sha256": "5a78f5d1d1cc67a1b73bee51c719533fe70322c1febf459899974f52049e5604",
-      "updated_at": "2026-10-07T06:25:00.063530-05:00"
+      "updated_at": "2026-10-08T06:26:49.514449-05:00"
     }
   ]
 }
