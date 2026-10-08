@@ -309,24 +309,36 @@ function fmtPct(rate) {
   return `${(100 * rate).toFixed(1)}%`;
 }
 
+function pointsLabel(value) {
+  const shown = Number(value.toFixed(1));
+  if (shown === 0) return "0.0";
+  return `${shown > 0 ? "+" : ""}${shown.toFixed(1)}`;
+}
+
 function powerChart(ratings) {
   // HTML rows instead of a scaled SVG, so team labels stay a readable size on phones.
-  const maxAbs = Math.max(6, ...ratings.map((r) => Math.abs(r.points)));
+  // points_rating is the weeks 5–8 scoring-margin scale (positive = points above average).
+  const ranked = ratings.slice().sort((a, b) => b.points_rating - a.points_rating || a.team.localeCompare(b.team));
+  const peak = Math.max(...ranked.map((r) => Math.abs(r.points_rating)));
+  const step = peak <= 6 ? 3 : 4;
+  const maxAbs = Math.max(6, Math.ceil(peak / step) * step);
   const pos = (pts) => 50 + (pts / maxAbs) * 50;
-  const ticks = [-6, -3, 0, 3, 6].filter((t) => Math.abs(t) <= maxAbs + 0.01);
+  const ticks = [];
+  for (let t = -maxAbs; t <= maxAbs + 0.01; t += step) ticks.push(t);
   const tickMarks = ticks.map((t) => `<i class="tick${t === 0 ? " zero" : ""}" style="left:${pos(t).toFixed(2)}%"></i>`).join("");
-  const rows = ratings.map((r) => {
-    const left = Math.min(50, pos(r.points));
-    const width = Math.max(0.4, Math.abs(pos(r.points) - 50));
-    const value = `${r.points > 0 ? "+" : ""}${r.points.toFixed(1)}`;
+  const rows = ranked.map((r) => {
+    const pts = r.points_rating;
+    const left = Math.min(50, pos(pts));
+    const width = Math.max(0.4, Math.abs(pos(pts) - 50));
+    const value = pointsLabel(pts);
     return `<li class="pw-row">
       <span class="pw-team" aria-hidden="true">${esc(r.team)}</span>
-      <span class="pw-track" aria-hidden="true">${tickMarks}<i class="pw-bar ${r.points >= 0 ? "up" : "down"}" style="left:${left.toFixed(2)}%;width:${width.toFixed(2)}%"></i></span>
+      <span class="pw-track" aria-hidden="true">${tickMarks}<i class="pw-bar ${pts >= 0 ? "up" : "down"}" style="left:${left.toFixed(2)}%;width:${width.toFixed(2)}%"></i></span>
       <span class="pw-val"><span class="sr">${esc(r.name || r.team)} </span>${value}</span>
     </li>`;
   }).join("");
   const scale = ticks.map((t) => `<span style="left:${pos(t).toFixed(2)}%">${t > 0 ? "+" : ""}${t}</span>`).join("");
-  return `<ol class="power" aria-label="Team power ratings, best to worst">${rows}</ol>
+  return `<ol class="power" aria-label="Points ratings, best to worst. Positive means points above an average team.">${rows}</ol>
     <div class="pw-axis" aria-hidden="true"><span></span><div class="pw-axis-scale">${scale}<span class="dir worse">worse</span><span class="dir better">better</span></div><span></span></div>`;
 }
 
@@ -465,7 +477,7 @@ function officialGames(card) {
 async function renderModel() {
   const [data, card] = await Promise.all([load("model.json"), load("picks.json")]);
   $("ratings-caption").textContent =
-    "Points better than an average team on a neutral field. Built from EPA per play, adjusted for who each team played.";
+    "Points ratings. Positive means points above an average team. Weeks 5–8 scale, from scores through week 4.";
   $("ratings-chart").innerHTML = powerChart(data.ratings);
   $("games-chart").innerHTML = gamesChart(officialGames(card));
   const caption = $("week5-caption");
