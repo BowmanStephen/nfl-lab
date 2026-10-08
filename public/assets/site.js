@@ -320,10 +320,11 @@ function powerChart(ratings) {
   // points_rating is the weeks 5–8 scoring-margin scale (positive = points above average).
   const ranked = ratings.slice().sort((a, b) => b.points_rating - a.points_rating || a.team.localeCompare(b.team));
   const peak = Math.max(...ranked.map((r) => Math.abs(r.points_rating)));
-  const maxAbs = Math.max(6, Math.ceil(peak / 3) * 3);
+  const step = peak <= 6 ? 3 : 4;
+  const maxAbs = Math.max(6, Math.ceil(peak / step) * step);
   const pos = (pts) => 50 + (pts / maxAbs) * 50;
   const ticks = [];
-  for (let t = -maxAbs; t <= maxAbs; t += 3) ticks.push(t);
+  for (let t = -maxAbs; t <= maxAbs + 0.01; t += step) ticks.push(t);
   const tickMarks = ticks.map((t) => `<i class="tick${t === 0 ? " zero" : ""}" style="left:${pos(t).toFixed(2)}%"></i>`).join("");
   const rows = ranked.map((r) => {
     const pts = r.points_rating;
