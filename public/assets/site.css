@@ -377,6 +377,15 @@ body[data-page="home"] .kicker { margin-bottom: 0.45rem; }
   color: var(--caution);
   font-size: 0.9rem;
 }
+.void-note {
+  background: var(--caution-tint);
+  color: var(--ink);
+  padding: 0.85rem 1rem;
+  margin: 0.85rem 0 0;
+  max-width: 52rem;
+  font-size: 1.02rem;
+  line-height: 1.45;
+}
 .count-pill {
   font-family: var(--mono);
   font-size: 0.72rem;

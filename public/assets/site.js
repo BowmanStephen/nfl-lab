@@ -125,9 +125,13 @@ function spreadCards(games) {
     }).join("");
 }
 
+function totalIsActive(selection) {
+  return Boolean(selection.total_qualifies) && !selection.total_voided;
+}
+
 function totalCards(games) {
   return games
-    .filter((g) => g.selection.total_qualifies)
+    .filter((g) => totalIsActive(g.selection))
     .sort((a, b) => Math.abs(b.selection.total_edge) - Math.abs(a.selection.total_edge))
     .map((g) => {
       const s = g.selection;
@@ -151,17 +155,22 @@ function totalCards(games) {
 
 function noPickReason(game) {
   const s = game.selection;
+  if (s.total_voided && !s.spread_qualifies) {
+    const recorded = `${s.total_pick} ${Number(game.pick_time.total).toFixed(1)}`;
+    return `Recorded total was ${recorded}. Voided and not scored.`;
+  }
   if (s.no_pick_reason) return s.no_pick_reason;
   return `No pick: locked rule (|spread edge| ${Math.abs(s.spread_edge).toFixed(1)} < 2 and |total edge| ${Math.abs(s.total_edge).toFixed(1)} < 3).`;
 }
 
 function noPickCards(games) {
   return games
-    .filter((g) => !g.selection.spread_qualifies && !g.selection.total_qualifies)
+    .filter((g) => !g.selection.spread_qualifies && !totalIsActive(g.selection))
     .map((g) => {
       const s = g.selection;
+      const label = s.total_voided ? "Voided total" : "No pick";
       return `<article class="card quiet-card">
-        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">No pick</span></header>
+        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(label)}</span></header>
         <p>${esc(noPickReason(g))}</p>
         <div class="nums nums-compact">
           <div><span>Spread edge</span><b>${fmt(s.spread_edge)}</b></div>
@@ -179,6 +188,15 @@ function showLock(card) {
     note.textContent = document.body.dataset.page === "home"
       ? holdoutCalmLine(card.holdout_note)
       : card.holdout_note;
+  }
+  const voidNote = $("totals-void-note");
+  if (voidNote) {
+    if (card.totals_void_note) {
+      voidNote.hidden = false;
+      voidNote.textContent = card.totals_void_note;
+    } else {
+      voidNote.hidden = true;
+    }
   }
 }
 
@@ -208,8 +226,8 @@ async function renderHome() {
     $("health").textContent = card.health.line;
   }
   const spreads = card.games.filter((g) => g.selection.spread_qualifies);
-  const totals = card.games.filter((g) => g.selection.total_qualifies);
-  const nopicks = card.games.filter((g) => !g.selection.spread_qualifies && !g.selection.total_qualifies);
+  const totals = card.games.filter((g) => totalIsActive(g.selection));
+  const nopicks = card.games.filter((g) => !g.selection.spread_qualifies && !totalIsActive(g.selection));
   $("count").textContent = `${spreads.length} spread picks · ${totals.length} total picks · ${card.games.length} games on the card`;
   if ($("spread-heading")) {
     $("spread-heading").innerHTML = spreads.length
@@ -222,7 +240,10 @@ async function renderHome() {
       : "Total picks";
   }
   $("spreads").innerHTML = spreads.length ? spreadCards(card.games) : "<p>No spread pick cleared 2 points this week.</p>";
-  $("totals").innerHTML = totals.length ? totalCards(card.games) : "<p>No total cleared 3 points this week.</p>";
+  const totalsEmpty = card.totals_void_note
+    ? "<p>No active total picks. The voided totals stay on the card and are not scored.</p>"
+    : "<p>No total cleared 3 points this week.</p>";
+  $("totals").innerHTML = totals.length ? totalCards(card.games) : totalsEmpty;
   if ($("nopicks")) {
     $("nopicks").innerHTML = nopicks.length ? noPickCards(card.games) : "<p>Every snapshotted game cleared a pick.</p>";
   }
@@ -242,12 +263,12 @@ async function renderLedger() {
   ).join("");
   showLock(card);
   $("live-health").textContent = card.health.line;
-  const picks = card.games.filter((g) => g.selection.spread_qualifies || g.selection.total_qualifies);
+  const picks = card.games.filter((g) => g.selection.spread_qualifies || totalIsActive(g.selection));
   $("live").innerHTML = picks.map((g) => {
     const s = g.selection;
     const bits = [];
     if (s.spread_qualifies) bits.push(`${s.spread_pick}, ${Math.abs(s.spread_edge).toFixed(1)} pts off the spread`);
-    if (s.total_qualifies) bits.push(`${s.total_pick}, ${Math.abs(s.total_edge).toFixed(1)} pts off the total`);
+    if (totalIsActive(s)) bits.push(`${s.total_pick}, ${Math.abs(s.total_edge).toFixed(1)} pts off the total`);
     return `<tr><td>${esc(g.away_team)} at ${esc(g.home_team)}</td><td>${esc(bits.join("; "))}</td><td>${esc(whenCT(g.pick_time.captured_at))}</td></tr>`;
   }).join("");
 }
@@ -325,11 +346,11 @@ function gamesChart(games) {
     if (g.spread_pick) pickBits.push(g.spread_pick);
     if (g.total_pick) pickBits.push(g.total_pick.replace("OVER", "Over").replace("UNDER", "Under"));
     const edgeBits = [];
-    if (Math.abs(g.spread_edge) >= 2) edgeBits.push(`${Math.abs(g.spread_edge).toFixed(1)} off spread`);
-    if (Math.abs(g.total_edge) >= 3) edgeBits.push(`${Math.abs(g.total_edge).toFixed(1)} off total`);
-    const tag = g.is_pick
-      ? (pickBits.join(" · ") || "Pick")
-      : "No pick";
+    if (g.spread_pick) edgeBits.push(`${Math.abs(g.spread_edge).toFixed(1)} off spread`);
+    if (g.total_pick) edgeBits.push(`${Math.abs(g.total_edge).toFixed(1)} off total`);
+    let tag = "No pick";
+    if (g.is_pick) tag = pickBits.join(" · ") || "Pick";
+    else if (g.total_voided) tag = "Voided total";
     // market_margin_home is the home spread (negative = home favored); flip it to a home margin for plotting
     const mktHome = -g.market_margin_home;
     const byLine = (m) => Math.abs(m) < 0.05 ? "even" : `${m > 0 ? g.home : g.away} by ${Math.abs(m).toFixed(1).replace(/\.0$/, "")}`;
@@ -422,7 +443,7 @@ function officialGames(card) {
       spreadPick = `${s.spread_pick} ${text}`;
     }
     let totalPick = null;
-    if (s.total_qualifies) {
+    if (totalIsActive(s)) {
       const word = s.total_pick === "over" ? "Over" : "Under";
       totalPick = `${word} ${Number(g.pick_time.total).toFixed(1)}`;
     }
@@ -435,7 +456,8 @@ function officialGames(card) {
       total_edge: s.total_edge,
       spread_pick: spreadPick,
       total_pick: totalPick,
-      is_pick: Boolean(s.spread_qualifies || s.total_qualifies),
+      total_voided: Boolean(s.total_voided),
+      is_pick: Boolean(s.spread_qualifies || totalIsActive(s)),
     };
   });
 }
@@ -449,6 +471,15 @@ async function renderModel() {
   const caption = $("week5-caption");
   if (caption && card.lock_label) {
     caption.textContent = `${card.lock_label}. A pick lights up only when that card clears 2 points on the spread or 3 on the total.`;
+  }
+  const voidNote = $("totals-void-note");
+  if (voidNote) {
+    if (card.totals_void_note) {
+      voidNote.hidden = false;
+      voidNote.textContent = card.totals_void_note;
+    } else {
+      voidNote.hidden = true;
+    }
   }
   $("winrate-chart").innerHTML = winRateChart(data.holdout);
   $("mae-chart").innerHTML = maeChart(data.holdout);

@@ -1,7 +1,9 @@
+import json
 from datetime import datetime, timedelta, timezone
 
 import pytest
 
+from nfl_lab.config import LIVE_DIR, PUBLIC_API
 from nfl_lab.odds_espn import MissingLineError
 from nfl_lab.picks import (
     apply_pre_kickoff,
@@ -10,10 +12,51 @@ from nfl_lab.picks import (
     format_lock_label,
     grade_game,
     grade_spread,
+    health_summary,
     merge_card,
     spread_clv,
     total_clv,
+    total_is_active,
 )
+from nfl_lab.publish import model_game_from_card
+
+VOID_REASON = (
+    "Voided Thu Oct 8 by Stephen's decision: the totals formula had the defense sign flipped, "
+    "biasing these toward overs."
+)
+VOID_NOTE = (
+    "The 8 week-5 totals picks were voided Oct 8: the totals formula had the defense sign flipped, "
+    "which biased them toward overs. The spread picks stand."
+)
+# game_id -> (total_pick, line total). These eight are the only voided markets.
+VOIDED_TOTALS = {
+    "2026_05_PHI_JAX": ("over", 42.5),
+    "2026_05_CIN_MIA": ("over", 42.5),
+    "2026_05_CLE_NYJ": ("over", 39.5),
+    "2026_05_HOU_TEN": ("over", 39.5),
+    "2026_05_MIN_NO": ("over", 41.5),
+    "2026_05_DEN_LAC": ("over", 42.5),
+    "2026_05_DET_ARI": ("under", 54.5),
+    "2026_05_BUF_LA": ("under", 54.5),
+}
+# game_id -> (spread_pick, pick-time home margin, spread_qualifies)
+LOCKED_SPREADS = {
+    "2026_05_TB_DAL": ("TB", 8.5, True),
+    "2026_05_PHI_JAX": ("PHI", 6.5, False),
+    "2026_05_CHI_GB": ("GB", -3.0, False),
+    "2026_05_CIN_MIA": ("MIA", -7.0, True),
+    "2026_05_CLE_NYJ": ("CLE", 2.5, True),
+    "2026_05_HOU_TEN": ("TEN", -7.0, True),
+    "2026_05_IND_PIT": ("IND", 2.5, True),
+    "2026_05_LV_NE": ("LV", 3.5, False),
+    "2026_05_MIN_NO": ("MIN", -1.5, False),
+    "2026_05_NYG_WAS": ("WAS", 3.0, False),
+    "2026_05_DEN_LAC": ("LAC", -3.5, False),
+    "2026_05_DET_ARI": ("ARI", -4.5, True),
+    "2026_05_SF_SEA": ("SF", 2.5, True),
+    "2026_05_BAL_ATL": ("ATL", -2.5, False),
+    "2026_05_BUF_LA": ("LA", 2.5, False),
+}
 
 
 def _proj(game_id, away, home, margin, total):
@@ -181,3 +224,141 @@ def test_window_captures_pre_kickoff():
     apply_pre_kickoff(games, [updated], now.isoformat(), now)
     assert games[0]["pre_kickoff"]["home_margin"] == 8
     assert games[0]["pick_time"]["home_margin"] == 10
+
+
+def test_voided_total_is_not_scored_and_the_spread_still_is():
+    game = build_games(
+        [_proj("g1", "TB", "DAL", 4, 50)],
+        [_line("TB", "DAL", 10, 47)],
+        "2026-10-05T12:00:00+00:00",
+        2.0,
+        3.0,
+    )[0]
+    sel = game["selection"]
+    assert sel["spread_qualifies"] is True
+    assert sel["total_qualifies"] is True
+    assert sel["total_pick"] == "over"
+    sel["total_voided"] = True
+    sel["total_void_reason"] = VOID_REASON
+    pre = dict(game["pick_time"])
+    pre["total"] = 50
+    game["pre_kickoff"] = pre
+    grading = grade_game(game, 24, 10)
+    assert grading["spread_outcome"] == "loss"
+    assert grading["spread_clv"] == 0
+    assert grading["total_outcome"] is None
+    assert grading["total_clv"] is None
+    assert grading["total_moved_toward"] is None
+    assert sel["total_qualifies"] is True
+    assert sel["total_pick"] == "over"
+    game["grading"] = grading
+    health = health_summary([game])
+    assert health["wins"] == 0
+    assert health["losses"] == 1
+    assert health["pushes"] == 0
+    assert health["settled_picks"] == 1
+    assert health["clv_samples"] == 1
+    assert total_is_active(sel) is False
+
+
+def test_merge_keeps_a_voided_total():
+    first = build_games(
+        [_proj("g1", "TB", "DAL", 4, 50)],
+        [_line("TB", "DAL", 10, 47)],
+        "2026-10-05T12:00:00+00:00",
+        2.0,
+        3.0,
+    )
+    first[0]["selection"]["total_voided"] = True
+    first[0]["selection"]["total_void_reason"] = VOID_REASON
+    later = build_games(
+        [_proj("g1", "TB", "DAL", 99, 10)],
+        [_line("TB", "DAL", 1, 60)],
+        "2026-10-08T12:00:00+00:00",
+        2.0,
+        3.0,
+    )
+    merged = merge_card({"season": 2026, "week": 5, "games": first}, later)
+    sel = merged["games"][0]["selection"]
+    assert sel["total_voided"] is True
+    assert sel["total_void_reason"] == VOID_REASON
+    assert sel["total_pick"] == "over"
+    assert sel["total_qualifies"] is True
+    assert sel["spread_pick"] == "TB"
+    assert merged["games"][0]["pick_time"]["total"] == 47
+
+
+def test_voided_total_drops_off_the_model_chart():
+    both = build_games(
+        [_proj("g1", "PHI", "JAX", 1, 46)],
+        [_line("PHI", "JAX", 6.5, 42.5)],
+        "2026-10-05T12:00:00+00:00",
+        2.0,
+        3.0,
+    )[0]
+    both["selection"]["total_voided"] = True
+    row = model_game_from_card(both)
+    assert row["spread_pick"] is not None
+    assert row["total_pick"] is None
+    assert row["is_pick"] is True
+    assert row["market_total"] == 42.5
+
+    only = build_games(
+        [_proj("g2", "MIN", "NO", 6.0, 46)],
+        [_line("MIN", "NO", 6.5, 42.5)],
+        "2026-10-05T12:00:00+00:00",
+        2.0,
+        3.0,
+    )[0]
+    assert only["selection"]["spread_qualifies"] is False
+    assert only["selection"]["total_qualifies"] is True
+    only["selection"]["total_voided"] = True
+    quiet = model_game_from_card(only)
+    assert quiet["spread_pick"] is None
+    assert quiet["total_pick"] is None
+    assert quiet["is_pick"] is False
+
+
+def test_week5_voids_only_the_eight_totals():
+    live = json.loads((LIVE_DIR / "2026-week-05.json").read_text())
+    published = json.loads((PUBLIC_API / "picks.json").read_text())
+    assert published == live
+    assert live["season"] == 2026
+    assert live["week"] == 5
+    assert live["official_lock"] is True
+    assert live["created_at"] == "2026-10-05T23:38:47.012782+00:00"
+    assert live["rule"] == {"spread_edge_min": 2.0, "total_edge_min": 3.0}
+    assert live["totals_void_note"] == VOID_NOTE
+    assert [g["game_id"] for g in live["games"]] == list(LOCKED_SPREADS)
+    voided = []
+    for game in live["games"]:
+        sel = game["selection"]
+        pick, margin, qualifies = LOCKED_SPREADS[game["game_id"]]
+        assert sel["spread_pick"] == pick
+        assert sel["spread_qualifies"] is qualifies
+        assert game["pick_time"]["home_margin"] == margin
+        assert "voided" not in sel
+        if game["game_id"] in VOIDED_TOTALS:
+            total_pick, total = VOIDED_TOTALS[game["game_id"]]
+            assert sel["total_qualifies"] is True
+            assert sel["total_pick"] == total_pick
+            assert game["pick_time"]["total"] == total
+            assert sel["total_voided"] is True
+            assert sel["total_void_reason"] == VOID_REASON
+            assert total_is_active(sel) is False
+            voided.append(game["game_id"])
+        else:
+            assert sel["total_qualifies"] is False
+            assert "total_voided" not in sel
+            assert total_is_active(sel) is False
+    assert voided == list(VOIDED_TOTALS)
+    summary = json.loads((PUBLIC_API / "summary.json").read_text())
+    assert summary["n_spread_picks"] == 7
+    assert summary["n_total_picks"] == 0
+    model = json.loads((PUBLIC_API / "model.json").read_text())
+    by_game = {row["game"]: row for row in model["games"]}
+    for game in live["games"]:
+        row = by_game[f"{game['away_team']}@{game['home_team']}"]
+        if game["game_id"] in VOIDED_TOTALS:
+            assert row["total_pick"] is None
+        assert row["is_pick"] is game["selection"]["spread_qualifies"]
