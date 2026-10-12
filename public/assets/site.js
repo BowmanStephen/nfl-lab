@@ -459,7 +459,103 @@ function record(r) {
   return `${r.wins}-${r.losses}-${r.pushes} (${(100 * r.win_rate).toFixed(1)}%)`;
 }
 
+
+// Track record: did the team the model had ahead win? Derived from saved
+// projected margins and final scores already in report_card.json and picks.json.
+function trackRecordGames(rc, card) {
+  const out = [];
+  for (const g of (rc && rc.games) || []) {
+    out.push({ week: g.week, gameday: g.gameday || null, away: g.away_team, home: g.home_team,
+      margin: g.proj_margin, home_score: g.home_score, away_score: g.away_score, live: false });
+  }
+  for (const g of (card && card.games) || []) {
+    const gr = g.grading || {};
+    out.push({ week: g.week, gameday: g.gameday || null, away: g.away_team, home: g.home_team,
+      margin: g.selection.model_margin, home_score: gr.home_score, away_score: gr.away_score, live: true });
+  }
+  return out.map((g) => {
+    const played = g.home_score != null && g.away_score != null;
+    let result = "pending";
+    if (played) {
+      const actual = g.home_score - g.away_score;
+      if (actual === 0 || !g.margin) result = "tie";
+      else result = (actual > 0) === (g.margin > 0) ? "right" : "wrong";
+    }
+    return { ...g, said: g.margin > 0 ? g.home : g.away, result };
+  });
+}
+
+function trackRecordWeeks(games) {
+  const weeks = new Map();
+  for (const g of games) {
+    if (!weeks.has(g.week)) weeks.set(g.week, { week: g.week, live: g.live, right: 0, wrong: 0, ties: 0, pending: 0 });
+    const w = weeks.get(g.week);
+    if (g.result === "right") w.right += 1;
+    else if (g.result === "wrong") w.wrong += 1;
+    else if (g.result === "tie") w.ties += 1;
+    else w.pending += 1;
+  }
+  return [...weeks.values()].sort((a, b) => a.week - b.week);
+}
+
+async function renderTrackRecord() {
+  const [rc, card] = await Promise.all([load("report_card.json"), load("picks.json")]);
+  const nick = (t) => (rc.names && rc.names[t]) || t;
+  const games = trackRecordGames(rc, card);
+  const weeks = trackRecordWeeks(games);
+  const right = games.filter((g) => g.result === "right").length;
+  const wrong = games.filter((g) => g.result === "wrong").length;
+  const decided = right + wrong;
+  const pct = decided ? `${Math.round((100 * right) / decided)}%` : "none yet";
+  const tile = (label, num) => `<div class="tr-tile"><p class="label">${label}</p><p class="num">${num}</p></div>`;
+  $("tr-tiles").innerHTML = tile("Games", decided) + tile("Right", right) + tile("Wrong", wrong) + tile("% right", pct);
+  const ties = games.filter((g) => g.result === "tie").length;
+  const pending = games.filter((g) => g.result === "pending").length;
+  const liveWeeks = weeks.filter((w) => w.live).map((w) => w.week);
+  const testWeeks = weeks.filter((w) => !w.live).map((w) => w.week);
+  const bits = [];
+  if (testWeeks.length) bits.push(`Weeks ${testWeeks[0]} to ${testWeeks[testWeeks.length - 1]} are a look back: what the model would have said using only games already played. They were not posted ahead of time.`);
+  if (liveWeeks.length) bits.push(`From week ${liveWeeks[0]} on, the projection was saved before kickoff.`);
+  if (ties) bits.push(`${ties} tie${ties > 1 ? "s are" : " is"} left out because nobody won.`);
+  if (pending) bits.push(`${pending} game${pending > 1 ? "s have" : " has"} not been played yet.`);
+  $("tr-scope").textContent = bits.join(" ");
+
+  $("tr-strip").innerHTML = weeks.slice(-5).map((w) => {
+    const n = w.right + w.wrong;
+    const ok = n && w.right / n > 0.5;
+    const cls = n ? (ok ? "ok" : "no") : "";
+    const sym = n ? (ok ? "✓" : "✗") : "·";
+    const said = n ? `${w.right} of ${n} right` : "not played yet";
+    const tag = w.live ? "saved before kickoff" : "look back";
+    return `<li class="${cls}"><span class="wk">Week ${w.week}</span><span class="sym" aria-hidden="true">${sym}</span>${said}<span class="tag">${tag}</span></li>`;
+  }).join("");
+
+  const date = (d) => d ? new Date(`${d}T12:00:00`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) : "";
+  $("tr-games").innerHTML = [...weeks].reverse().map((w) => {
+    const rows = games.filter((g) => g.week === w.week).map((g) => {
+      const hs = g.home_score, as = g.away_score;
+      let line, pill;
+      if (g.result === "pending") {
+        line = `Our model says ${esc(nick(g.said))}. ${esc(nick(g.away))} at ${esc(nick(g.home))} has not been played.`;
+        pill = `<span class="pill even">Not played</span>`;
+      } else if (g.result === "tie") {
+        line = `Our model said ${esc(nick(g.said))}. ${esc(nick(g.away))} and ${esc(nick(g.home))} tied ${hs}-${as}.`;
+        pill = `<span class="pill even">= Tie</span>`;
+      } else {
+        const homeWon = hs > as;
+        const winner = homeWon ? g.home : g.away;
+        const loser = homeWon ? g.away : g.home;
+        line = `Our model said ${esc(nick(g.said))}. <b>${esc(nick(winner))}</b> beat ${esc(nick(loser))} ${Math.max(hs, as)}-${Math.min(hs, as)}.`;
+        pill = g.result === "right" ? `<span class="pill ok">✓ Right</span>` : `<span class="pill no">✗ Wrong</span>`;
+      }
+      return `<div class="tr-game"><p><span class="date">${esc(date(g.gameday))}</span>${line}</p>${pill}</div>`;
+    }).join("");
+    return `<section class="tr-week"><h3>Week ${w.week}${w.live ? "" : " · look back"}</h3>${rows}</section>`;
+  }).join("");
+}
+
 async function renderLedger() {
+  await renderTrackRecord();
   const [base, card] = await Promise.all([load("baseline.json"), load("picks.json")]);
   $("spread-rec").textContent = record(base.spread);
   $("total-rec").textContent = record(base.total);
