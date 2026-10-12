@@ -42,6 +42,38 @@ UTC = ZoneInfo("UTC")
 CT = ZoneInfo("America/Chicago")
 
 
+class StaleSourceData(RuntimeError):
+    """nflverse returned nothing, or play-by-play lags the scores. Exit 3.
+
+    Raised before anything is written, so the workflow has nothing to commit.
+    """
+
+
+def check_source_fresh(schedules: pd.DataFrame, pbp: pd.DataFrame, season: int = LIVE_SEASON) -> None:
+    """Missing/stale-data rule for ``refresh``. Checks inputs only; never grades.
+
+    - no schedule rows for the live season -> stale
+    - scored live-season games but no live-season plays -> stale
+    - plays end more than one week behind the last scored week -> stale
+      (one week of lag is normal right after Sunday/Monday games)
+    """
+    sched = schedules[schedules["season"] == season] if "season" in schedules.columns else schedules.iloc[0:0]
+    if sched.empty:
+        raise StaleSourceData(f"nflverse schedule has no {season} rows")
+    scored = sched[sched["home_score"].notna()] if "home_score" in sched.columns else sched.iloc[0:0]
+    if scored.empty:
+        return
+    last_scored = int(scored["week"].max())
+    plays = pbp[pbp["season"] == season] if {"season", "week"} <= set(pbp.columns) else pbp.iloc[0:0]
+    if plays.empty:
+        raise StaleSourceData(f"nflverse play-by-play has no {season} plays, but week {last_scored} is scored")
+    last_play_week = int(plays["week"].max())
+    if last_play_week < last_scored - 1:
+        raise StaleSourceData(
+            f"nflverse play-by-play ends at week {last_play_week}, scores run through week {last_scored}"
+        )
+
+
 def log(msg: str) -> None:
     print(msg, flush=True)
 
@@ -375,7 +407,7 @@ def _next_card(schedules, pbp, depth, injuries):
     return week, card, message, captured_at, ratings, stats, weekly, through
 
 
-def run(mode: str = "refresh") -> dict:
+def run(mode: str = "refresh") -> dict | None:
     now = _clock()
     captured_at = now.isoformat()
     existing = None
@@ -386,7 +418,10 @@ def run(mode: str = "refresh") -> dict:
         cards = sorted(card_path(LIVE_SEASON, w) for w in range(LIVE_START_WEEK, 23))
         present = [p for p in cards if p.exists()]
         if not present:
-            raise MissingLineError("no pick card yet. Run `nfl-lab pick-card` before kickoff.")
+            # Nothing to capture before the week's card exists. Quiet exit 0:
+            # nothing written, nothing committed. The morning refresh makes the card.
+            log("line-snapshot: no pick card yet; nothing to capture")
+            return None
         existing = json.loads(present[-1].read_text())
         if not _due(existing["games"], now):
             log("no pre-kickoff snapshots are due")
@@ -410,6 +445,8 @@ def run(mode: str = "refresh") -> dict:
     pbp = load_pbp(seasons, force_years=[LIVE_SEASON])
     depth = load_depth_charts(LIVE_SEASON, force=True)
     injuries = load_injuries(LIVE_SEASON, force=True)
+    # Stop before any card or site file is touched if the inputs are empty or stale.
+    check_source_fresh(schedules, pbp)
     # The downloads above can outlast a kickoff. Grade a week that just ended
     # before live_week() steps past it, then read the clock again at capture.
     now = _clock()

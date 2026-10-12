@@ -557,8 +557,8 @@ def new_card(season: int, week: int, games: list[dict], captured_at: str) -> dic
 
 def save_card(card: dict) -> None:
     path = card_path(card["season"], card["week"])
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(card, indent=2) + "\n")
+    from .safe_io import atomic_write_json
+    atomic_write_json(path, card)
 
 
 def load_card(season: int, week: int) -> dict | None:

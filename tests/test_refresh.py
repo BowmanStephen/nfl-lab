@@ -59,6 +59,8 @@ def _install_loaders(monkeypatch, schedules, clock):
     monkeypatch.setattr("nfl_lab.refresh.load_pbp", lambda *args, **kwargs: pd.DataFrame())
     monkeypatch.setattr("nfl_lab.refresh.load_depth_charts", lambda *args, **kwargs: None)
     monkeypatch.setattr("nfl_lab.refresh.load_injuries", lambda *args, **kwargs: None)
+    # These fixtures have no play-by-play; the stale-data rule is tested in test_safe_to_fail.py.
+    monkeypatch.setattr("nfl_lab.refresh.check_source_fresh", lambda *args, **kwargs: None)
 
     def project(schedules, pbp, depth, injuries, week):
         slate = schedules[schedules["week"] == week].copy()

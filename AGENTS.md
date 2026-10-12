@@ -19,7 +19,26 @@ uv run nfl-lab backtest       # prints the spent holdout; does not recompute it
 uv run nfl-lab report-card    # 2026 wk1-4 walk-forward backtest -> public/api/report_card.json (not official picks)
 ```
 
-A missing DraftKings line is exit code 1 while the game is still before kickoff and nothing new was saved. Exit code 2 means a partial snapshot was saved and a line is still missing: commit that snapshot, then fail. After kickoff, a missed snapshot may be filled from the nflverse close and must be labeled `nflverse_close`. Do not call that pair CLV. Do not catch a line that is still missing and continue.
+Exit code 3 means nflverse inputs were missing or stale (`check_source_fresh`); nothing was written and nothing is committed. A missing DraftKings line is exit code 1 while the game is still before kickoff and nothing new was saved. Exit code 2 means a partial snapshot was saved and a line is still missing: commit that snapshot, then fail. After kickoff, a missed snapshot may be filled from the nflverse close and must be labeled `nflverse_close`. Do not call that pair CLV. Do not catch a line that is still missing and continue.
+
+## Routine failure alerts
+
+Failed scheduled runs (from `docs/nightly.yml.proposed` once it is copied into `.github/workflows/nightly.yml`) write to one open GitHub issue labeled `routine-failure`. The first failure opens it; later failures add a comment. Close it by hand once runs are green, and the next failure opens a new one. Shannon Sharpe reads this issue and relays it to Stephen's chat.
+
+The issue body and each comment are machine-readable: a marker line `<!-- routine-failure v1 -->`, then one fenced `json` block:
+
+```json
+{"run_url": "https://github.com/BowmanStephen/nfl-lab/actions/runs/123", "job": "refresh", "exit_code": "3", "reason": "source data missing or stale; nothing written or committed", "timestamp_utc": "2026-10-12T11:28:43Z"}
+```
+
+- `job`: `refresh` (6:15 AM CT run, or manual refresh/pick-card) or `capture` (hourly game-day line-snapshot)
+- `exit_code`: string; `1` crash or missing line, `2` partial snapshot committed, `3` stale source data, `0` command passed but validate/commit/push failed, `none` failed before the command ran
+- `reason`: one line, plain English
+- `timestamp_utc`: ISO 8601, `Z`
+
+Change the fields only by bumping the marker to `v2`.
+
+`line-snapshot` with no pick card yet exits 0 with a log line and writes nothing.
 
 ## Do not
 
