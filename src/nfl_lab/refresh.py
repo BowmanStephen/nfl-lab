@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -18,12 +18,10 @@ from .data_loader import filter_offensive_plays, load_injuries, load_depth_chart
 from .model import ModelParams, project_games
 from .odds_espn import MissingLineError, fetch_week_lines
 from .picks import (
-    annotate_close_fallback,
     apply_pre_kickoff,
     apply_unclear_starter_nopick,
     build_games,
     card_path,
-    closes_from_schedule,
     grade_game,
     health_summary,
     load_card,
@@ -150,94 +148,18 @@ def _with_grades(games: list[dict], slate: pd.DataFrame) -> list[dict]:
     return out
 
 
-def _kickoff(game: dict) -> datetime | None:
-    raw = game.get("kickoff_utc")
-    if not raw:
-        return None
-    kick = datetime.fromisoformat(raw)
-    if kick.tzinfo is None:
-        kick = kick.replace(tzinfo=UTC)
-    return kick
-
-
 def _due(games: list[dict], now: datetime) -> bool:
+    from datetime import timedelta
     window = timedelta(minutes=PRE_KICKOFF_MINUTES)
     for game in games:
-        if game.get("pre_kickoff"):
+        if game.get("pre_kickoff") or not game.get("kickoff_utc"):
             continue
-        kick = _kickoff(game)
-        if kick is None:
-            continue
+        kick = datetime.fromisoformat(game["kickoff_utc"])
+        if kick.tzinfo is None:
+            kick = kick.replace(tzinfo=UTC)
         if now >= kick or kick - now <= window:
             return True
     return False
-
-
-def _past_without_line(games: list[dict], now: datetime) -> bool:
-    for game in games:
-        if game.get("pre_kickoff"):
-            continue
-        kick = _kickoff(game)
-        if kick is not None and now >= kick:
-            return True
-    return False
-
-
-def _closes_for(season: int, week: int) -> dict:
-    schedules = load_schedules([season], force_seasons=[season])
-    slate = schedules[(schedules["season"] == season) & (schedules["week"] == week)].copy()
-    if "game_type" in slate.columns:
-        slate = slate[slate["game_type"] == "REG"]
-    return closes_from_schedule(slate)
-
-
-def _stored_this_run(games: list[dict], captured_at: str) -> bool:
-    return any((g.get("pre_kickoff") or {}).get("captured_at") == captured_at for g in games)
-
-
-def _capture_closes(games: list[dict], captured_at: str, now: datetime, season: int, week: int,
-                    lines: list[dict] | None = None, closes: dict | None = None) -> str | None:
-    """Store ESPN lines that are due, and nflverse closes after a missed snapshot.
-
-    Returns the fail-loud message when something is still missing. Lines that
-    were stored stay on ``games`` so the caller can save them before exiting.
-    ``closes`` is the nflverse map. When it is omitted and a kickoff has passed,
-    the live season schedule is reloaded so the close is current.
-    """
-    if closes is None:
-        closes = _closes_for(season, week) if _past_without_line(games, now) else {}
-    if lines is None:
-        try:
-            lines = fetch_week_lines(season, week, now=now)
-        except MissingLineError as exc:
-            if not closes:
-                raise
-            log(f"ESPN lines unavailable ({exc}); nflverse close is the fallback for games already kicked")
-            lines = []
-    message = None
-    try:
-        apply_pre_kickoff(games, lines, captured_at, now, closes)
-    except MissingLineError as exc:
-        message = str(exc)
-    for game in games:
-        pre = game.get("pre_kickoff") or {}
-        if pre.get("captured_at") == captured_at:
-            log(f"{game['away_team']} @ {game['home_team']}: close stored from {pre.get('source')}")
-    return message
-
-
-def _persist_captured(card: dict, games: list[dict], captured_at: str, generated: datetime,
-                      message: str | None) -> None:
-    """Write a partial capture, then fail if a line is still missing."""
-    if message and not _stored_this_run(games, captured_at):
-        raise MissingLineError(message)
-    card["games"] = games
-    annotate_close_fallback(card)
-    card["health"] = health_summary(card["games"])
-    save_card(card)
-    publish_card(card, generated)
-    if message:
-        raise MissingLineError(message)
 
 
 def run(mode: str = "refresh") -> dict:
@@ -256,20 +178,24 @@ def run(mode: str = "refresh") -> dict:
         if not _due(existing["games"], now):
             log("no pre-kickoff snapshots are due")
             return existing
+        lines = fetch_week_lines(existing["season"], existing["week"])
         games = json.loads(json.dumps(existing["games"]))
-        message = _capture_closes(games, captured_at, now, existing["season"], existing["week"])
+        apply_pre_kickoff(games, lines, captured_at, now)
         for game in games:
             if not game.get("pre_kickoff"):
                 continue
             prev = game.get("grading") or {}
             game["grading"] = grade_game(game, prev.get("home_score"), prev.get("away_score"))
-        _persist_captured(existing, games, captured_at, datetime.now(CT), message)
+        existing["games"] = games
+        existing["health"] = health_summary(existing["games"])
+        save_card(existing)
+        publish_card(existing, datetime.now(CT))
         log(f"pre-kickoff lines saved to {card_path(existing['season'], existing['week'])}")
         return existing
 
     log("loading nflverse schedules, play-by-play, depth chart, injuries")
     seasons = list(range(LIVE_SEASON - 3, LIVE_SEASON + 1))
-    schedules = load_schedules(seasons, force_seasons=[LIVE_SEASON])
+    schedules = load_schedules(seasons)
     pbp = load_pbp(seasons, force_years=[LIVE_SEASON])
     depth = load_depth_charts(LIVE_SEASON, force=True)
     injuries = load_injuries(LIVE_SEASON, force=True)
@@ -281,19 +207,15 @@ def run(mode: str = "refresh") -> dict:
 
     if existing is None:
         log(f"no pick card for {LIVE_SEASON} week {week}; snapshotting ESPN DraftKings")
-        lines = fetch_week_lines(LIVE_SEASON, week, now=now)
+        lines = fetch_week_lines(LIVE_SEASON, week)
         # Stamp the pick at the fetch, not at the start of the data load.
         captured_at = datetime.now(UTC).isoformat()
         games = build_games(records, lines, captured_at, spread_min, total_min)
         if LIVE_SEASON == 2026 and int(week) == 5:
             noted = apply_unclear_starter_nopick(games, "2026_05_NYG_WAS")
             log(noted["selection"]["no_pick_reason"])
-        message = None
         if _due(games, now):
-            message = _capture_closes(
-                games, captured_at, now, LIVE_SEASON, week, lines=lines,
-                closes=closes_from_schedule(slate),
-            )
+            apply_pre_kickoff(games, lines, captured_at, now)
         games = _with_grades(games, slate)
         card = new_card(LIVE_SEASON, week, games, captured_at)
         if calibration.applies(calibration.load_v2(), LIVE_SEASON, week):
@@ -305,24 +227,16 @@ def run(mode: str = "refresh") -> dict:
     else:
         log(f"pick card already frozen ({existing['created_at']}); leaving picks and pick-time lines")
         incoming = json.loads(json.dumps(existing["games"]))
-        message = None
         if _due(incoming, now):
-            message = _capture_closes(
-                incoming, captured_at, now, LIVE_SEASON, week,
-                closes=closes_from_schedule(slate),
-            )
+            lines = fetch_week_lines(LIVE_SEASON, week)
+            apply_pre_kickoff(incoming, lines, captured_at, now)
         incoming = _with_grades(incoming, slate)
         card = merge_card(existing, incoming)
+        card["health"] = health_summary(card["games"])
 
-    annotate_close_fallback(card)
-    card["health"] = health_summary(card["games"])
-    if message and not _stored_this_run(card["games"], captured_at):
-        raise MissingLineError(message)
     save_card(card)
     generated = datetime.now(CT)
     summary = write_site(card, ratings, stats, through, weekly, generated)
-    if message:
-        raise MissingLineError(message)
     log(
         f"week {week}: {summary['n_spread_picks']} spread picks, "
         f"{summary['n_total_picks']} total picks, {summary['n_games']} games snapshotted"

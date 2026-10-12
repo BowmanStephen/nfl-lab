@@ -19,7 +19,7 @@ uv run nfl-lab backtest       # prints the spent holdout; does not recompute it
 uv run nfl-lab report-card    # 2026 wk1-4 walk-forward backtest -> public/api/report_card.json (not official picks)
 ```
 
-A missing DraftKings line is exit code 1 while the game is still before kickoff. After kickoff, a missed snapshot may be filled from the nflverse close and must be labeled `nflverse_close`. Do not call that pair CLV. Do not catch a line that is still missing and continue.
+A missing DraftKings line is exit code 1. Do not catch that and continue.
 
 ## Do not
 

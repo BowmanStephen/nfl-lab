@@ -2,7 +2,7 @@
 
 One margin model, checked against the line. The 2022–2025 seasons were graded once and came up short: **48.8%** on spreads, **51.0%** on totals. That record stays as history. The live test is the 2026 season, starting week 5 (Thursday, October 8).
 
-Picks are saved with a timestamp before kickoff. The line at that moment is ESPN DraftKings. The line just before kickoff is ESPN DraftKings again. Same book, both times. If that second snapshot is missed and kickoff has passed, the card stores the nflverse close instead and says so. That pair is not same-book closing-line value. Scores come from nflverse.
+Picks are saved with a timestamp before kickoff. The line at that moment is ESPN DraftKings. The line just before kickoff is ESPN DraftKings again. Same book, both times. Scores come from nflverse.
 
 This is a research ledger. It is not betting advice.
 
@@ -24,7 +24,7 @@ uv run pytest
 
 `refresh` writes `output/live/` and `public/api/`. Raw play-by-play stays in `data/` and is not committed. The nightly GitHub Action runs the same command and commits the JSON.
 
-No odds API key. The ESPN scoreboard is a public, unofficial endpoint and can change. The adapter is `src/nfl_lab/odds_espn.py`. If a game is inside the pre-kickoff window and still has no DraftKings number, the command exits 1. After kickoff, a missed snapshot can fall back to the labeled nflverse close.
+No odds API key. The ESPN scoreboard is a public, unofficial endpoint and can change. The adapter is `src/nfl_lab/odds_espn.py`. If a scheduled game has no DraftKings number, the command exits 1.
 
 ## Site
 

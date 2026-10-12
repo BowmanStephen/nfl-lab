@@ -198,15 +198,6 @@ function showLock(card) {
       voidNote.hidden = true;
     }
   }
-  const closeNote = $("close-fallback-note");
-  if (closeNote) {
-    if (card.close_fallback_note) {
-      closeNote.hidden = false;
-      closeNote.textContent = card.close_fallback_note;
-    } else {
-      closeNote.hidden = true;
-    }
-  }
 }
 
 function liveRecordLine(health) {
@@ -500,15 +491,6 @@ async function renderModel() {
       voidNote.textContent = card.totals_void_note;
     } else {
       voidNote.hidden = true;
-    }
-  }
-  const closeNote = $("close-fallback-note");
-  if (closeNote) {
-    if (card.close_fallback_note) {
-      closeNote.hidden = false;
-      closeNote.textContent = card.close_fallback_note;
-    } else {
-      closeNote.hidden = true;
     }
   }
   $("winrate-chart").innerHTML = winRateChart(data.holdout);
