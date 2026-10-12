@@ -28,9 +28,9 @@ The two ESPN numbers are DraftKings both times: the snapshot taken when the pick
 
 Cover is graded against the pick-time ESPN line. Final scores come from nflverse.
 
-Before kickoff, a missing DraftKings number fails the job. The scoreboard is read first. If it omits DraftKings and kickoff has not passed, the game summary's DraftKings pickcenter line is used and tagged `espn_summary`.
+Before kickoff, a DraftKings number that is still missing after the summary fallback fails the job. The scoreboard is read first. If it omits DraftKings and kickoff has not passed, the game summary's DraftKings pickcenter line is used and tagged `espn_summary`.
 
-If kickoff passes with no stored ESPN snapshot, the job stores the nflverse closing spread and total and tags that game `nflverse_close`. Stephen approved that for the week-5 games the Sunday job missed, and as the ongoing fallback when a snapshot is missed. It is a different book. It is not same-book CLV, and it does not count toward the line-move half of the week-18 test. A late ESPN read is not written back into the pre-kickoff slot.
+If kickoff passes with no stored pre-kickoff ESPN snapshot, the job stores the nflverse closing spread and total and tags that game `nflverse_close`. Stephen approved that for the week-5 games the Sunday job missed, and as the ongoing fallback when a snapshot is missed. It is a different book. It is not same-book CLV, and it does not count toward the line-move half of the week-18 test. A late ESPN read is not written back into the pre-kickoff slot.
 
 If kickoff has passed and the nflverse close is missing too, the job exits non-zero. The game stays on the card. It is not dropped. Lines that were captured in the same run are saved before that exit, so one miss does not erase the others.
 

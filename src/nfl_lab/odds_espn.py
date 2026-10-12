@@ -31,6 +31,13 @@ class MissingLineError(RuntimeError):
     """A scheduled game has no DraftKings spread or total. The job must stop."""
 
 
+class PartialSnapshot(MissingLineError):
+    """A line is still missing, and this run already saved what it captured.
+
+    Exit code 2. The workflow may commit that snapshot, then fail the job.
+    """
+
+
 def lab_abbr(abbreviation: str) -> str:
     abbr = (abbreviation or "").upper()
     return ESPN_TO_LAB.get(abbr, abbr)

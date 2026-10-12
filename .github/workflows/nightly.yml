@@ -59,13 +59,17 @@ jobs:
           echo "command=$CMD" >> "$GITHUB_OUTPUT"
       - name: Run
         id: lab
-        continue-on-error: true
-        run: uv run nfl-lab ${{ steps.cmd.outputs.command }}
-      # Commit even when the command exits 1. A single missing line used to
-      # discard every other DraftKings snapshot taken in that run, and the
-      # next hour could not get them back. The job still fails afterward.
+        run: |
+          set +e
+          uv run nfl-lab ${{ steps.cmd.outputs.command }}
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit $code
+      # Exit 2 means a partial snapshot was saved on purpose. Commit that, and
+      # nothing else: a crash (exit 1) or a cancelled run must not push a
+      # half-written public/api. The job still fails afterward.
       - name: Commit snapshots
-        if: always()
+        if: always() && (steps.lab.outputs.exit_code == '0' || steps.lab.outputs.exit_code == '2')
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -78,5 +82,5 @@ jobs:
           # checkout leaves a detached HEAD, so name the branch explicitly.
           git push origin "HEAD:${GITHUB_REF_NAME}"
       - name: Fail when the command failed
-        if: steps.lab.outcome == 'failure'
+        if: always() && steps.lab.outputs.exit_code != '0' && steps.lab.outputs.exit_code != ''
         run: exit 1

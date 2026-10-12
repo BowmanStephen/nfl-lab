@@ -78,9 +78,13 @@ def test_pre_kickoff_crons_cover_london_and_the_rest_of_the_slate():
     assert 'cron: "15 11 * * *"' in text
     assert 'cron: "15 12-23,0-4 * * 0,1,4,5,6"' in text
     # The morning refresh is the only schedule that rebuilds the card.
-    # Every other schedule is a line snapshot, including the London hours.
-    assert 'elif [ "${{ github.event.schedule }}" = "15 11 * * *" ]; then' in text
-    assert 'CMD="line-snapshot"' in text
+    # The else of that check, not a stray string, assigns line-snapshot.
+    assert (
+        'elif [ "${{ github.event.schedule }}" = "15 11 * * *" ]; then\n'
+        '            CMD="refresh"\n'
+        "          else\n"
+        '            CMD="line-snapshot"'
+    ) in text
     specs = _cron_specs(text)
     missed = [
         label for raw, label in KICKOFFS

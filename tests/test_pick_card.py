@@ -559,4 +559,10 @@ def test_nflverse_sign_matches_tb_at_dal_draftkings_lock():
     label_line_sources(card)
     for row in card["games"]:
         assert row["pick_time"]["line_source"] == "espn_draftkings"
-        assert row["line_source"] in {"espn_draftkings", "nflverse_close", None}
+        pre = row.get("pre_kickoff")
+        expected_source = (
+            "nflverse_close" if pre and pre.get("source") == "nflverse_close"
+            else "espn_draftkings" if pre
+            else None
+        )
+        assert row["line_source"] == expected_source
