@@ -313,9 +313,9 @@ function resultPill(g) {
     const pickHome = g.selection.spread_pick === g.home_team;
     o = Math.abs(homeCover) < 1e-9 ? "push" : ((homeCover > 0) === pickHome ? "win" : "loss");
   }
-  if (o === "win") return '<span class="result-pill right" aria-label="Our pick was right">✓ Right</span>';
-  if (o === "loss") return '<span class="result-pill wrong" aria-label="Our pick was wrong">✗ Wrong</span>';
-  if (o === "push") return '<span class="result-pill tie" aria-label="Push, no result">Tie</span>';
+  if (o === "win") return '<span class="result-pill right" aria-label="Our pick won">✓ Win</span>';
+  if (o === "loss") return '<span class="result-pill wrong" aria-label="Our pick lost">✗ Loss</span>';
+  if (o === "push") return '<span class="result-pill tie" aria-label="Push, landed on the line">= Push</span>';
   return "";
 }
 
@@ -330,12 +330,33 @@ function expander(g, cls, sentence, extra, detail) {
   </div>`;
 }
 
+function isScored(g) {
+  return Boolean(g.grading && g.grading.home_score != null && g.grading.away_score != null);
+}
+
+function scoreTag(g) {
+  const gr = g.grading;
+  return `<span class="score num">Final: ${esc(g.away_team)} ${esc(gr.away_score)} · ${esc(g.home_team)} ${esc(gr.home_score)}</span>`;
+}
+
+// Final score, "In progress", or the kickoff time in CT, from the saved card.
+function statusTag(g, now) {
+  if (isScored(g)) return scoreTag(g);
+  const kick = Date.parse(g.kickoff_utc);
+  if (Number.isFinite(kick) && kick <= now) {
+    return kick + 4 * HOUR < now
+      ? '<span class="tag">Final score coming</span>'
+      : '<span class="tag">In progress</span>';
+  }
+  return timeTag(g.kickoff_utc);
+}
+
 function gameRow(g, state, now) {
-  if (state === "final") return finalRow(g);
-  const started = state === "live" && Date.parse(g.kickoff_utc) <= now ? ' <span class="tag">Started</span>' : "";
+  if (state === "final" || isScored(g)) return finalRow(g);
+  const started = statusTag(g, now) === timeTag(g.kickoff_utc) ? "" : ` ${statusTag(g, now)}`;
   const price = pickLineDisplay(g, g.selection.spread_pick);
   return expander(g, "pick-row", homeSentence(g),
-    `${timeTag(g.kickoff_utc)}${started}`,
+    started ? started.trim() : timeTag(g.kickoff_utc),
     `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`);
 }
 
@@ -346,18 +367,18 @@ function finalRow(g) {
   const winner = am === 0 ? null : (am > 0 ? g.home_team : g.away_team);
   const sentence = `We had ${fullName(g.selection.spread_pick)} ${price.split(" ").slice(1).join(" ")}. ${winner ? `${fullName(winner)} won by ${Math.abs(am)}.` : "It ended in a tie."}`;
   return expander(g, "pick-row final", sentence,
-    `<span class="score num">${esc(g.away_team)} ${esc(gr.away_score)} · ${esc(g.home_team)} ${esc(gr.home_score)}</span> ${resultPill(g)}`,
+    `${scoreTag(g)} ${resultPill(g)}`,
     detailList(g, true));
 }
 
-function tooCloseRow(g) {
+function tooCloseRow(g, now = Date.now()) {
   return expander(g, "quiet", `Too close to call. Vegas says ${g.pick_time.spread_display}; our model says ${modelPlain(g)}.`,
-    timeTag(g.kickoff_utc), detailList(g, false));
+    statusTag(g, now), detailList(g, false));
 }
 
-function agreeGroup(games) {
+function agreeGroup(games, now = Date.now()) {
   if (!games.length) return "";
-  const items = games.map((g) => `<li>${esc(g.away_team)} @ ${esc(g.home_team)} · ${timeTag(g.kickoff_utc)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}</li>`).join("");
+  const items = games.map((g) => `<li>${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}</li>`).join("");
   return `<div class="agree-group">
     <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span></button>
     <div class="row-panel" id="d-agree" role="region" aria-labelledby="b-agree" hidden><ul>${items}</ul></div>
@@ -447,7 +468,7 @@ async function renderHome() {
     $("games").innerHTML = picks.map((g) => gameRow(g, state, now)).join("");
     $("close-h").textContent = `Too close to call (${close.length})`;
     $("close-h").hidden = !close.length;
-    $("close-games").innerHTML = close.map(tooCloseRow).join("") + agreeGroup(agree);
+    $("close-games").innerHTML = close.map((g) => tooCloseRow(g, now)).join("") + agreeGroup(agree, now);
   }
   const prev = $("previews-link");
   if (prev) { prev.textContent = `Read the week ${card.week} game previews`; prev.href = `previews/week${card.week}.html`; }
