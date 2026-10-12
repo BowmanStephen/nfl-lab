@@ -301,7 +301,7 @@ def _grade_saved_card(card: dict, schedules: pd.DataFrame, now: datetime) -> dic
     return graded
 
 
-def _finalize_completed_weeks(schedules: pd.DataFrame, now: datetime) -> None:
+def _finalize_completed_weeks(schedules: pd.DataFrame, now: datetime) -> list[int]:
     """Grade weeks that are already finished before ``live_week`` moves on.
 
     Once every score in a week is filled, ``live_week`` returns the next week.
@@ -309,53 +309,19 @@ def _finalize_completed_weeks(schedules: pd.DataFrame, now: datetime) -> None:
     and drop out of the live record.
     """
     current = live_week(schedules)
+    graded: list[int] = []
     for week in range(LIVE_START_WEEK, current):
         card = load_card(LIVE_SEASON, week)
         if card is None:
             continue
         log(f"grading finished {LIVE_SEASON} week {week} before week {current}")
         _grade_saved_card(card, schedules, now)
+        graded.append(week)
+    return graded
 
 
-def run(mode: str = "refresh") -> dict:
-    now = _clock()
-    captured_at = now.isoformat()
-    existing = None
-
-    if mode == "line-snapshot":
-        # Fast path: do not rebuild ratings. The pick is already frozen.
-        # Week is discovered from the newest card at or after the live start.
-        cards = sorted(card_path(LIVE_SEASON, w) for w in range(LIVE_START_WEEK, 23))
-        present = [p for p in cards if p.exists()]
-        if not present:
-            raise MissingLineError("no pick card yet. Run `nfl-lab pick-card` before kickoff.")
-        existing = json.loads(present[-1].read_text())
-        if not _due(existing["games"], now):
-            log("no pre-kickoff snapshots are due")
-            return existing
-        now = _clock()
-        captured_at = now.isoformat()
-        games = json.loads(json.dumps(existing["games"]))
-        message = _capture_closes(games, captured_at, now, existing["season"], existing["week"])
-        for game in games:
-            if not game.get("pre_kickoff"):
-                continue
-            prev = game.get("grading") or {}
-            game["grading"] = grade_game(game, prev.get("home_score"), prev.get("away_score"))
-        _persist_captured(existing, games, captured_at, datetime.now(CT), message)
-        log(f"pre-kickoff lines saved to {card_path(existing['season'], existing['week'])}")
-        return existing
-
-    log("loading nflverse schedules, play-by-play, depth chart, injuries")
-    seasons = list(range(LIVE_SEASON - 3, LIVE_SEASON + 1))
-    schedules = load_schedules(seasons, force_seasons=[LIVE_SEASON])
-    pbp = load_pbp(seasons, force_years=[LIVE_SEASON])
-    depth = load_depth_charts(LIVE_SEASON, force=True)
-    injuries = load_injuries(LIVE_SEASON, force=True)
-    # The downloads above can outlast a kickoff. Grade a week that just ended
-    # before live_week() steps past it, then read the clock again at capture.
-    now = _clock()
-    _finalize_completed_weeks(schedules, now)
+def _next_card(schedules, pbp, depth, injuries):
+    """Build (but do not save) the live week's card."""
     week = live_week(schedules)
     existing = load_card(LIVE_SEASON, week)
     ratings, stats, weekly, proj, slate, through = _project(schedules, pbp, depth, injuries, week)
@@ -404,6 +370,62 @@ def run(mode: str = "refresh") -> dict:
         incoming = _with_grades(incoming, slate)
         card = merge_card(existing, incoming)
 
+    return week, card, message, captured_at, ratings, stats, weekly, through
+
+
+def run(mode: str = "refresh") -> dict:
+    now = _clock()
+    captured_at = now.isoformat()
+    existing = None
+
+    if mode == "line-snapshot":
+        # Fast path: do not rebuild ratings. The pick is already frozen.
+        # Week is discovered from the newest card at or after the live start.
+        cards = sorted(card_path(LIVE_SEASON, w) for w in range(LIVE_START_WEEK, 23))
+        present = [p for p in cards if p.exists()]
+        if not present:
+            raise MissingLineError("no pick card yet. Run `nfl-lab pick-card` before kickoff.")
+        existing = json.loads(present[-1].read_text())
+        if not _due(existing["games"], now):
+            log("no pre-kickoff snapshots are due")
+            return existing
+        now = _clock()
+        captured_at = now.isoformat()
+        games = json.loads(json.dumps(existing["games"]))
+        message = _capture_closes(games, captured_at, now, existing["season"], existing["week"])
+        for game in games:
+            if not game.get("pre_kickoff"):
+                continue
+            prev = game.get("grading") or {}
+            game["grading"] = grade_game(game, prev.get("home_score"), prev.get("away_score"))
+        _persist_captured(existing, games, captured_at, datetime.now(CT), message)
+        log(f"pre-kickoff lines saved to {card_path(existing['season'], existing['week'])}")
+        return existing
+
+    log("loading nflverse schedules, play-by-play, depth chart, injuries")
+    seasons = list(range(LIVE_SEASON - 3, LIVE_SEASON + 1))
+    schedules = load_schedules(seasons, force_seasons=[LIVE_SEASON])
+    pbp = load_pbp(seasons, force_years=[LIVE_SEASON])
+    depth = load_depth_charts(LIVE_SEASON, force=True)
+    injuries = load_injuries(LIVE_SEASON, force=True)
+    # The downloads above can outlast a kickoff. Grade a week that just ended
+    # before live_week() steps past it, then read the clock again at capture.
+    now = _clock()
+    graded_weeks = _finalize_completed_weeks(schedules, now)
+    try:
+        week, card, message, captured_at, ratings, stats, weekly, through = _next_card(
+            schedules, pbp, depth, injuries)
+    except PartialSnapshot:
+        raise
+    except Exception as exc:
+        if not graded_weeks:
+            raise
+        # The finished week is already graded and saved. Exit 2 so the
+        # workflow commits it, then the job still fails on the next card.
+        raise PartialSnapshot(
+            f"graded {LIVE_SEASON} week(s) {graded_weeks} saved, "
+            f"but the next pick card failed: {type(exc).__name__}: {exc}"
+        ) from exc
     annotate_close_fallback(card)
     card["health"] = season_health(card)
     if message and not _stored_this_run(card["games"], captured_at):
