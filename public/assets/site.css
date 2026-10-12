@@ -1149,3 +1149,9 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 .pill.even { border: 1px solid var(--hair); color: var(--muted); }
 .tr-bettors { margin: 2.5rem 0 0; border-top: 1px solid var(--ink); padding-top: 0.25rem; }
 .tr-bettors > summary { cursor: pointer; font-family: var(--mono); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; min-height: 44px; display: flex; align-items: center; }
+
+/* Final score on a finished row: its own small style, not the big .score display. */
+.final-score { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.pick-row.final .row-top, .quiet .row-top { flex-wrap: wrap; row-gap: 0.25rem; }
+.pick-row.final .when, .quiet .when { flex-wrap: wrap; white-space: normal; min-width: 0; }
+.result-pill { white-space: nowrap; }

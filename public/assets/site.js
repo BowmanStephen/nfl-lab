@@ -315,7 +315,7 @@ function resultPill(g) {
   }
   if (o === "win") return '<span class="result-pill right" aria-label="Our pick won">✓ Win</span>';
   if (o === "loss") return '<span class="result-pill wrong" aria-label="Our pick lost">✗ Loss</span>';
-  if (o === "push") return '<span class="result-pill tie" aria-label="Push, landed on the line">= Push</span>';
+  if (o === "push") return '<span class="result-pill tie" aria-label="Tie, landed on the line">= Tie (landed on the line)</span>';
   return "";
 }
 
@@ -336,7 +336,7 @@ function isScored(g) {
 
 function scoreTag(g) {
   const gr = g.grading;
-  return `<span class="score num">Final: ${esc(g.away_team)} ${esc(gr.away_score)} · ${esc(g.home_team)} ${esc(gr.home_score)}</span>`;
+  return `<span class="final-score num">Final: ${esc(g.away_team)} ${esc(gr.away_score)} · ${esc(g.home_team)} ${esc(gr.home_score)}</span>`;
 }
 
 // Final score, "In progress", or the kickoff time in CT, from the saved card.
