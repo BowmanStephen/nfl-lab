@@ -503,21 +503,28 @@ async function renderTrackRecord() {
   const nick = (t) => (rc.names && rc.names[t]) || t;
   const games = trackRecordGames(rc, card);
   const weeks = trackRecordWeeks(games);
-  const right = games.filter((g) => g.result === "right").length;
-  const wrong = games.filter((g) => g.result === "wrong").length;
+  const count = (list, r) => list.filter((g) => g.result === r).length;
+  const saved = games.filter((g) => g.live);
+  const look = games.filter((g) => !g.live);
+  const right = count(saved, "right");
+  const wrong = count(saved, "wrong");
   const decided = right + wrong;
   const pct = decided ? `${Math.round((100 * right) / decided)}%` : "none yet";
   const tile = (label, num) => `<div class="tr-tile"><p class="label">${label}</p><p class="num">${num}</p></div>`;
   $("tr-tiles").innerHTML = tile("Games", decided) + tile("Right", right) + tile("Wrong", wrong) + tile("% right", pct);
-  const ties = games.filter((g) => g.result === "tie").length;
-  const pending = games.filter((g) => g.result === "pending").length;
-  const liveWeeks = weeks.filter((w) => w.live).map((w) => w.week);
-  const testWeeks = weeks.filter((w) => !w.live).map((w) => w.week);
+  const ties = count(saved, "tie");
+  const pending = count(saved, "pending");
+  const liveWeeks = [...new Set(saved.map((g) => g.week))].sort((a, b) => a - b);
+  const testWeeks = [...new Set(look.map((g) => g.week))].sort((a, b) => a - b);
   const bits = [];
-  if (testWeeks.length) bits.push(`Weeks ${testWeeks[0]} to ${testWeeks[testWeeks.length - 1]} are a look back: what the model would have said using only games already played. They were not posted ahead of time.`);
-  if (liveWeeks.length) bits.push(`From week ${liveWeeks[0]} on, the projection was saved before kickoff.`);
+  if (liveWeeks.length) bits.push(`These count only games saved before kickoff, from week ${liveWeeks[0]} on.`);
   if (ties) bits.push(`${ties} tie${ties > 1 ? "s are" : " is"} left out because nobody won.`);
   if (pending) bits.push(`${pending} game${pending > 1 ? "s have" : " has"} not been played yet.`);
+  if (testWeeks.length) {
+    const lr = count(look, "right");
+    const ln = lr + count(look, "wrong");
+    bits.push(`Weeks ${testWeeks[0]} to ${testWeeks[testWeeks.length - 1]} are a look back, not picks posted ahead of time: ${lr} of ${ln} right.`);
+  }
   $("tr-scope").textContent = bits.join(" ");
 
   $("tr-strip").innerHTML = weeks.slice(-5).map((w) => {
