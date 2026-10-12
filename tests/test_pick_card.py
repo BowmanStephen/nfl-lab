@@ -171,7 +171,7 @@ def test_zero_move_is_not_toward_us():
 def test_lock_label_uses_central_time():
     label = format_lock_label(5, "2026-10-05T23:42:00+00:00")
     assert label == (
-        "Official week-5 picks, locked Mon Oct 5 6:42 PM CT, DraftKings lines at lock"
+        "Week 5 picks, locked Mon Oct 5 6:42 PM CT, using the DraftKings lines at that moment"
     )
 
 
