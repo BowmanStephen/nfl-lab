@@ -27,8 +27,8 @@ UTC = ZoneInfo("UTC")
 
 # Display copy for the spent holdout. Not a regrade.
 HOLDOUT_NOTE = (
-    "2026 live record starts with these picks. "
-    "Holdout record 48.8% ATS vs 52.4% break-even stays as-is."
+    "Our model has been right 48.8% of the time against Vegas in its 2022 to 2025 test. "
+    "Beating Vegas takes 52.4%."
 )
 
 
@@ -50,8 +50,8 @@ def format_lock_label(week: int, captured_at: str) -> str:
     """The sentence the site shows for an official card. Clock is Central Time."""
     clock = captured_ct(captured_at).strftime("%a %b %-d %-I:%M %p")
     return (
-        f"Official week-{int(week)} picks, locked {clock} CT, "
-        "DraftKings lines at lock"
+        f"Week {int(week)} picks, locked {clock} CT, "
+        "using the DraftKings lines at that moment"
     )
 
 

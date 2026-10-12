@@ -1,5 +1,5 @@
 /*
-  NFL Lab — print edition.
+  NFL Lab, print edition.
   Visual direction comes from Stephen's Design Collection
   (design-collection-sigma.vercel.app): warm paper, ink, Georgia display,
   monospace labels, thin rules. Project route: "Dashboard or activity
@@ -1037,3 +1037,80 @@ footer p { max-width: 52rem; }
   .game, .card, .rc-lesson, .chart-card { break-inside: avoid; }
   a { overflow-wrap: anywhere; }
 }
+
+/* ---------- 2026-10 redesign, slice 1: one sans family, Apple Sports rows ----------
+   Type rules live in DESIGN.md ("Type"). These override the earlier print-edition
+   type so every page uses the same system-ui stack. */
+:root {
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --serif: var(--sans);
+  --mono: var(--sans);
+  --ours: #1d4f91;           /* our model, the one accent: 7.1:1 on paper (light), 9.5:1 dark */
+  --vegas: var(--muted);     /* Vegas stays neutral grey */
+}
+@media (prefers-color-scheme: dark) {
+  :root { --ours: #9cc0f5; }
+}
+html { font-size: 100%; }
+body { font-family: var(--sans); font-size: 1rem; line-height: 1.5; }
+h1, h2, h3 { font-family: var(--sans); letter-spacing: -0.01em; }
+h1 { font-size: 1.75rem; line-height: 1.2; font-weight: 700; letter-spacing: -0.015em; margin: 1.5rem 0 0.5rem; }
+h2 { font-size: 1.25rem; line-height: 1.3; font-weight: 650; }
+h3 { font-size: 1.0625rem; line-height: 1.35; font-weight: 600; }
+.meta, .caption, .kicker, footer, footer p, .foot-nav a, small, figcaption { font-size: 0.8125rem; }
+td, th, .num, b, .meta, .row-time, .row-score, .record-line, table { font-variant-numeric: tabular-nums; }
+* { text-transform: none; }
+.caption { color: var(--muted); margin: 0.25rem 0; }
+
+/* Five-link primary nav, same on every page */
+header.top nav.primary { display: flex; flex-wrap: wrap; gap: 0 0.25rem; }
+header.top nav.primary a, .foot-nav a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.6rem;
+  font-family: var(--sans); font-size: 0.9375rem; letter-spacing: 0; text-transform: none;
+}
+.foot-nav { display: flex; flex-wrap: wrap; gap: 0 0.25rem; margin: 0 0 0.5rem -0.6rem; }
+.foot-nav a { font-size: 0.8125rem; }
+header.top nav.primary a[aria-current="page"] { font-weight: 650; text-decoration-thickness: 2px; }
+@media (max-width: 40rem) {
+  header.top nav.primary { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
+  header.top nav.primary a { justify-content: center; padding: 0 0.25rem; }
+}
+
+/* Home rows */
+.notices { list-style: none; padding: 0; margin: 0.5rem 0 1rem; }
+.notices li { font-size: 0.8125rem; color: var(--caution); margin: 0.15rem 0; }
+.games, #close-games { border-top: 1px solid var(--hair-strong); }
+.hrow { border-bottom: 1px solid var(--hair); }
+.hrow > summary {
+  list-style: none; cursor: pointer; min-height: 44px;
+  display: grid; grid-template-columns: 1fr auto; gap: 0.15rem 1rem;
+  padding: 0.75rem 0.25rem; align-items: baseline;
+}
+.hrow > summary::-webkit-details-marker { display: none; }
+.hrow > summary:hover { background: var(--track); }
+.row-teams { font-size: 1.0625rem; font-weight: 600; line-height: 1.35; }
+.row-teams .abbr { font-size: 0.8125rem; font-weight: 700; color: var(--muted); letter-spacing: 0.02em; }
+.row-teams .at { font-weight: 400; color: var(--muted); }
+.row-when { font-size: 0.8125rem; color: var(--muted); text-align: right; white-space: nowrap; display: flex; gap: 0.5rem; align-items: baseline; }
+.row-score { font-size: 1.0625rem; font-weight: 600; color: var(--ink); }
+.mark-right { color: var(--hit); font-weight: 650; }
+.mark-wrong { color: var(--miss); font-weight: 650; }
+.mark-push { color: var(--muted); }
+.row-say { grid-column: 1 / -1; font-size: 1rem; color: var(--ink); }
+.hrow > summary::after { content: "Details"; grid-column: 1 / -1; font-size: 0.8125rem; color: var(--muted); text-decoration: underline; text-underline-offset: 0.2em; }
+.hrow[open] > summary::after { content: "Hide details"; }
+.row-detail { margin: 0 0.25rem 0.75rem; display: grid; gap: 0.35rem; }
+.row-detail div { display: grid; grid-template-columns: 9rem 1fr; gap: 0.75rem; }
+.row-detail dt { font-size: 0.8125rem; color: var(--muted); }
+.row-detail dd { margin: 0; font-variant-numeric: tabular-nums; }
+.row-detail dd.ours { color: var(--ours); font-weight: 600; }
+.row-detail dd.vegas { color: var(--vegas); }
+.hrow > .caption { margin: 0 0.25rem 0.5rem; color: var(--caution); }
+.close-group > summary .row-teams { color: var(--ink); }
+.close-list { padding-left: 0.75rem; border-left: 2px solid var(--hair); margin-bottom: 0.75rem; }
+.close-list .hrow:last-child { border-bottom: 0; }
+.next-link { margin-top: 1.25rem; }
+.next-link a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
+.how-line a { display: inline-flex; align-items: center; min-height: 44px; }
+.record-line { font-size: 0.8125rem; color: var(--muted); border-top: 1px solid var(--hair); padding-top: 0.75rem; }
+h1 { max-width: none; }

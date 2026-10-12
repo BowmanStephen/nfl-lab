@@ -17,7 +17,7 @@ function when(iso) {
   const d = new Date(iso);
   return d.toLocaleString("en-US", {
     weekday: "short", month: "short", day: "numeric",
-    hour: "numeric", minute: "2-digit", timeZone: "America/New_York",
+    hour: "numeric", minute: "2-digit", timeZone: "America/Chicago",
     timeZoneName: "short",
   });
 }
@@ -225,37 +225,158 @@ function holdoutCalmLine(note) {
   return note;
 }
 
+/* Home: one row per game (Apple Sports style). Data: picks.json + teams.json. */
+const AMBIGUOUS_CITY = /^(New York|Los Angeles)\b/;
+
+function teamShort(abbr, names) {
+  const full = names[abbr];
+  if (!full) return abbr;
+  const parts = full.split(" ");
+  const nick = parts[parts.length - 1];
+  const city = parts.slice(0, -1).join(" ");
+  return AMBIGUOUS_CITY.test(full) || !city ? nick : city;
+}
+
+function pts(n) {
+  const v = Math.abs(Number(n));
+  if (!Number.isFinite(v)) return "?";
+  const r = Math.round(v * 2) / 2;
+  return Number.isInteger(r) ? String(r) : r.toFixed(1);
+}
+
+function kickoffCT(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleString("en-US", {
+    weekday: "short", hour: "numeric", minute: "2-digit", timeZone: "America/Chicago",
+  });
+}
+
+function vegasSays(g, nm) {
+  const line = Number(g.pick_time && g.pick_time.home_margin);
+  if (!Number.isFinite(line)) return "Vegas has no line yet.";
+  if (Math.abs(line) < 0.25) return "Vegas calls it even.";
+  const fav = line > 0 ? g.home_team : g.away_team;
+  return `Vegas says ${teamShort(fav, nm)} by ${pts(line)}.`;
+}
+
+function modelSays(g, nm) {
+  const s = g.selection;
+  const mm = Number(s.model_margin);
+  const line = Number(g.pick_time && g.pick_time.home_margin);
+  if (!Number.isFinite(mm)) return "Our model has no number for this game.";
+  if (Math.abs(mm) < 0.5) return "Our model calls it a toss-up.";
+  const modelFav = mm > 0 ? g.home_team : g.away_team;
+  const vegasFav = line > 0 ? g.home_team : g.away_team;
+  if (s.spread_qualifies && s.spread_pick !== modelFav && Number.isFinite(line)) {
+    return `Our model says ${teamShort(s.spread_pick, nm)} keeps it within ${pts(mm)}.`;
+  }
+  if (Number.isFinite(line) && modelFav !== vegasFav) {
+    return `Our model says ${teamShort(modelFav, nm)} wins by ${pts(mm)}.`;
+  }
+  return `Our model says ${teamShort(modelFav, nm)} by ${pts(mm)}.`;
+}
+
+function hasScore(g) {
+  return g.grading && g.grading.home_score != null && g.grading.away_score != null;
+}
+
+function resultMark(g) {
+  const o = g.grading && g.grading.spread_outcome;
+  if (!g.selection.spread_qualifies || !o) return "";
+  if (o === "win") return '<span class="mark-right"><span aria-hidden="true">✓</span> Right</span>';
+  if (o === "loss") return '<span class="mark-wrong"><span aria-hidden="true">✗</span> Wrong</span>';
+  return '<span class="mark-push">Tie with Vegas</span>';
+}
+
+function gameRow(g, nm) {
+  const s = g.selection;
+  const pick = s.spread_qualifies;
+  const away = teamShort(g.away_team, nm);
+  const home = teamShort(g.home_team, nm);
+  const sentence = pick ? `${modelSays(g, nm)} ${vegasSays(g, nm)}` : "Too close to call.";
+  const score = hasScore(g)
+    ? `<span class="row-score">${esc(g.grading.away_score)}-${esc(g.grading.home_score)}</span>${resultMark(g)}`
+    : `<span class="row-time">${esc(kickoffCT(g.kickoff_utc))}</span>`;
+  const gap = Number.isFinite(Number(s.spread_edge))
+    ? (pick
+      ? `${pts(s.spread_edge)} points apart, toward ${teamShort(s.spread_pick, nm)}`
+      : `${pts(s.spread_edge)} points apart. We need 2 to make a call.`)
+    : "Not available";
+  const qbs = s.away_qb || s.home_qb
+    ? `<div><dt>Starting QBs</dt><dd>${esc(away)}: ${esc(s.away_qb || "not listed")}. ${esc(home)}: ${esc(s.home_qb || "not listed")}.</dd></div>`
+    : "";
+  const notes = (s.qb_notes || []).map((n) => `<p class="caption">${esc(n)}</p>`).join("");
+  return `<details class="hrow${pick ? " is-pick" : ""}">
+    <summary>
+      <span class="row-teams"><span class="abbr">${esc(g.away_team)}</span> ${esc(away)} <span class="at">at</span> <span class="abbr">${esc(g.home_team)}</span> ${esc(home)}</span>
+      <span class="row-when">${score}</span>
+      <span class="row-say">${esc(sentence)}</span>
+    </summary>
+    <dl class="row-detail">
+      <div><dt>Vegas says</dt><dd class="vegas">${esc(vegasSays(g, nm).replace(/^Vegas says /, "").replace(/\.$/, ""))}</dd></div>
+      <div><dt>Our model says</dt><dd class="ours">${esc(modelSays(g, nm).replace(/^Our model says /, "").replace(/\.$/, ""))}</dd></div>
+      <div><dt>Gap vs Vegas</dt><dd>${esc(gap)}</dd></div>
+      ${qbs}
+    </dl>
+    ${notes}
+  </details>`;
+}
+
+function weekIsFinal(card) {
+  return card.games.length > 0 && card.games.every(hasScore);
+}
+
+function homeNotices(card) {
+  const out = [];
+  if (card.totals_void_note) {
+    const m = String(card.totals_void_note).match(/voided (\w{3} \d+)/i);
+    out.push(`Over/unders pulled${m ? ` ${m[1]}` : ""} (bug fixed). Winner calls stand.`);
+  }
+  if (card.games.some((g) => (g.selection.qb_notes || []).length)) {
+    out.push("Some starting QBs are uncertain. Open a game to see the note.");
+  }
+  return out;
+}
+
+function homeRecord(health) {
+  const past = "In a 2022 to 2025 test the model was right 48.8% of the time against Vegas.";
+  if (!health || !health.settled_picks) return `2026 record: no calls graded yet. ${past}`;
+  const ties = health.pushes ? `, ${health.pushes} even` : "";
+  return `2026 record: ${health.wins} right, ${health.losses} wrong${ties}. ${past}`;
+}
+
 async function renderHome() {
-  const card = await load("picks.json");
-  $("kicker").textContent = `Week ${card.week} · ${card.season}`;
-  showLock(card);
-  if ($("live-record")) $("live-record").textContent = liveRecordLine(card.health);
-  if ($("health")) {
-    $("health").hidden = true;
-    $("health").textContent = card.health.line;
-  }
-  const spreads = card.games.filter((g) => g.selection.spread_qualifies);
-  const totals = card.games.filter((g) => totalIsActive(g.selection));
-  const nopicks = card.games.filter((g) => !g.selection.spread_qualifies && !totalIsActive(g.selection));
-  $("count").textContent = `${spreads.length} spread picks, ${totals.length} over/under picks, ${card.games.length} games on the card.`;
-  if ($("spread-heading")) {
-    $("spread-heading").innerHTML = spreads.length
-      ? `Who we think covers <span class="count-pill">${spreads.length}</span>`
-      : "Who we think covers";
-  }
-  if ($("total-heading")) {
-    $("total-heading").innerHTML = totals.length
-      ? `Over/under picks <span class="count-pill">${totals.length}</span>`
-      : "Over/under picks";
-  }
-  $("spreads").innerHTML = spreads.length ? spreadCards(card.games) : "<p>No game had a 2-point gap on the margin this week.</p>";
-  const totalsEmpty = card.totals_void_note
-    ? "<p>No over/under picks are active. The voided ones stay on the card and are not scored.</p>"
-    : "<p>No game had a 3-point gap on the total this week.</p>";
-  $("totals").innerHTML = totals.length ? totalCards(card.games) : totalsEmpty;
-  if ($("nopicks")) {
-    $("nopicks").innerHTML = nopicks.length ? noPickCards(card.games) : "<p>Every game on the card has a pick.</p>";
-  }
+  const [card, teams] = await Promise.all([
+    load("picks.json"),
+    load("teams.json").catch(() => ({ teams: [] })),
+  ]);
+  const nm = Object.fromEntries((teams.teams || []).map((t) => [t.team, t.name]));
+  const final = weekIsFinal(card);
+  $("home-title").textContent = final
+    ? `Week ${card.week} is final`
+    : `Week ${card.week}: who we think wins`;
+  document.title = `NFL Lab: ${$("home-title").textContent}`;
+  const lockTime = card.created_at ? whenCT(card.created_at).replace(/,? CDT|,? CST/, "") : "";
+  $("lock-label").textContent = lockTime
+    ? `Calls locked ${lockTime} CT, before any kickoff. All times CT.`
+    : "All times CT.";
+  $("notices").innerHTML = homeNotices(card).map((n) => `<li>${esc(n)}</li>`).join("");
+
+  const byKick = (a, b) => String(a.kickoff_utc).localeCompare(String(b.kickoff_utc));
+  const picks = card.games.filter((g) => g.selection.spread_qualifies).sort(byKick);
+  const close = card.games.filter((g) => !g.selection.spread_qualifies).sort(byKick);
+  $("games").innerHTML = picks.length
+    ? picks.map((g) => gameRow(g, nm)).join("")
+    : "<p>Our model agrees with Vegas on every game this week.</p>";
+  $("close-games").innerHTML = close.length
+    ? `<details class="hrow close-group">
+        <summary><span class="row-teams">${close.length} games: too close to call</span><span class="row-say">Our model and Vegas roughly agree on these, so we make no call.</span></summary>
+        <div class="close-list">${close.map((g) => gameRow(g, nm)).join("")}</div>
+      </details>`
+    : "";
+  $("previews-link").textContent = `Read the week ${card.week} game previews`;
+  $("previews-link").href = `previews/week${card.week}.html`;
+  $("live-record").textContent = homeRecord(card.health);
 }
 
 function record(r) {

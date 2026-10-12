@@ -45,14 +45,26 @@ modes.
 
 ## Type
 
-- Display: Georgia 400, tight letter spacing, large sizes (`h1` up to 6.25rem).
-- Reading: Georgia at 18px, set relative to the browser default so user font
-  settings still apply.
-- Labels: monospace, small caps, used for short labels only. Long sentences
-  never go in uppercase mono.
-- Numbers in data (the figures under each pick, tables, chart values):
-  monospace with tabular figures so columns line up. Display numbers, like the
-  pick itself or a season record, keep the Georgia display type.
+Changed Oct 2026 with the approved home redesign (Apple Sports style, one row
+per game). The palette above stays; the type is now one sans family.
+
+- One family site-wide: `system-ui, -apple-system, "Segoe UI", Roboto,
+  "Helvetica Neue", Arial, sans-serif`. No Georgia, no monospace. The old
+  `--serif` and `--mono` tokens point at the same stack.
+- Page titles (`h1`): 28px, bold. Section heads 20px.
+- Game rows: team names 17px semibold.
+- Body: 16px, line height 1.5.
+- Captions, labels and footer text: 13px, never smaller.
+- Every number uses `font-variant-numeric: tabular-nums`.
+- Headings are sentence case and state the takeaway ("Week 5: who we think
+  wins", "Week 5 is final"). No uppercase labels.
+- Our model has one accent colour, `--ours` (#1d4f91 light, #9cc0f5 dark).
+  Vegas stays neutral grey (`--muted`). Right is green with a check mark,
+  wrong is red with a cross; colour is never used alone.
+- Contrast on the paper background (computed, WCAG): ink 15.35, muted/Vegas
+  6.31, right 6.32, wrong 5.69, caution 6.02, our model 7.09. Dark mode: muted
+  7.51, right 9.89, wrong 7.87, caution 9.17, our model 9.47.
+- Tap targets are at least 44px tall. All times are Central Time.
 
 ## Layout
 

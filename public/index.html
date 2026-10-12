@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
-  <meta name="description" content="Who NFL Lab's model thinks wins and covers this week, next to the Vegas line, plus the 2026 record so far.">
+  <meta name="description" content="Who NFL Lab's model thinks wins this week, next to what Vegas says, plus an honest 2026 record.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/><path d='M5 12.5 11 3.5' stroke='%23f2efe7' stroke-width='2'/></svg>">
-  <title>NFL Lab: this week's picks</title>
+  <title>NFL Lab: who we think wins this week</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="home">
@@ -15,55 +15,38 @@
   <div class="wrap">
     <header class="top">
       <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
-      <nav aria-label="Primary">
-        <a href="index.html" aria-current="page">Picks</a>
-        <a href="model.html">Model</a>
-        <a href="report-card.html">2026 so far</a>
-        <a href="previews/week5.html">Week 5 previews</a>
-        <a href="recaps/week4.html">Week 4 recaps</a>
+      <nav class="primary" aria-label="Primary">
+        <a href="index.html" aria-current="page">This week</a>
+        <a href="recaps/week4.html">Last week</a>
+        <a href="teams.html">Teams</a>
+        <a href="model.html">How it works</a>
         <a href="glossary.html">Glossary</a>
       </nav>
     </header>
 
     <main id="main" tabindex="-1">
-      <div class="home-hero">
-        <p class="kicker" id="kicker">This week</p>
-        <h1>This week's picks</h1>
-        <p class="lock" id="lock-label">Official week-5 picks, locked Mon Oct 5, DraftKings lines at lock.</p>
-        <div class="record-strip" id="record-strip" aria-label="Honest record">
-          <p class="record-line" id="live-record">Loading the 2026 record...</p>
-          <p class="record-line caution" id="holdout-note">In a 2022 to 2025 test, the model got 48.8% of spread picks right. It needs 52.4% to break even.</p>
-        </div>
-        <p class="void-note" id="totals-void-note">We voided the 8 week 5 over/under picks on Oct 8. The totals formula had the defense sign flipped, which pushed them toward overs. The spread picks stand.</p>
-        <p class="void-note" id="close-fallback-note" hidden></p>
-        <p class="meta home-count" id="count"></p>
-      </div>
+      <h1 id="home-title">This week: who we think wins</h1>
+      <p class="caption" id="lock-label">Picks locked before kickoff. All times CT.</p>
+      <ul class="notices" id="notices"></ul>
 
-      <div class="health" id="health" hidden>Loading this week's picks...</div>
+      <div class="health" id="health" hidden>Loading this week's games...</div>
+      <div class="games" id="games" aria-live="polite"></div>
+      <div id="close-games"></div>
 
-      <h2 id="spread-heading">Who we think covers</h2>
-      <div id="spreads"></div>
-
-      <h2 id="total-heading">Over/under picks</h2>
-      <div id="totals"></div>
-
-      <p class="home-lede">We pick a team to cover when our model and Vegas disagree on the final margin by 2+ points. We pick over or under when we disagree on total points by 3+. This is a research record, not betting advice.</p>
-
-      <h2 id="nopick-heading">No pick this week</h2>
-      <p class="gloss">These games are on the card but not scored. Our model and Vegas were too close for a pick, unless the card gives another reason.</p>
-      <div id="nopicks"></div>
+      <p class="next-link"><a href="previews/week5.html" id="previews-link">Read the game previews</a></p>
+      <p class="caption how-line">We call a winner against Vegas only when our model's margin is 2 or more points away from theirs. <a href="model.html">How it works</a></p>
+      <p class="record-line" id="live-record">Loading the 2026 record...</p>
     </main>
 
     <footer>
       <nav class="foot-nav" aria-label="More pages">
-        <a href="ledger.html">Ledger</a>
-        <a href="teams.html">Teams</a>
-        <a href="freshness.html">Freshness</a>
+        <a href="ledger.html">Track record</a>
+        <a href="report-card.html">2026 so far</a>
         <a href="previews/week5.html">Week 5 previews</a>
         <a href="recaps/week4.html">Week 4 recaps</a>
-        <a href="glossary.html">Glossary</a>
+        <a href="freshness.html">Data freshness</a>
       </nav>
-      <p>Vegas lines are DraftKings, from ESPN. We save them when we make the pick and check them again just before kickoff. If no snapshot is available after kickoff, the card says so and stores the nflverse closing line instead. ESPN's feed is unofficial and can change.</p>
+      <p>Vegas lines are DraftKings, from ESPN. We save them when we make the pick and check them again just before kickoff. ESPN's feed is unofficial and can change.</p>
       <p>Our predicted margin includes a starting-quarterback adjustment. We tested it on 2016 to 2021 games only, so the 2022 to 2025 record does not include it.</p>
     </footer>
   </div>
