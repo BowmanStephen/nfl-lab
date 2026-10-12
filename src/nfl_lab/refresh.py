@@ -304,6 +304,8 @@ def _grade_saved_card(card: dict, schedules: pd.DataFrame, now: datetime) -> dic
 def _finalize_completed_weeks(schedules: pd.DataFrame, now: datetime) -> list[int]:
     """Grade weeks that are already finished before ``live_week`` moves on.
 
+    Returns only the weeks whose saved card changed this run.
+
     Once every score in a week is filled, ``live_week`` returns the next week.
     The card that just ended has to be graded first, or its picks never settle
     and drop out of the live record.
@@ -315,8 +317,8 @@ def _finalize_completed_weeks(schedules: pd.DataFrame, now: datetime) -> list[in
         if card is None:
             continue
         log(f"grading finished {LIVE_SEASON} week {week} before week {current}")
-        _grade_saved_card(card, schedules, now)
-        graded.append(week)
+        if _grade_saved_card(card, schedules, now) != card:
+            graded.append(week)
     return graded
 
 
