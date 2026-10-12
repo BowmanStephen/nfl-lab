@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/><path d='M5 12.5 11 3.5' stroke='%23f2efe7' stroke-width='2'/></svg>">
-  <title>NFL Lab — glossary</title>
+  <title>NFL Lab: glossary</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -32,64 +32,64 @@
 
     <article class="game">
       <h2>EPA per play (Expected Points Added)</h2>
-      <p>Every spot on the field is worth some number of points before the snap: 1st-and-10 at your own 25 is worth about +1; 1st-and-goal at the 1 is worth about +5.5. EPA is how much one play changed that number. An 8-yard gain on 3rd-and-7 is big plus EPA; the same 8 yards on 3rd-and-12 is minus, because you still have to punt.</p>
-      <p><strong>College cousin:</strong> CFBD's PPA is the same idea with a college-trained model. Same math, different league.</p>
-      <p><strong>Good / bad:</strong> Offense +0.10 per play is top-tier; −0.10 is bottom-tier. For defense, lower is better.</p>
+      <p>Before the snap, every spot on the field is worth some number of points. First-and-10 at your own 25 is worth about +1. First-and-goal at the 1 is worth about +5.5. EPA is how much one play changed that number. An 8-yard gain on 3rd-and-7 is a large positive EPA. The same 8 yards on 3rd-and-12 is negative, because you still have to punt.</p>
+      <p><strong>In college:</strong> CFBD's PPA is the same idea, with a model trained on college games.</p>
+      <p><strong>What's good:</strong> An offense at +0.10 per play is top tier. At −0.10 it is bottom tier. For defense, lower is better.</p>
     </article>
 
     <article class="game">
       <h2>Success rate</h2>
-      <p>Did the play keep the offense on schedule? Counts as a success if it gains 40% of the needed yards on 1st down, 60% on 2nd, 100% on 3rd/4th (nflverse uses "EPA &gt; 0", which lines up closely).</p>
-      <p><strong>Why both:</strong> EPA rewards big plays; success rate rewards consistency. A team with high EPA but low success rate is living on explosives.</p>
+      <p>Success rate asks whether a play kept the offense on schedule. A play counts as a success if it gains 40% of the needed yards on 1st down, 60% on 2nd, or all of them on 3rd or 4th. nflverse counts any play with EPA above 0 instead, and the two line up closely.</p>
+      <p><strong>Why use both:</strong> EPA rewards big plays. Success rate rewards staying on schedule. A team with high EPA and a low success rate depends on big plays.</p>
     </article>
 
     <article class="game">
       <h2>Explosive play rate</h2>
-      <p>Share of plays that gain 20+ yards passing or 10+ rushing. Explosives are swingy week to week, so the model leans on EPA and success rate more.</p>
+      <p>The share of plays that gain 20+ yards passing or 10+ rushing. Big plays swing a lot from week to week, so the model relies more on EPA and success rate.</p>
     </article>
 
     <article class="game">
       <h2>Early-down EPA</h2>
-      <p>EPA on 1st and 2nd down only. Third downs are noisy; early downs predict future scoring better.</p>
+      <p>EPA on 1st and 2nd down only. Third-down results are noisy. Early downs predict future scoring better.</p>
     </article>
 
     <article class="game">
       <h2>Pass rate over expected (PROE)</h2>
-      <p>How often a team throws compared with what an average team would do in the same down, distance, score and clock. Positive = pass-happy.</p>
+      <p>How often a team throws compared with what an average team would do in the same down, distance, score and clock. A positive number means the team passes more than expected.</p>
     </article>
 
     <article class="game">
-      <h2>QB EPA + CPOE</h2>
-      <p>EPA per dropback (what the QB's plays were worth) plus Completion % Over Expected (did he complete throws that were harder than average). Best single-number QB summary in public data.</p>
+      <h2>QB EPA and CPOE</h2>
+      <p>EPA per dropback is what a quarterback's plays were worth. CPOE (completion percentage over expected) measures whether he completed throws that were harder than average. Together they are the best single QB summary in public data.</p>
     </article>
 
     <article class="game">
       <h2>Opponent-adjusted rating</h2>
-      <p>Raw EPA, corrected for who you played. Beating up three bad defenses gets marked down.</p>
+      <p>Raw EPA, corrected for who a team played. Wins over three bad defenses count for less.</p>
     </article>
 
     <article class="game">
-      <h2>The spread and "edge"</h2>
-      <p>The spread is the market's guess at the final margin. The model's <strong>edge</strong> = model margin minus market margin. NFL Lab only makes a pick when the edge is <strong>2+ points on the spread</strong> or <strong>3+ points on the total</strong>.</p>
+      <h2>The spread and the gap</h2>
+      <p>The spread is the Vegas guess at the final margin. The total is the Vegas guess at combined points. The gap is our model's number minus the Vegas number. Bettors call this the edge. NFL Lab only makes a pick when the gap is 2+ points on the spread or 3+ points on the total.</p>
     </article>
 
     <article class="game">
-      <h2>Break-even: 52.4%</h2>
-      <p>Standard bets cost $110 to win $100. You need to win 52.4% just to break even. Below that loses money.</p>
+      <h2>Break-even is 52.4%</h2>
+      <p>A standard bet costs $110 to win $100. Bettors call that -110 odds. At that price you have to win 52.4% of bets to break even. Below that, you lose money.</p>
     </article>
 
     <article class="game">
       <h2>Closing line value (CLV)</h2>
-      <p>Did the line move toward our pick between when we picked and kickoff? Sharp bettors consistently get better numbers than the close. It's the earliest honest sign of a real edge, long before win-loss means anything.</p>
+      <p>CLV asks whether the Vegas line moved toward our pick between the time we picked and kickoff. A line that keeps moving our way is an early sign the model sees something real. It shows up long before the win-loss record means anything.</p>
     </article>
 
     <article class="game">
       <h2>How the record is scored</h2>
       <ul>
-        <li>Picks are saved with a timestamp <strong>before kickoff</strong> and never edited.</li>
-        <li>Graded only at the end of the regular season, on 100+ picks.</li>
-        <li>It must pass <strong>all three</strong>: above 52.4% vs the spread, line moves our way on more than 55% of picks, and an average closing-line move in our favor.</li>
-        <li>Past seasons 2022–2025 were graded once: 48.8% on spreads, 51.0% on totals. Not good enough yet, and the site says so.</li>
+        <li>Picks are saved with a timestamp before kickoff and never edited.</li>
+        <li>We grade the record once, at the end of the regular season, on 100+ picks.</li>
+        <li>It must pass every test: above 52.4% against the spread, the line moving our way on more than 55% of picks, and an average closing-line move in our favor.</li>
+        <li>We graded the 2022 to 2025 seasons once. The model won 48.8% on spreads and 51.0% on totals, below the 52.4% break-even.</li>
       </ul>
     </article>
 
@@ -102,15 +102,15 @@
           <tr><td>SRS</td><td>SRS (same idea, scoring margin adjusted for schedule)</td></tr>
           <tr><td>Elo</td><td>nfelo / 538-style Elo</td></tr>
           <tr><td>FPI</td><td>ESPN NFL FPI</td></tr>
-          <tr><td>SP+</td><td>No public twin; DVOA (FTN) is closest, paid</td></tr>
-          <tr><td>Havoc, line yards</td><td>Mostly college-only; NFL uses pressure rate and rush yards over expected (NGS)</td></tr>
+          <tr><td>SP+</td><td>No public match. FTN's DVOA is closest and costs money.</td></tr>
+          <tr><td>Havoc, line yards</td><td>Mostly college only. The NFL uses pressure rate and rush yards over expected (NGS).</td></tr>
         </tbody>
       </table>
     </article>
 
     </main>
     <footer>
-      <p>The same sentences live in <code>GLOSSARY.md</code>.</p>
+      <p>The same definitions are in the project's GitHub repo.</p>
     </footer>
   </div>
 </body>

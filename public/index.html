@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
-  <meta name="description" content="This week’s locked NFL Lab picks: model call next to the line, live 2026 record, and the holdout ATS vs break-even.">
+  <meta name="description" content="Who NFL Lab's model thinks wins and covers this week, next to the Vegas line, plus the 2026 record so far.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/><path d='M5 12.5 11 3.5' stroke='%23f2efe7' stroke-width='2'/></svg>">
-  <title>NFL Lab — this week’s picks</title>
+  <title>NFL Lab: this week's picks</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="home">
@@ -28,28 +28,28 @@
     <main id="main" tabindex="-1">
       <div class="home-hero">
         <p class="kicker" id="kicker">This week</p>
-        <h1>This week’s picks</h1>
+        <h1>This week's picks</h1>
         <p class="lock" id="lock-label">Official week-5 picks, locked Mon Oct 5, DraftKings lines at lock.</p>
         <div class="record-strip" id="record-strip" aria-label="Honest record">
-          <p class="record-line" id="live-record">Loading live record…</p>
-          <p class="record-line caution" id="holdout-note">Holdout record 48.8% ATS vs 52.4% break-even.</p>
+          <p class="record-line" id="live-record">Loading the 2026 record...</p>
+          <p class="record-line caution" id="holdout-note">In a 2022 to 2025 test, the model got 48.8% of spread picks right. It needs 52.4% to break even.</p>
         </div>
-        <p class="void-note" id="totals-void-note">The 8 week-5 totals picks were voided Oct 8: the totals formula had the defense sign flipped, which biased them toward overs. The spread picks stand.</p>
+        <p class="void-note" id="totals-void-note">We voided the 8 week 5 over/under picks on Oct 8. The totals formula had the defense sign flipped, which pushed them toward overs. The spread picks stand.</p>
         <p class="meta home-count" id="count"></p>
       </div>
 
-      <div class="health" id="health" hidden>Loading this week’s card…</div>
+      <div class="health" id="health" hidden>Loading this week's picks...</div>
 
-      <h2 id="spread-heading">Spread picks</h2>
+      <h2 id="spread-heading">Who we think covers</h2>
       <div id="spreads"></div>
 
-      <h2 id="total-heading">Total picks</h2>
+      <h2 id="total-heading">Over/under picks</h2>
       <div id="totals"></div>
 
-      <p class="home-lede">Only games where the model is at least 2 points off the spread, or 3 off the total. Research record, not a bet slip.</p>
+      <p class="home-lede">We pick a team to cover when our model and Vegas disagree on the final margin by 2+ points. We pick over or under when we disagree on total points by 3+. This is a research record, not betting advice.</p>
 
       <h2 id="nopick-heading">No pick this week</h2>
-      <p class="gloss">Games that stay on the card and are not scored. A no-pick is the locked rule, unless a line names a different reason.</p>
+      <p class="gloss">These games are on the card but not scored. Our model and Vegas were too close for a pick, unless the card gives another reason.</p>
       <div id="nopicks"></div>
     </main>
 
@@ -62,8 +62,8 @@
         <a href="recaps/week4.html">Week 4 recaps</a>
         <a href="glossary.html">Glossary</a>
       </nav>
-      <p>Lines are ESPN DraftKings, saved when the pick was written. The same book is checked again just before kickoff. That endpoint is unofficial and can change.</p>
-      <p>Margin includes a starting-QB adjustment checked on 2016–2021 only. It is not in the 2022–2025 ledger.</p>
+      <p>Vegas lines are DraftKings, from ESPN. We save them when we make the pick and check them again just before kickoff. ESPN's feed is unofficial and can change.</p>
+      <p>Our predicted margin includes a starting-quarterback adjustment. We tested it on 2016 to 2021 games only, so the 2022 to 2025 record does not include it.</p>
     </footer>
   </div>
   <script src="assets/site.js"></script>

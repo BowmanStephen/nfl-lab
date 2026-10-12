@@ -7,7 +7,7 @@ function esc(value) {
 }
 
 function fmt(n, digits = 1) {
-  if (n == null || Number.isNaN(Number(n))) return "—";
+  if (n == null || Number.isNaN(Number(n))) return "n/a";
   const v = Number(n);
   return (v > 0 ? "+" : "") + v.toFixed(digits);
 }
@@ -50,8 +50,8 @@ function gapChart(model, line) {
 
 function marginPlain(homeMargin, home, away) {
   const m = Number(homeMargin);
-  if (!Number.isFinite(m)) return "—";
-  if (Math.abs(m) < 0.05) return "pick’em";
+  if (!Number.isFinite(m)) return "n/a";
+  if (Math.abs(m) < 0.05) return "pick'em";
   if (m > 0) return `${home} by ${Math.abs(m).toFixed(1)}`;
   return `${away} by ${Math.abs(m).toFixed(1)}`;
 }
@@ -63,14 +63,14 @@ function pickLineDisplay(game, side) {
 }
 
 function compareBlock(lineLabel, lineValue, modelLabel, modelValue) {
-  return `<div class="compare" aria-label="Model versus line">
+  return `<div class="compare" aria-label="Our model versus Vegas">
     <div class="compare-col compare-line">
-      <span>Line</span>
+      <span>Vegas says</span>
       <b>${esc(lineValue)}</b>
       <em>${esc(lineLabel)}</em>
     </div>
     <div class="compare-col compare-model">
-      <span>Model call</span>
+      <span>Our model says</span>
       <b>${esc(modelValue)}</b>
       <em>${esc(modelLabel)}</em>
     </div>
@@ -117,9 +117,9 @@ function spreadCards(games) {
           `home margin ${fmt(s.model_margin)}`,
           marginPlain(s.model_margin, g.home_team, g.away_team),
         )}
-        <p class="edge-line"><span>Edge</span><b>${fmt(edge)}</b><em>pts toward ${esc(side)}</em></p>
-        <p class="meta">Snapshotted ${esc(whenCT(g.pick_time.captured_at))} · ${esc(g.pick_time.provider)}</p>
-        <p class="meta">Starters used: ${esc(g.away_team)} ${esc(s.away_qb)}, ${esc(g.home_team)} ${esc(s.home_qb)}</p>
+        <p class="edge-line"><span>Gap</span><b>${fmt(edge)}</b><em>pts toward ${esc(side)}</em></p>
+        <p class="meta">Line saved ${esc(whenCT(g.pick_time.captured_at))}, ${esc(g.pick_time.provider)}</p>
+        <p class="meta">Starting QBs: ${esc(g.away_team)} ${esc(s.away_qb)}, ${esc(g.home_team)} ${esc(s.home_qb)}</p>
         ${notes}
       </article>`;
     }).join("");
@@ -143,12 +143,12 @@ function totalCards(games) {
         <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
         <p class="side">${esc(sideLabel)}</p>
         ${compareBlock(
-          `ESPN total ${tot.toFixed(1)}`,
+          `Vegas total ${tot.toFixed(1)}`,
           tot.toFixed(1),
-          `Model total ${modelTot.toFixed(1)}`,
+          `Our total ${modelTot.toFixed(1)}`,
           modelTot.toFixed(1),
         )}
-        <p class="edge-line"><span>Edge</span><b>${fmt(edge)}</b><em>pts · ${esc(s.total_pick)}</em></p>
+        <p class="edge-line"><span>Gap</span><b>${fmt(edge)}</b><em>pts, ${esc(s.total_pick)}</em></p>
       </article>`;
     }).join("");
 }
@@ -157,10 +157,10 @@ function noPickReason(game) {
   const s = game.selection;
   if (s.total_voided && !s.spread_qualifies) {
     const recorded = `${s.total_pick} ${Number(game.pick_time.total).toFixed(1)}`;
-    return `Recorded total was ${recorded}. Voided and not scored.`;
+    return `We had ${recorded} on the total. It was voided and is not scored.`;
   }
   if (s.no_pick_reason) return s.no_pick_reason;
-  return `No pick: locked rule (|spread edge| ${Math.abs(s.spread_edge).toFixed(1)} < 2 and |total edge| ${Math.abs(s.total_edge).toFixed(1)} < 3).`;
+  return `No pick. Our model was ${Math.abs(s.spread_edge).toFixed(1)} points from Vegas on the margin (a pick needs 2) and ${Math.abs(s.total_edge).toFixed(1)} on the total (a pick needs 3).`;
 }
 
 function noPickCards(games) {
@@ -173,8 +173,8 @@ function noPickCards(games) {
         <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(label)}</span></header>
         <p>${esc(noPickReason(g))}</p>
         <div class="nums nums-compact">
-          <div><span>Spread edge</span><b>${fmt(s.spread_edge)}</b></div>
-          <div><span>Total edge</span><b>${fmt(s.total_edge)}</b></div>
+          <div><span>Spread gap</span><b>${fmt(s.spread_edge)}</b></div>
+          <div><span>Total gap</span><b>${fmt(s.total_edge)}</b></div>
         </div>
       </article>`;
     }).join("");
@@ -201,12 +201,12 @@ function showLock(card) {
 }
 
 function liveRecordLine(health) {
-  if (!health) return "Live 2026 record: unavailable.";
+  if (!health) return "The 2026 record is unavailable.";
   if (!health.settled_picks) {
-    return "Live 2026 record: no settled picks yet.";
+    return "No 2026 picks have been graded yet.";
   }
   const rate = health.cover_rate == null ? "" : ` (${(100 * health.cover_rate).toFixed(1)}%)`;
-  return `Live 2026 record: ${health.wins}–${health.losses}–${health.pushes}${rate}.`;
+  return `The 2026 record so far is ${health.wins}-${health.losses}-${health.pushes}${rate}.`;
 }
 
 function holdoutCalmLine(note) {
@@ -228,30 +228,30 @@ async function renderHome() {
   const spreads = card.games.filter((g) => g.selection.spread_qualifies);
   const totals = card.games.filter((g) => totalIsActive(g.selection));
   const nopicks = card.games.filter((g) => !g.selection.spread_qualifies && !totalIsActive(g.selection));
-  $("count").textContent = `${spreads.length} spread picks · ${totals.length} total picks · ${card.games.length} games on the card`;
+  $("count").textContent = `${spreads.length} spread picks, ${totals.length} over/under picks, ${card.games.length} games on the card.`;
   if ($("spread-heading")) {
     $("spread-heading").innerHTML = spreads.length
-      ? `Spread picks <span class="count-pill">${spreads.length}</span>`
-      : "Spread picks";
+      ? `Who we think covers <span class="count-pill">${spreads.length}</span>`
+      : "Who we think covers";
   }
   if ($("total-heading")) {
     $("total-heading").innerHTML = totals.length
-      ? `Total picks <span class="count-pill">${totals.length}</span>`
-      : "Total picks";
+      ? `Over/under picks <span class="count-pill">${totals.length}</span>`
+      : "Over/under picks";
   }
-  $("spreads").innerHTML = spreads.length ? spreadCards(card.games) : "<p>No spread pick cleared 2 points this week.</p>";
+  $("spreads").innerHTML = spreads.length ? spreadCards(card.games) : "<p>No game had a 2-point gap on the margin this week.</p>";
   const totalsEmpty = card.totals_void_note
-    ? "<p>No active total picks. The voided totals stay on the card and are not scored.</p>"
-    : "<p>No total cleared 3 points this week.</p>";
+    ? "<p>No over/under picks are active. The voided ones stay on the card and are not scored.</p>"
+    : "<p>No game had a 3-point gap on the total this week.</p>";
   $("totals").innerHTML = totals.length ? totalCards(card.games) : totalsEmpty;
   if ($("nopicks")) {
-    $("nopicks").innerHTML = nopicks.length ? noPickCards(card.games) : "<p>Every snapshotted game cleared a pick.</p>";
+    $("nopicks").innerHTML = nopicks.length ? noPickCards(card.games) : "<p>Every game on the card has a pick.</p>";
   }
 }
 
 function record(r) {
-  if (!r || r.win_rate == null) return "—";
-  return `${r.wins}–${r.losses}–${r.pushes} (${(100 * r.win_rate).toFixed(1)}%)`;
+  if (!r || r.win_rate == null) return "n/a";
+  return `${r.wins}-${r.losses}-${r.pushes} (${(100 * r.win_rate).toFixed(1)}%)`;
 }
 
 async function renderLedger() {
@@ -275,18 +275,18 @@ async function renderLedger() {
 
 async function renderTeams() {
   const data = await load("teams.json");
-  $("through").textContent = `2026 regular season through week ${data.through_week}. Partial season.`;
+  $("through").textContent = `2026 regular season through week ${data.through_week}.`;
   $("teams").innerHTML = data.teams.map((t, i) => `
     <article class="team" id="${esc(t.team)}">
       <div>
         <strong>${i + 1}. ${esc(t.name)}</strong>
-        <div class="meta">${esc(t.team)} · rating ${fmt(t.rating, 3)}</div>
+        <div class="meta">${esc(t.team)}, rating ${fmt(t.rating, 3)}</div>
         ${spark(t.weekly)}
       </div>
       <div class="bars">
         <div class="bar-row"><span>Off</span>${epaBar(t.off_epa, "")}<b>${fmt(t.off_epa, 3)}</b></div>
         <div class="bar-row"><span>Def</span>${epaBar(-(t.def_epa || 0), "def")}<b>${fmt(t.def_epa, 3)}</b></div>
-        <div class="meta">Success rate ${t.off_success == null ? "—" : (100 * t.off_success).toFixed(1)}% offense</div>
+        <div class="meta">Offense success rate ${t.off_success == null ? "n/a" : (100 * t.off_success).toFixed(1)}%</div>
       </div>
     </article>`).join("");
 }
@@ -296,7 +296,7 @@ async function renderFreshness() {
   const stale = new Date(data.stale_after).getTime() < Date.now();
   if (stale) {
     $("stale").hidden = false;
-    $("stale").textContent = "This page is stale. The last refresh is older than 36 hours.";
+    $("stale").textContent = "This data is out of date. The last refresh was more than 36 hours ago.";
   }
   $("when").textContent = when(data.generated_at);
   $("files").innerHTML = data.files.map((f) =>
@@ -317,7 +317,7 @@ function pointsLabel(value) {
 
 function powerChart(ratings) {
   // HTML rows instead of a scaled SVG, so team labels stay a readable size on phones.
-  // points_rating is the weeks 5–8 scoring-margin scale (positive = points above average).
+  // points_rating is the weeks 5 to 8 scoring-margin scale (positive = points above average).
   const ranked = ratings.slice().sort((a, b) => b.points_rating - a.points_rating || a.team.localeCompare(b.team));
   const peak = Math.max(...ranked.map((r) => Math.abs(r.points_rating)));
   const step = peak <= 6 ? 3 : 4;
@@ -338,7 +338,7 @@ function powerChart(ratings) {
     </li>`;
   }).join("");
   const scale = ticks.map((t) => `<span style="left:${pos(t).toFixed(2)}%">${t > 0 ? "+" : ""}${t}</span>`).join("");
-  return `<ol class="power" aria-label="Points ratings, best to worst. Positive means points above an average team.">${rows}</ol>
+  return `<ol class="power" aria-label="Team ratings in points, best to worst. Positive means better than an average team.">${rows}</ol>
     <div class="pw-axis" aria-hidden="true"><span></span><div class="pw-axis-scale">${scale}<span class="dir worse">worse</span><span class="dir better">better</span></div><span></span></div>`;
 }
 
@@ -358,17 +358,17 @@ function gamesChart(games) {
     if (g.spread_pick) pickBits.push(g.spread_pick);
     if (g.total_pick) pickBits.push(g.total_pick.replace("OVER", "Over").replace("UNDER", "Under"));
     const edgeBits = [];
-    if (g.spread_pick) edgeBits.push(`${Math.abs(g.spread_edge).toFixed(1)} off spread`);
-    if (g.total_pick) edgeBits.push(`${Math.abs(g.total_edge).toFixed(1)} off total`);
+    if (g.spread_pick) edgeBits.push(`${Math.abs(g.spread_edge).toFixed(1)} pts off the Vegas spread`);
+    if (g.total_pick) edgeBits.push(`${Math.abs(g.total_edge).toFixed(1)} pts off the Vegas total`);
     let tag = "No pick";
-    if (g.is_pick) tag = pickBits.join(" · ") || "Pick";
+    if (g.is_pick) tag = pickBits.join(", ") || "Pick";
     else if (g.total_voided) tag = "Voided total";
     // market_margin_home is the home spread (negative = home favored); flip it to a home margin for plotting
     const mktHome = -g.market_margin_home;
     const byLine = (m) => Math.abs(m) < 0.05 ? "even" : `${m > 0 ? g.home : g.away} by ${Math.abs(m).toFixed(1).replace(/\.0$/, "")}`;
-    const sub = g.is_pick && edgeBits.length ? edgeBits.join(" · ") : `Line: ${byLine(mktHome)} · Model: ${byLine(g.model_margin_home)}`;
+    const sub = g.is_pick && edgeBits.length ? edgeBits.join(", ") : `Vegas says ${byLine(mktHome)}, our model says ${byLine(g.model_margin_home)}`;
     return `<div class="game-row${g.is_pick ? " is-pick" : ""}">
-      <div class="match">${esc(g.away)} @ ${esc(g.home)}<small>${esc(tag)}</small></div>
+      <div class="match">${esc(g.away)} at ${esc(g.home)}<small>${esc(tag)}</small></div>
       ${gameScale(mktHome, g.model_margin_home)}
       <div class="edge-tag">${esc(sub)}</div>
     </div>`;
@@ -382,8 +382,8 @@ function winRateChart(holdout) {
   const chartH = H - padT - padB;
   const max = 0.65;
   const rows = [
-    { label: "Spreads", rate: holdout.spread_win_rate, detail: `${holdout.spread_wins}–${holdout.spread_losses}–${holdout.spread_pushes}` },
-    { label: "Totals", rate: holdout.total_win_rate, detail: `${holdout.total_wins}–${holdout.total_losses}–${holdout.total_pushes}` },
+    { label: "Spreads", rate: holdout.spread_win_rate, detail: `${holdout.spread_wins}-${holdout.spread_losses}-${holdout.spread_pushes}` },
+    { label: "Totals", rate: holdout.total_win_rate, detail: `${holdout.total_wins}-${holdout.total_losses}-${holdout.total_pushes}` },
   ];
   const barW = 64;
   const gap = (chartW - rows.length * barW) / (rows.length + 1);
@@ -418,8 +418,8 @@ function maeChart(holdout) {
   const chartH = H - padT - padB;
   const max = 12;
   const rows = [
-    { label: "Model", val: holdout.model_mae_margin },
-    { label: "Market", val: holdout.market_mae_margin },
+    { label: "Our model", val: holdout.model_mae_margin },
+    { label: "Vegas", val: holdout.market_mae_margin },
   ];
   const barW = 64;
   const gap = (chartW - rows.length * barW) / (rows.length + 1);
@@ -436,9 +436,9 @@ function maeChart(holdout) {
       <text class="label" x="${x + barW / 2}" y="${H - 14}" text-anchor="middle">${esc(r.label)}</text>`;
   }).join("");
 
-  const label = `Avg miss on final margin (pts): ${rows.map((r) => `${r.label} ${r.val.toFixed(2)}`).join(", ")}.`;
+  const label = `Average miss on final margin (pts): ${rows.map((r) => `${r.label} ${r.val.toFixed(2)}`).join(", ")}.`;
   return `<svg class="mae-bar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">
-    <text class="axis" x="${padL}" y="14">Avg miss on final margin (pts)</text>
+    <text class="axis" x="${padL}" y="14">Average miss on final margin (pts)</text>
     <line class="base" x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}"/>
     ${bars}
   </svg>`;
@@ -477,12 +477,12 @@ function officialGames(card) {
 async function renderModel() {
   const [data, card] = await Promise.all([load("model.json"), load("picks.json")]);
   $("ratings-caption").textContent =
-    "Points ratings. Positive means points above an average team. Weeks 5–8 scale, from scores through week 4.";
+    "Each rating is how many points better or worse than an average team we think a team is. We built it from scores through week 4, scaled for weeks 5 to 8.";
   $("ratings-chart").innerHTML = powerChart(data.ratings);
   $("games-chart").innerHTML = gamesChart(officialGames(card));
   const caption = $("week5-caption");
   if (caption && card.lock_label) {
-    caption.textContent = `${card.lock_label}. A pick lights up only when that card clears 2 points on the spread or 3 on the total.`;
+    caption.textContent = `${card.lock_label}. We make a pick only when our model and Vegas differ by 2+ points on the margin or 3+ on the total.`;
   }
   const voidNote = $("totals-void-note");
   if (voidNote) {
@@ -581,13 +581,13 @@ function rcLesson(l, rc) {
   if (l.kind === "spread") {
     const pickLine = l.pick === l.home ? -l.line_home_margin : l.line_home_margin;
     const pickMargin = l.pick === l.home ? l.actual_home_margin : -l.actual_home_margin;
-    saw = `The line had ${by(l.line_home_margin)}. The model had ${by(l.model_home_margin)}, ${rcNum(Math.abs(l.edge))} points away from the line, so it would have taken ${N(l.pick)} at ${pickLine > 0 ? "+" : ""}${rcNum(pickLine)}.`;
+    saw = `Vegas had ${by(l.line_home_margin)}. The model had ${by(l.model_home_margin)}, ${rcNum(Math.abs(l.edge))} points away from Vegas, so it would have taken ${N(l.pick)} at ${pickLine > 0 ? "+" : ""}${rcNum(pickLine)}.`;
     happened = `${l.final}. ${cap(N(l.pick))} ${l.outcome === "win" ? "covered" : "did not cover"}.`;
     if (l.outcome === "win") {
       const dog = rc.spread_underdog_calls;
-      number = `${dog.bets} of the model's ${rc.spread.bets} spread calls were on the underdog, and those went ${rcRec(dog)}. The model pulls every team hard toward average, so it rarely believes in a big favorite. Here that paid: ${N(l.pick)} were getting ${rcNum(Math.abs(pickLine))} points and ${pickMargin > 0 ? "won by" : "lost by only"} ${Math.abs(pickMargin)}.`;
+      number = `${dog.bets} of the model's ${rc.spread.bets} spread calls were on the underdog, and those went ${rcRec(dog)}. The model pulls every team hard toward average, so it rarely trusts a big favorite. That paid off here. ${cap(N(l.pick))} were getting ${rcNum(Math.abs(pickLine))} points and ${pickMargin > 0 ? "won by" : "lost by only"} ${Math.abs(pickMargin)}.`;
     } else {
-      number = `Same squeeze, other side. A ${rcNum(Math.abs(l.line_home_margin))}-point favorite looked like a ${rcNum(Math.abs(l.model_home_margin))}-point favorite to the model. The line missed the final margin by ${rcNum(l.line_miss_pts)} points. The model missed by ${rcNum(l.model_miss_pts)}.`;
+      number = `This is the same pull toward average, and here it cost the model. A ${rcNum(Math.abs(l.line_home_margin))}-point favorite looked like a ${rcNum(Math.abs(l.model_home_margin))}-point favorite to the model. Vegas missed the final margin by ${rcNum(l.line_miss_pts)} points. The model missed by ${rcNum(l.model_miss_pts)}.`;
     }
   } else {
     const side = l.pick === "over" ? "over" : "under";
@@ -598,9 +598,9 @@ function rcLesson(l, rc) {
     const offPts = rc.points_per_combined_off * (mu[l.home].off_epa + mu[l.away].off_epa);
     const defPts = -rc.points_per_combined_off * (mu[l.home].def_epa + mu[l.away].def_epa);
     const stingy = mu[l.home].def_epa < mu[l.away].def_epa ? l.home : l.away;
-    saw = `The line was ${rcNum(l.line_total)} points. The model expected ${rcNum(l.model_total)}, ${rcNum(Math.abs(l.edge))} points ${l.edge > 0 ? "higher" : "lower"}, so it would have taken the ${side}.`;
-    happened = `${l.final}, ${l.actual_total} points in all. That is ${rcNum(l.line_miss_pts)} ${l.actual_total < l.line_total ? "under" : "over"} the line.`;
-    number = `Every model total in weeks 1 to 4 landed between ${rcNum(pa)} and ${rcNum(pb)}, while the lines ran from ${rcNum(la)} to ${rcNum(lb)}. So low lines drew ${side}s, and ${side}s went ${rcRec(sideRec)}. Part of the reason is in the totals math itself: a defense that allows less adds projected points instead of taking them away. Here the two offenses ${offPts < 0 ? "took" : "added"} ${rcNum(Math.abs(offPts))} ${offPts < 0 ? "off" : ""}, and the defenses, led by ${N(stingy)}, ${defPts > 0 ? "added" : "took"} ${rcNum(Math.abs(defPts))} ${defPts > 0 ? "back" : "off"}.`;
+    saw = `The Vegas total was ${rcNum(l.line_total)} points. The model expected ${rcNum(l.model_total)}, ${rcNum(Math.abs(l.edge))} points ${l.edge > 0 ? "higher" : "lower"}, so it would have taken the ${side}.`;
+    happened = `${l.final}, ${l.actual_total} points in all. That is ${rcNum(l.line_miss_pts)} ${l.actual_total < l.line_total ? "under" : "over"} the Vegas total.`;
+    number = `Every model total in weeks 1 to 4 landed between ${rcNum(pa)} and ${rcNum(pb)}, while the Vegas totals ran from ${rcNum(la)} to ${rcNum(lb)}. So low lines drew ${side}s, and ${side}s went ${rcRec(sideRec)}. Part of the reason is in the totals math itself. A defense that allows less adds projected points instead of taking them away. Here the two offenses ${offPts < 0 ? "took" : "added"} ${rcNum(Math.abs(offPts))} ${offPts < 0 ? "off" : ""}, and the defenses, led by ${N(stingy)}, ${defPts > 0 ? "added" : "took"} ${rcNum(Math.abs(defPts))} ${defPts > 0 ? "back" : "off"}.`;
   }
   return `<article class="rc-lesson">
     <p class="rc-tag ${l.outcome === "win" ? "hit" : "miss"}">${esc(l.label)}</p>
@@ -619,7 +619,7 @@ async function renderReportCard() {
   const be = fmtPct(rc.breakeven);
   const verdict = (r) => (r.win_rate > rc.breakeven ? `above the ${be} break-even` : `below the ${be} break-even`);
   $("rec-caption").textContent =
-    `${rc.games_graded} games graded. A call counts when the model is ${rc.rule.spread_edge_min}+ points off the spread or ${rc.rule.total_edge_min}+ off the total. Break-even at standard odds is ${be}.`;
+    `${rc.games_graded} games graded. A pick counts when our model and Vegas differ by ${rc.rule.spread_edge_min}+ points on the margin or ${rc.rule.total_edge_min}+ on the total. A standard bet needs ${be} wins to break even.`;
   $("rc-hero").innerHTML = [
     ["Spreads", rc.spread], ["Totals", rc.total],
   ].map(([label, r]) => `<div class="rc-big ${r.win_rate > rc.breakeven ? "up" : "down"}">
@@ -630,7 +630,7 @@ async function renderReportCard() {
   $("rc-winrate").innerHTML = rcRateChart(rc);
   const all = rc.all_games_model_side;
   $("rc-context").innerHTML = `${maeChart({ model_mae_margin: rc.model_mae_margin, market_mae_margin: rc.market_mae_margin })}
-    <p class="meta">If it had taken a side in every game, not just the big gaps: spreads ${rcRec(all.spread)} (${rcPct(all.spread)}), totals ${rcRec(all.total)} (${rcPct(all.total)}). The line still guessed final margins better.</p>`;
+    <p class="meta">If it had picked every game, not just the big gaps, it would have gone ${rcRec(all.spread)} (${rcPct(all.spread)}), totals ${rcRec(all.total)} (${rcPct(all.total)}). Vegas still guessed final margins better.</p>`;
   $("rc-weeks").innerHTML = rcWeeks(rc);
   $("rc-lessons").innerHTML = rc.lessons.map((l) => rcLesson(l, rc)).join("");
 
@@ -640,12 +640,12 @@ async function renderReportCard() {
     ? `<p>${rc.pending.map((p) => esc(p.matchup)).join(", ")} had not finished when this ran, so it is not graded.</p>` : "";
   $("rc-honest").innerHTML = `
     <p>Each week, the model only saw games already played. Week 3 used weeks 1 and 2. Week 4 used weeks 1 through 3. The settings were tuned on ${rc.model.fit_on_seasons[0]} to ${rc.model.fit_on_seasons[rc.model.fit_on_seasons.length - 1]} and frozen before any of this.</p>
-    <p>We tested it. For each week, we swapped every play from that week onward for random numbers (${lc.map((x) => x.plays_poisoned.toLocaleString("en-US")).join(", ")} plays for weeks ${lc.map((x) => x.week).join(", ")}) and ran it again. That week's numbers did not move at all. Scrambling earlier weeks did move weeks 3 and 4, so the test can catch a leak.</p>
+    <p>To check for leaks, we took each week and swapped every play from that week onward for random numbers (${lc.map((x) => x.plays_poisoned.toLocaleString("en-US")).join(", ")} plays for weeks ${lc.map((x) => x.week).join(", ")}) and ran it again. That week's numbers did not move at all. Scrambling earlier weeks did move weeks 3 and 4, so the test can catch a leak.</p>
     <p>Weeks 1 and 2 ran on ${rc.model.prior_seasons[0]} to ${rc.model.prior_seasons[2]} alone. With one game per team, the model's strength-of-schedule step cancels out, so 2026 games start counting in week 3.</p>
-    <p>Lines are nflverse closing numbers, used only to grade. This is the same model as the 2022 to 2025 test (${fmtPct(h.spread_win_rate)} on spreads, ${fmtPct(h.total_win_rate)} on totals), without the starting-QB adjustment the live card uses. Four weeks is a small sample in either direction.</p>
+    <p>Grading uses the final Vegas lines from nflverse. This is the same model as the 2022 to 2025 test (${fmtPct(h.spread_win_rate)} on spreads, ${fmtPct(h.total_win_rate)} on totals), without the starting-QB adjustment the live card uses. Four weeks is a small sample in either direction.</p>
     ${pending}`;
   const t = new Date(rc.generated_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/Chicago" });
-  $("rc-foot").textContent = `Backtest generated ${t} CT. Closing lines and final scores from nflverse. Research record, not a bet slip.`;
+  $("rc-foot").textContent = `Backtest generated ${t} CT. Final Vegas lines and scores from nflverse. This is a research record, not betting advice.`;
 }
 
 const page = document.body.dataset.page;
