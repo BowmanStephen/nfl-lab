@@ -518,7 +518,7 @@ async function renderTrackRecord() {
   const tile = (label, num, gloss) =>
     `<div class="tr-tile"><p class="label">${label}</p><p class="num">${num}</p><p class="tile-gloss">${gloss}</p></div>`;
   const winnerGloss = decided ? `${pct} right. Did the team the model had ahead win?` : "Did the team the model had ahead win?";
-  const spreadGloss = `Did the pick cover the betting line?${spPending ? ` ${spPending} still to play.` : ""}`;
+  const spreadGloss = `Did the pick beat the betting line?${spPending ? ` ${spPending} ${spPending > 1 ? "games are" : "game is"} left to play.` : ""}`;
   $("tr-tiles").innerHTML =
     tile("Picked the winner", `${right} of ${decided}`, winnerGloss) +
     tile("Against the spread", `${sw}-${sl}-${sp}`, spreadGloss);
@@ -527,13 +527,13 @@ async function renderTrackRecord() {
   const liveWeeks = [...new Set(saved.map((g) => g.week))].sort((a, b) => a - b);
   const testWeeks = [...new Set(look.map((g) => g.week))].sort((a, b) => a - b);
   const bits = [];
-  if (liveWeeks.length) bits.push(`Both count only picks saved before kickoff, from week ${liveWeeks[0]} on.`);
+  if (liveWeeks.length) bits.push(`Both tiles count only picks saved before kickoff. That starts in week ${liveWeeks[0]}.`);
   if (ties) bits.push(`${ties} tie${ties > 1 ? "s are" : " is"} left out because nobody won.`);
   if (pending) bits.push(`${pending} game${pending > 1 ? "s have" : " has"} not been played yet.`);
   if (testWeeks.length) {
     const lr = count(look, "right");
     const ln = lr + count(look, "wrong");
-    bits.push(`Weeks ${testWeeks[0]} to ${testWeeks[testWeeks.length - 1]} are a look back, not picks posted ahead of time: ${lr} of ${ln} right.`);
+    bits.push(`Weeks ${testWeeks[0]} to ${testWeeks[testWeeks.length - 1]} are a look back. Those picks were not posted ahead of time. The model got ${lr} of ${ln} right.`);
   }
   $("tr-scope").textContent = bits.join(" ");
 
@@ -553,10 +553,10 @@ async function renderTrackRecord() {
       const hs = g.home_score, as = g.away_score;
       let line, pill;
       if (g.result === "pending") {
-        line = `Our model says ${esc(nick(g.said))}. ${esc(nick(g.away))} at ${esc(nick(g.home))} has not been played.`;
+        line = `Our model says ${esc(nick(g.said))}. ${esc(nick(g.away))} at ${esc(nick(g.home))} has not been played yet.`;
         pill = `<span class="pill even">Not played yet</span>`;
       } else if (g.result === "nocall") {
-        line = `Our model had ${esc(nick(g.away))} and ${esc(nick(g.home))} even.`;
+        line = `Our model called ${esc(nick(g.away))} at ${esc(nick(g.home))} even.`;
         pill = `<span class="pill even">No call</span>`;
       } else if (g.result === "tie") {
         line = `Our model said ${esc(nick(g.said))}. ${esc(nick(g.away))} and ${esc(nick(g.home))} tied ${hs}-${as}.`;
