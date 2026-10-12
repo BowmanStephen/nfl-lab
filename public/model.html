@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/><path d='M5 12.5 11 3.5' stroke='%23f2efe7' stroke-width='2'/></svg>">
-  <title>NFL Lab — Model</title>
+  <title>NFL Lab: model</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="model">
@@ -30,29 +30,29 @@
     <main id="main" tabindex="-1">
       <p class="kicker">How the model thinks</p>
       <h1>The model</h1>
-      <p class="lede">Three straight answers: who is good, where we disagree with the line this week, and how often we have been right.</p>
+      <p class="lede">This page shows who is good, where we disagree with Vegas this week, and how often we have been right.</p>
 
       <section class="model-sec" aria-labelledby="ratings-h">
         <h2 id="ratings-h">Team power</h2>
-        <p class="caption" id="ratings-caption">Points ratings. Positive means points above an average team. Weeks 5–8 scale, from scores through week 4.</p>
+        <p class="caption" id="ratings-caption">Each rating is how many points better or worse than an average team we think a team is. We built it from scores through week 4, scaled for weeks 5 to 8.</p>
         <div class="chart-card" id="ratings-chart"></div>
       </section>
 
       <section class="model-sec" aria-labelledby="week5-h">
-        <h2 id="week5-h">Week 5 · model vs the line</h2>
-        <p class="caption" id="week5-caption">Official week-5 picks, DraftKings lines at lock. A pick lights up when the locked card clears 2 points on the spread or 3 on the total.</p>
-        <p class="void-note" id="totals-void-note">The 8 week-5 totals picks were voided Oct 8: the totals formula had the defense sign flipped, which biased them toward overs. The spread picks stand.</p>
+        <h2 id="week5-h">Our model vs Vegas in week 5</h2>
+        <p class="caption" id="week5-caption">Official week-5 picks, DraftKings lines at lock. We make a pick only when our model and Vegas differ by 2+ points on the margin or 3+ on the total.</p>
+        <p class="void-note" id="totals-void-note">We voided the 8 week 5 over/under picks on Oct 8. The totals formula had the defense sign flipped, which pushed them toward overs. The spread picks stand.</p>
         <div class="chart-card games-panel" id="games-chart"></div>
         <p class="legend-row" aria-hidden="true">
-          <span class="swatch market"></span> Market
-          <span class="swatch model"></span> Model
-          <span class="swatch pick"></span> Meets pick rule
+          <span class="swatch market"></span> Vegas says
+          <span class="swatch model"></span> Our model says
+          <span class="swatch pick"></span> Gap big enough to pick
         </p>
       </section>
 
       <section class="model-sec" aria-labelledby="record-h">
         <h2 id="record-h">How often it has been right</h2>
-        <p class="caption">2022–2025 holdout, locked rule only. Break-even at −110 is 52.4%. These numbers are not dressed up.</p>
+        <p class="caption">We tested the locked pick rule on 2022 to 2025 games the model never trained on. A standard bet needs 52.4% wins to break even.</p>
         <div class="chart-grid">
           <div class="chart-card" id="winrate-chart"></div>
           <div class="chart-card" id="mae-chart"></div>
@@ -60,13 +60,13 @@
         <div class="live-slot" id="live-slot">
           <p class="kicker">2026 live record</p>
           <p class="live-label" id="live-label">Official week-5 picks, DraftKings lines at lock</p>
-          <p class="meta" id="live-meta">2026 live record starts with these picks. Holdout record 48.8% ATS vs 52.4% break-even stays as-is.</p>
+          <p class="meta" id="live-meta">The 2026 live record starts with these picks. Our 2022 to 2025 test result stays as published: 48.8% of spread picks right, short of the 52.4% needed to break even.</p>
         </div>
       </section>
     </main>
 
     <footer>
-      <p>Points ratings from scores through 2026 week 4. The week-5 chart uses the official DraftKings lock, not the preview file. Research record, not a bet slip.</p>
+      <p>Ratings use scores through 2026 week 4. The week 5 chart uses the official locked picks and DraftKings lines, not the preview page. This is a research record, not betting advice.</p>
     </footer>
   </div>
   <script src="assets/site.js"></script>

@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/><path d='M5 12.5 11 3.5' stroke='%23f2efe7' stroke-width='2'/></svg>">
-  <title>NFL Lab — teams</title>
+  <title>NFL Lab: teams</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="teams">
@@ -29,12 +29,12 @@
     <main id="main" tabindex="-1">
     <p class="kicker">Rankings</p>
     <h1>Teams</h1>
-    <p id="through">Loading…</p>
-    <p class="gloss">Every spot on the field is worth some number of points before the snap: 1st-and-10 at your own 25 is worth about +1; 1st-and-goal at the 1 is worth about +5.5. EPA is how much one play changed that number.</p>
-    <p class="gloss"><strong>College cousin:</strong> CFBD's PPA is the same idea with a college-trained model. Same math, different league.</p>
-    <p class="gloss">Did the play keep the offense on schedule? Counts as a success if it gains 40% of the needed yards on 1st down, 60% on 2nd, 100% on 3rd/4th (nflverse uses "EPA &gt; 0", which lines up closely).</p>
-    <p class="gloss">EPA rewards big plays; success rate rewards consistency. A team with high EPA but low success rate is living on explosives. For defense, lower is better.</p>
-    <p class="gloss">Opponent-adjusted rating: raw EPA, corrected for who you played. Beating up three bad defenses gets marked down. The bars below are this season's raw EPA. The rating beside the name is the adjusted one.</p>
+    <p id="through">Loading...</p>
+    <p class="gloss">Before the snap, every spot on the field is worth some number of points. First-and-10 at your own 25 is worth about +1. First-and-goal at the 1 is worth about +5.5. EPA (expected points added) is how much one play changed that number.</p>
+    <p class="gloss"><strong>In college:</strong> CFBD's PPA is the same idea, with a model trained on college games.</p>
+    <p class="gloss">Success rate asks whether a play kept the offense on schedule. A play counts as a success if it gains 40% of the needed yards on 1st down, 60% on 2nd, or all of them on 3rd or 4th. nflverse counts any play with EPA above 0 instead, and the two line up closely.</p>
+    <p class="gloss">EPA rewards big plays. Success rate rewards staying on schedule. A team with high EPA and a low success rate depends on big plays. For defense, lower is better.</p>
+    <p class="gloss">The opponent-adjusted rating is raw EPA corrected for who a team played. Wins over three bad defenses count for less. The bars below show this season's raw EPA. The rating next to each name is the adjusted one.</p>
     <div id="teams"></div>
     </main>
   </div>
