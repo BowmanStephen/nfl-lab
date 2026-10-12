@@ -6,7 +6,7 @@ import sys
 import traceback
 
 from .odds_espn import MissingLineError, PartialSnapshot
-from .refresh import print_backtest, run
+from .refresh import StaleSourceData, print_backtest, run
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -77,6 +77,10 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         run("refresh" if args.cmd == "refresh" else "pick-card")
         return 0
+    except StaleSourceData as exc:
+        # Exit 3: source data missing or stale. Nothing was written; nothing to commit.
+        print(f"STALE: {exc}", file=sys.stderr)
+        return 3
     except PartialSnapshot as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2

@@ -9,13 +9,13 @@ from zoneinfo import ZoneInfo
 
 from .config import OUTPUT_DIR, PUBLIC_API, TEAM_NAMES
 from .picks import total_is_active
+from .safe_io import atomic_write_json
 
 CT = ZoneInfo("America/Chicago")
 
 
 def _write(path: Path, obj) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, indent=2) + "\n")
+    atomic_write_json(path, obj)
 
 
 def _sha256(path: Path) -> str:
