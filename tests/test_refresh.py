@@ -324,3 +324,46 @@ def test_espn_lines_stick_when_nflverse_reload_fails(monkeypatch):
     assert future["pre_kickoff"]["home_margin"] == -2.5
     assert past["pre_kickoff"] is None
     assert message is not None and "kickoff passed" in message
+
+
+def test_graded_week_is_kept_when_the_next_card_fails(monkeypatch, capsys):
+    """Week 5 grades, week 6 has no line: grades saved, exit 2 commits, job still fails."""
+    from nfl_lab import cli
+    from nfl_lab.odds_espn import PartialSnapshot
+
+    schedules = pd.DataFrame([
+        _schedule_row(5, "2026_05_BUF_LA", "BUF", "LA", 2.5, 47.5, kick_score=(30, 20)),
+        _schedule_row(6, "2026_06_SEA_DEN", "SEA", "DEN", -3.0, 45.0),
+    ])
+    now = datetime(2026, 10, 13, 11, 15, tzinfo=UTC)
+    _install_loaders(monkeypatch, schedules, lambda: now)
+    store = {"5": {
+        "season": 2026, "week": 5, "created_at": "2026-10-05T23:38:47+00:00",
+        "games": [_buf_game(pre={
+            "home_margin": 2.5, "total": 47.5, "source": "espn_scoreboard",
+            "same_book": True, "captured_at": "2026-10-12T23:45:00+00:00",
+        })],
+    }}
+    monkeypatch.setattr("nfl_lab.refresh.load_card",
+                        lambda season, week: json.loads(json.dumps(store[str(week)])) if str(week) in store else None)
+    monkeypatch.setattr("nfl_lab.refresh.save_card",
+                        lambda card: store.__setitem__(str(card["week"]), json.loads(json.dumps(card))))
+
+    def no_line(season, week, now=None):
+        raise MissingLineError("SEA @ DEN has no DraftKings spread")
+
+    monkeypatch.setattr("nfl_lab.refresh.fetch_week_lines", no_line)
+    monkeypatch.setattr("nfl_lab.refresh.write_site",
+                        lambda *a, **k: pytest.fail("no site write without a next card"))
+
+    with pytest.raises(PartialSnapshot) as err:
+        run("refresh")
+    assert "week(s) [5] saved" in str(err.value)
+    assert isinstance(err.value.__cause__, MissingLineError)
+    assert store["5"]["games"][0]["grading"]["spread_outcome"] == "win"
+    assert "6" not in store  # no fabricated week 6 card or line
+
+    # The CLI maps this to exit 2: nightly.yml commits, then fails the job.
+    monkeypatch.setattr("sys.argv", ["nfl-lab", "refresh"])
+    assert cli.main() == 2
+    assert "next pick card failed" in capsys.readouterr().err
