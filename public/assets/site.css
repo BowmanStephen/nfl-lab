@@ -81,7 +81,7 @@ a:hover { text-decoration-thickness: 2px; }
 main:focus { outline: none; } /* skip-link target, not a control */
 p { margin: 0.6rem 0; max-width: var(--measure); text-wrap: pretty; }
 strong { font-weight: 700; }
-code { font-family: var(--mono); font-size: max(0.82em, 13.5px); overflow-wrap: anywhere; }
+code { font-family: var(--mono); font-size: max(0.84rem, 13.5px); overflow-wrap: anywhere; }
 
 h1, h2, h3 { font-family: var(--serif); font-weight: 400; color: var(--ink); text-wrap: balance; }
 h1 {
@@ -124,7 +124,7 @@ main > h2, .model-sec > h2 {
   margin: 0 0 clamp(2.5rem, 6vw, 4.75rem);
   border-bottom: 1px solid var(--ink);
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   line-height: 1.4;
 }
 .mark {
@@ -183,7 +183,7 @@ nav a[aria-current="page"] {
 /* ---------- Shared type roles ---------- */
 .kicker {
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   line-height: 1.45;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -199,7 +199,7 @@ nav a[aria-current="page"] {
 .meta { color: var(--muted); font-size: 0.85rem; }
 .gloss { color: var(--muted); font-size: 0.95rem; }
 .caption { color: var(--muted); font-size: 0.95rem; margin: 0 0 1.25rem; }
-.more, .trail { font-family: var(--mono); font-size: 13.5px; }
+.more, .trail { font-family: var(--mono); font-size: max(0.84rem, 13.5px); }
 .trail { margin: 1.25rem 0 0.5rem; color: var(--muted); }
 .trail a, .more a { color: var(--ink); }
 
@@ -214,7 +214,7 @@ nav a[aria-current="page"] {
 }
 .health {
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   line-height: 1.55;
   border-left: 2px solid var(--ink);
   padding: 0.15rem 0 0.15rem 0.85rem;
@@ -222,7 +222,7 @@ nav a[aria-current="page"] {
   max-width: var(--measure);
 }
 .health strong { font-variant-numeric: tabular-nums; }
-#count { font-family: var(--mono); font-size: 13.5px; letter-spacing: 0.02em; }
+#count { font-family: var(--mono); font-size: max(0.84rem, 13.5px); letter-spacing: 0.02em; }
 
 #spreads, #totals, #nopicks {
   display: grid;
@@ -246,7 +246,7 @@ nav a[aria-current="page"] {
 .card header strong { font-size: 1rem; }
 .card header .meta {
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -273,7 +273,7 @@ nav a[aria-current="page"] {
 .nums span {
   display: block;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   line-height: 1.3;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -297,10 +297,10 @@ nav a[aria-current="page"] {
   align-items: center;
   margin: 0.3rem 0;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   color: var(--muted);
 }
-.gap-row b { color: var(--ink); text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; font-size: 13.5px; }
+.gap-row b { color: var(--ink); text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; font-size: max(0.84rem, 13.5px); }
 .gap-track { position: relative; height: 0.6rem; background: var(--track); }
 .gap-track::after {
   content: "";
@@ -342,7 +342,7 @@ body[data-page="home"] .kicker { margin-bottom: 0.45rem; }
 }
 .home-count {
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   letter-spacing: 0.02em;
   margin: 0.35rem 0 0;
 }
@@ -388,7 +388,7 @@ body[data-page="home"] .kicker { margin-bottom: 0.45rem; }
 }
 .count-pill {
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -416,7 +416,7 @@ body[data-page="home"] .kicker { margin-bottom: 0.45rem; }
 .compare-col span {
   display: block;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   line-height: 1.3;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -437,7 +437,7 @@ body[data-page="home"] .kicker { margin-bottom: 0.45rem; }
   display: block;
   margin-top: 0.2rem;
   font-style: normal;
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   color: var(--muted);
   overflow-wrap: anywhere;
 }
@@ -454,7 +454,7 @@ body[data-page="home"] .kicker { margin-bottom: 0.45rem; }
 .edge-line span {
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   color: var(--muted);
 }
 .edge-line b {
@@ -465,7 +465,7 @@ body[data-page="home"] .kicker { margin-bottom: 0.45rem; }
 .edge-line em {
   font-style: normal;
   color: var(--muted);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
 }
 body[data-page="home"] .side {
   font-size: clamp(2.2rem, 4vw, 3rem);
@@ -482,7 +482,7 @@ body[data-page="home"] .side {
   gap: 0.35rem 1.25rem;
   margin: 0 0 1.25rem;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
 }
 .foot-nav a {
   color: var(--muted);
@@ -534,7 +534,7 @@ main { counter-reset: dossier; }
 .game p { font-size: 1.05rem; line-height: 1.62; }
 .game ul { max-width: var(--measure); padding-left: 1.15rem; }
 .game li { margin: 0.4rem 0; }
-.game .kicker { margin-bottom: 0.6rem; font-size: 13.5px; line-height: 1.45; }
+.game .kicker { margin-bottom: 0.6rem; font-size: max(0.84rem, 13.5px); line-height: 1.45; }
 
 @media (min-width: 56rem) {
   .game {
@@ -551,7 +551,7 @@ main { counter-reset: dossier; }
     grid-column: 1;
     grid-row: 1 / span 30;
     font-family: var(--mono);
-    font-size: 13.5px;
+    font-size: max(0.84rem, 13.5px);
     letter-spacing: 0.08em;
     color: var(--muted);
     padding-top: 0.45rem;
@@ -582,7 +582,7 @@ p.quiet-pick, .game p.quiet-pick {
 .market { color: var(--muted); }
 .game .market {
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   line-height: 1.6;
   color: var(--ink);
   border-top: 1px solid var(--hair);
@@ -599,7 +599,7 @@ p.quiet-pick, .game p.quiet-pick {
 .lesson span {
   display: block;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   line-height: 1.45;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -652,13 +652,13 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   font-variant-numeric: tabular-nums;
 }
 th, td { text-align: left; padding: 0.55rem 0.9rem 0.55rem 0; border-bottom: 1px solid var(--hair); vertical-align: top; }
 th {
   font-weight: 400;
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
@@ -683,7 +683,7 @@ td code { font-size: 1em; overflow-wrap: anywhere; white-space: normal; }
   gap: 0.6rem;
   align-items: center;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   color: var(--muted);
 }
 .bar-row b { color: var(--ink); font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
@@ -732,7 +732,7 @@ footer p { max-width: 52rem; }
   display: block;
   line-height: 2;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   color: var(--muted);
   margin: 0.8rem 0 0;
 }
@@ -758,8 +758,8 @@ footer p { max-width: 52rem; }
   align-items: center;
   min-height: 1.45rem;
 }
-.pw-team { font-family: var(--mono); font-size: 13.5px; text-align: right; }
-.pw-val { font-family: var(--mono); font-size: 13.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pw-team { font-family: var(--mono); font-size: max(0.84rem, 13.5px); text-align: right; }
+.pw-val { font-family: var(--mono); font-size: max(0.84rem, 13.5px); color: var(--muted); font-variant-numeric: tabular-nums; }
 .pw-track { position: relative; height: 0.7rem; }
 .pw-track .tick { position: absolute; top: -0.4rem; bottom: -0.4rem; width: 1px; background: var(--hair); }
 .pw-track .tick.zero { background: var(--ink); }
@@ -774,7 +774,7 @@ footer p { max-width: 52rem; }
   padding-top: 0.5rem;
   border-top: 1px solid var(--hair);
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   color: var(--muted);
 }
 .pw-axis-scale { position: relative; height: 2.8rem; }
@@ -789,7 +789,7 @@ footer p { max-width: 52rem; }
 .rate-bar .bar-fill, .mae-bar .bar-fill { fill: var(--hit); }
 .rate-bar .bar-miss, .mae-bar .bar-miss { fill: var(--miss); }
 .rate-bar .break, .mae-bar .break { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 3 3; }
-.rate-bar .axis, .mae-bar .axis { fill: var(--muted); font-size: 13.5px; }
+.rate-bar .axis, .mae-bar .axis { fill: var(--muted); font-size: max(0.84rem, 13.5px); }
 /* The record sits under the bar name. Nudge it clear of the 13.5px label. */
 .rate-bar .label + .axis { transform: translateY(4px); }
 .rate-bar .val, .mae-bar .val { fill: var(--paper); font-size: 14px; font-variant-numeric: tabular-nums; }
@@ -815,7 +815,7 @@ footer p { max-width: 52rem; }
   display: block;
   margin-top: 0.2rem;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--muted);
@@ -823,7 +823,7 @@ footer p { max-width: 52rem; }
 .game-row.is-pick .match small { color: var(--hit); }
 .game-row .edge-tag {
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   line-height: 1.45;
   color: var(--muted);
   text-align: right;
@@ -850,7 +850,7 @@ footer p { max-width: 52rem; }
   justify-content: space-between;
   margin-top: 0.2rem;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -880,7 +880,7 @@ footer p { max-width: 52rem; }
 .backtest-note strong {
   display: block;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -896,7 +896,7 @@ footer p { max-width: 52rem; }
 .rc-big { border-top: 1px solid var(--ink); padding-top: 0.75rem; min-width: 0; }
 .rc-big span {
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
@@ -928,7 +928,7 @@ footer p { max-width: 52rem; }
 .rc-week:last-child { border-bottom: 0; }
 .rc-week-head {
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -950,11 +950,11 @@ footer p { max-width: 52rem; }
   margin: 0;
 }
 .rc-lesson h3 { font-size: clamp(1.5rem, 3vw, 2.1rem); line-height: 1.08; margin: 0.35rem 0 0.15rem; }
-.rc-lesson .meta { margin: 0 0 1rem; font-family: var(--mono); font-size: 13.5px; text-transform: uppercase; letter-spacing: 0.06em; }
+.rc-lesson .meta { margin: 0 0 1rem; font-family: var(--mono); font-size: max(0.84rem, 13.5px); text-transform: uppercase; letter-spacing: 0.06em; }
 .rc-tag {
   margin: 0;
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -964,7 +964,7 @@ footer p { max-width: 52rem; }
 .rc-lesson dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 2.25rem; margin: 0; max-width: 60rem; }
 .rc-lesson dt {
   font-family: var(--mono);
-  font-size: 13.5px;
+  font-size: max(0.84rem, 13.5px);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -985,7 +985,7 @@ footer p { max-width: 52rem; }
     display: inline-flex;
     align-items: center;
     min-height: var(--tap, 44px);
-    font-size: 13.5px;
+    font-size: max(0.84rem, 13.5px);
   }
   h1 { letter-spacing: -0.035em; }
   .chart-grid { grid-template-columns: minmax(0, 1fr); }
@@ -1002,7 +1002,7 @@ footer p { max-width: 52rem; }
   .rc-week-head { display: none; }
   .rc-cell::before {
     font-family: var(--mono);
-    font-size: 13.5px;
+    font-size: max(0.84rem, 13.5px);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
@@ -1037,7 +1037,7 @@ footer p { max-width: 52rem; }
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --serif: var(--sans);
   --mono: var(--sans);
-  --fs-h1: 28px; --fs-call: 17px; --fs-body: 16px; --fs-small: 13.5px; --lh: 1.5;
+  --fs-h1: 28px; --fs-call: 17px; --fs-body: 16px; --fs-small: max(0.84rem, 13.5px); --lh: 1.5;
   --accent: var(--hit);      /* our model / our pick */
   --vegas: var(--muted);     /* Vegas, neutral */
   --tap: 44px; --row-pad: 12px 16px; --radius: 8px;
@@ -1155,3 +1155,20 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 .pick-row.final .row-top, .quiet .row-top { flex-wrap: wrap; row-gap: 0.25rem; }
 .pick-row.final .when, .quiet .when { flex-wrap: wrap; white-space: normal; min-width: 0; }
 .result-pill { white-space: nowrap; }
+
+/* Official-pick links stay a 44px target on the phone and on the desktop. */
+.official-pick a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: var(--tap, 44px);
+  min-width: var(--tap, 44px);
+}
+/* Same label color as the other card labels. Muted ink is 6.3:1 on paper. */
+.game .label {
+  font-size: max(0.84rem, 13.5px);
+  line-height: 1.45;
+  color: var(--muted);
+  margin: 0 0 0.35rem;
+}
