@@ -510,14 +510,23 @@ async function renderTrackRecord() {
   const wrong = count(saved, "wrong");
   const decided = right + wrong;
   const pct = decided ? `${Math.round((100 * right) / decided)}%` : "none yet";
-  const tile = (label, num) => `<div class="tr-tile"><p class="label">${label}</p><p class="num">${num}</p></div>`;
-  $("tr-tiles").innerHTML = tile("Games", decided) + tile("Right", right) + tile("Wrong", wrong) + tile("% right", pct);
+  const spreads = ((card && card.games) || []).filter((g) => g.selection && g.selection.spread_qualifies);
+  const outcome = (r) => spreads.filter((g) => (g.grading || {}).spread_outcome === r).length;
+  const sw = outcome("win"), sl = outcome("loss"), sp = outcome("push");
+  const spPending = spreads.length - sw - sl - sp;
+  const tile = (label, num, gloss) =>
+    `<div class="tr-tile"><p class="label">${label}</p><p class="num">${num}</p><p class="tile-gloss">${gloss}</p></div>`;
+  const winnerGloss = decided ? `${pct} right. Did the team the model had ahead win?` : "Did the team the model had ahead win?";
+  const spreadGloss = `Did the pick cover the betting line?${spPending ? ` ${spPending} still to play.` : ""}`;
+  $("tr-tiles").innerHTML =
+    tile("Picked the winner", `${right} of ${decided}`, winnerGloss) +
+    tile("Against the spread", `${sw}-${sl}-${sp}`, spreadGloss);
   const ties = count(saved, "tie");
   const pending = count(saved, "pending");
   const liveWeeks = [...new Set(saved.map((g) => g.week))].sort((a, b) => a - b);
   const testWeeks = [...new Set(look.map((g) => g.week))].sort((a, b) => a - b);
   const bits = [];
-  if (liveWeeks.length) bits.push(`These count only games saved before kickoff, from week ${liveWeeks[0]} on.`);
+  if (liveWeeks.length) bits.push(`Both count only picks saved before kickoff, from week ${liveWeeks[0]} on.`);
   if (ties) bits.push(`${ties} tie${ties > 1 ? "s are" : " is"} left out because nobody won.`);
   if (pending) bits.push(`${pending} game${pending > 1 ? "s have" : " has"} not been played yet.`);
   if (testWeeks.length) {
