@@ -6,9 +6,9 @@
   "official_lock": true,
   "lock_label": "Official week-5 picks, locked Mon Oct 5 6:38 PM CT, DraftKings lines at lock",
   "holdout_note": "2026 live record starts with these picks. Holdout record 48.8% ATS vs 52.4% break-even stays as-is.",
-  "totals_void_note": "The 8 week-5 totals picks were voided Oct 8: the totals formula had the defense sign flipped, which biased them toward overs. The spread picks stand.",
+  "totals_void_note": "We voided the 8 week 5 over/under picks on Oct 8. The totals formula had the defense sign flipped, which pushed them toward overs. The spread picks stand.",
   "line_source": "espn_draftkings",
-  "same_book_clv": "ESPN DraftKings at pick time vs ESPN DraftKings pre-kickoff. Not nflverse.",
+  "same_book_clv": "ESPN DraftKings at pick time vs ESPN DraftKings pre-kickoff. Games tagged source nflverse_close are a different book and are not included.",
   "rule": {
     "spread_edge_min": 2.0,
     "total_edge_min": 3.0
@@ -33,7 +33,8 @@
         "total": 47.5,
         "spread_display": "DAL -8.5",
         "kickoff_utc": "2026-10-09T00:15Z",
-        "espn_id": "401872980"
+        "espn_id": "401872980",
+        "line_source": "espn_draftkings"
       },
       "pre_kickoff": {
         "captured_at": "2026-10-08T22:28:16.780235+00:00",
@@ -44,7 +45,8 @@
         "total": 48.5,
         "spread_display": "DAL -9.5",
         "kickoff_utc": "2026-10-09T00:15Z",
-        "espn_id": "401872980"
+        "espn_id": "401872980",
+        "line_source": "espn_draftkings"
       },
       "selection": {
         "model_margin": 3.9556056092,
@@ -69,17 +71,18 @@
         ]
       },
       "grading": {
-        "home_score": null,
-        "away_score": null,
-        "actual_margin": null,
-        "actual_total": null,
-        "spread_outcome": null,
+        "home_score": 16.0,
+        "away_score": 24.0,
+        "actual_margin": -8.0,
+        "actual_total": 40.0,
+        "spread_outcome": "win",
         "total_outcome": null,
         "spread_clv": -1.0,
         "total_clv": null,
         "spread_moved_toward": false,
         "total_moved_toward": null
-      }
+      },
+      "line_source": "espn_draftkings"
     },
     {
       "game_id": "2026_05_PHI_JAX",
@@ -99,9 +102,24 @@
         "total": 42.5,
         "spread_display": "JAX -6.5",
         "kickoff_utc": "2026-10-11T13:30Z",
-        "espn_id": "401872981"
+        "espn_id": "401872981",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": 7.5,
+        "total": 41.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T13:30Z",
+        "espn_id": "401872981",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": 5.4019290087,
         "base_margin": 5.4404508084,
@@ -123,7 +141,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null
+      "grading": {
+        "home_score": 19.0,
+        "away_score": 17.0,
+        "actual_margin": 2.0,
+        "actual_total": 36.0,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_CHI_GB",
@@ -143,9 +173,24 @@
         "total": 44.5,
         "spread_display": "CHI -3",
         "kickoff_utc": "2026-10-11T17:00Z",
-        "espn_id": "401872990"
+        "espn_id": "401872990",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": -1.5,
+        "total": 46.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T17:00Z",
+        "espn_id": "401872990",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": -1.326808429,
         "base_margin": -2.3562975933,
@@ -168,7 +213,19 @@
           "CHI: Caleb Williams listed Out (Hamstring) on week 4 report"
         ]
       },
-      "grading": null
+      "grading": {
+        "home_score": 31.0,
+        "away_score": 7.0,
+        "actual_margin": 24.0,
+        "actual_total": 38.0,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_CIN_MIA",
@@ -188,9 +245,24 @@
         "total": 42.5,
         "spread_display": "CIN -7",
         "kickoff_utc": "2026-10-11T17:00Z",
-        "espn_id": "401872982"
+        "espn_id": "401872982",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": -7.0,
+        "total": 44.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T17:00Z",
+        "espn_id": "401872982",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": -1.0536224369,
         "base_margin": -1.0536224369,
@@ -212,7 +284,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null
+      "grading": {
+        "home_score": 24.0,
+        "away_score": 31.0,
+        "actual_margin": -7.0,
+        "actual_total": 55.0,
+        "spread_outcome": "push",
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_CLE_NYJ",
@@ -232,9 +316,24 @@
         "total": 39.5,
         "spread_display": "NYJ -2.5",
         "kickoff_utc": "2026-10-11T17:00Z",
-        "espn_id": "401872983"
+        "espn_id": "401872983",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": 2.5,
+        "total": 38.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T17:00Z",
+        "espn_id": "401872983",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": -0.8280760727,
         "base_margin": -0.815306091,
@@ -256,7 +355,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null
+      "grading": {
+        "home_score": 17.0,
+        "away_score": 12.0,
+        "actual_margin": 5.0,
+        "actual_total": 29.0,
+        "spread_outcome": "loss",
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_HOU_TEN",
@@ -276,9 +387,24 @@
         "total": 39.5,
         "spread_display": "HOU -7",
         "kickoff_utc": "2026-10-11T17:00Z",
-        "espn_id": "401872984"
+        "espn_id": "401872984",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": -6.5,
+        "total": 37.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T17:00Z",
+        "espn_id": "401872984",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": -3.9882917258,
         "base_margin": -3.9628725616,
@@ -300,7 +426,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null
+      "grading": {
+        "home_score": 3.0,
+        "away_score": 26.0,
+        "actual_margin": -23.0,
+        "actual_total": 29.0,
+        "spread_outcome": "loss",
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_IND_PIT",
@@ -320,9 +458,24 @@
         "total": 44.5,
         "spread_display": "PIT -2.5",
         "kickoff_utc": "2026-10-11T17:00Z",
-        "espn_id": "401872985"
+        "espn_id": "401872985",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": 3.0,
+        "total": 41.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T17:00Z",
+        "espn_id": "401872985",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": 0.3649342677,
         "base_margin": 0.3358680052,
@@ -342,7 +495,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null
+      "grading": {
+        "home_score": 34.0,
+        "away_score": 22.0,
+        "actual_margin": 12.0,
+        "actual_total": 56.0,
+        "spread_outcome": "loss",
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_LV_NE",
@@ -362,9 +527,24 @@
         "total": 45.5,
         "spread_display": "NE -3.5",
         "kickoff_utc": "2026-10-11T17:00Z",
-        "espn_id": "401872986"
+        "espn_id": "401872986",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": 3.5,
+        "total": 45.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T17:00Z",
+        "espn_id": "401872986",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": 2.3508566176,
         "base_margin": 2.0528221015,
@@ -384,7 +564,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null
+      "grading": {
+        "home_score": 45.0,
+        "away_score": 17.0,
+        "actual_margin": 28.0,
+        "actual_total": 62.0,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_MIN_NO",
@@ -404,9 +596,24 @@
         "total": 41.5,
         "spread_display": "MIN -1.5",
         "kickoff_utc": "2026-10-11T17:00Z",
-        "espn_id": "401872987"
+        "espn_id": "401872987",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": -2.5,
+        "total": 41.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T17:00Z",
+        "espn_id": "401872987",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": -2.2064558211,
         "base_margin": -1.3095994284,
@@ -428,7 +635,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null
+      "grading": {
+        "home_score": 13.0,
+        "away_score": 23.0,
+        "actual_margin": -10.0,
+        "actual_total": 36.0,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_NYG_WAS",
@@ -448,9 +667,24 @@
         "total": 43.5,
         "spread_display": "WSH -3",
         "kickoff_utc": "2026-10-11T17:00Z",
-        "espn_id": "401872988"
+        "espn_id": "401872988",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": 3.5,
+        "total": 41.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T17:00Z",
+        "espn_id": "401872988",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": 3.3261565227,
         "base_margin": 2.2732296086,
@@ -474,7 +708,19 @@
         ],
         "no_pick_reason": "No pick: the locked rule already excludes this game (|spread edge| 0.33 < 2 and |total edge| 0.96 < 3). Washington's starter is unclear; that did not change the card."
       },
-      "grading": null
+      "grading": {
+        "home_score": 27.0,
+        "away_score": 27.0,
+        "actual_margin": 0.0,
+        "actual_total": 54.0,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_DEN_LAC",
@@ -494,9 +740,24 @@
         "total": 42.5,
         "spread_display": "DEN -3.5",
         "kickoff_utc": "2026-10-11T20:05Z",
-        "espn_id": "401872989"
+        "espn_id": "401872989",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": -3.5,
+        "total": 42.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T20:05Z",
+        "espn_id": "401872989",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": -2.4204325924,
         "base_margin": -2.4511223417,
@@ -518,7 +779,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null
+      "grading": {
+        "home_score": 17.0,
+        "away_score": 23.0,
+        "actual_margin": -6.0,
+        "actual_total": 40.0,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_DET_ARI",
@@ -538,9 +811,24 @@
         "total": 54.5,
         "spread_display": "DET -4.5",
         "kickoff_utc": "2026-10-11T20:25Z",
-        "espn_id": "401872991"
+        "espn_id": "401872991",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": -5.5,
+        "total": 55.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T20:25Z",
+        "espn_id": "401872991",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": -1.7598422083,
         "base_margin": -1.7598422083,
@@ -562,7 +850,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null
+      "grading": {
+        "home_score": 21.0,
+        "away_score": 45.0,
+        "actual_margin": -24.0,
+        "actual_total": 66.0,
+        "spread_outcome": "loss",
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_SF_SEA",
@@ -582,9 +882,24 @@
         "total": 47.5,
         "spread_display": "SEA -2.5",
         "kickoff_utc": "2026-10-11T20:25Z",
-        "espn_id": "401872992"
+        "espn_id": "401872992",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": 3.0,
+        "total": 46.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-11T20:25Z",
+        "espn_id": "401872992",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": -0.3006098897,
         "base_margin": -1.7314277981,
@@ -607,7 +922,19 @@
           "SEA: using Sam Darnold from the depth chart and injury report (schedule listed Drew Lock)"
         ]
       },
-      "grading": null
+      "grading": {
+        "home_score": 29.0,
+        "away_score": 32.0,
+        "actual_margin": -3.0,
+        "actual_total": 61.0,
+        "spread_outcome": "win",
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_BAL_ATL",
@@ -627,9 +954,24 @@
         "total": 44.5,
         "spread_display": "BAL -2.5",
         "kickoff_utc": "2026-10-12T00:20Z",
-        "espn_id": "401872993"
+        "espn_id": "401872993",
+        "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T15:07:28.919160+00:00",
+        "captured_at_ct": "2026-10-12T10:07:28.919160-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": 3.5,
+        "total": 44.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-12T00:20Z",
+        "espn_id": "401872993",
+        "line_source": "nflverse_close"
+      },
       "selection": {
         "model_margin": -2.0036880342,
         "base_margin": -4.7620835365,
@@ -649,7 +991,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null
+      "grading": {
+        "home_score": 23.0,
+        "away_score": 30.0,
+        "actual_margin": -7.0,
+        "actual_total": 53.0,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_05_BUF_LA",
@@ -669,7 +1023,8 @@
         "total": 54.5,
         "spread_display": "LAR -2.5",
         "kickoff_utc": "2026-10-13T00:15Z",
-        "espn_id": "401872994"
+        "espn_id": "401872994",
+        "line_source": "espn_draftkings"
       },
       "pre_kickoff": null,
       "selection": {
@@ -693,18 +1048,20 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null
+      "grading": null,
+      "line_source": null
     }
   ],
   "health": {
-    "line": "Live 2026 record: no settled picks yet. Judged once after week 18.",
-    "settled_picks": 0,
-    "wins": 0,
-    "losses": 0,
-    "pushes": 0,
-    "cover_rate": null,
+    "line": "Live 2026 record: 2\u20134, 1 pushes (33.3%). Judged once after week 18.",
+    "settled_picks": 7,
+    "wins": 2,
+    "losses": 4,
+    "pushes": 1,
+    "cover_rate": 0.3333333333333333,
     "clv_samples": 1,
     "moved_toward_rate": 0.0,
     "average_clv": -1.0
-  }
+  },
+  "close_fallback_note": "13 games missed the DraftKings line we record just before kickoff (PHI-JAX, CHI-GB, CIN-MIA, CLE-NYJ, HOU-TEN, IND-PIT, LV-NE, MIN-NO, NYG-WAS, DEN-LAC, DET-ARI, SF-SEA, BAL-ATL). Those games use the nflverse closing line instead, from a different sportsbook. We do not count that as the same-book line move. The picks and the DraftKings lines from lock time are unchanged."
 }

@@ -5,7 +5,7 @@ import argparse
 import sys
 import traceback
 
-from .odds_espn import MissingLineError
+from .odds_espn import MissingLineError, PartialSnapshot
 from .refresh import print_backtest, run
 
 
@@ -77,6 +77,9 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         run("refresh" if args.cmd == "refresh" else "pick-card")
         return 0
+    except PartialSnapshot as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
     except MissingLineError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1

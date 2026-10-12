@@ -24,11 +24,15 @@ A fast weekly record of one model against the line. Cousin of CFB Model Lab. Not
 
 Judged once, after the 2026 regular season (week 18). Only picks that met the locked rule count. Pushes are counted and left out of the cover rate. A line that does not move counts as not moving our way.
 
-The two ESPN numbers are DraftKings both times: the snapshot taken when the pick is saved, and the snapshot taken in the two hours before kickoff. nflverse closing lines stay on the 2022–2025 ledger. They are a different book, so they are not the live comparison.
+The two ESPN numbers are DraftKings both times: the snapshot taken when the pick is saved, and the snapshot taken in the two hours before kickoff. That pair is the only same-book comparison. nflverse closing lines stay on the 2022–2025 ledger.
 
 Cover is graded against the pick-time ESPN line. Final scores come from nflverse.
 
-If a scheduled game is missing either ESPN line, the job exits non-zero and the game stays on the card. It is not dropped.
+Before kickoff, a DraftKings number that is still missing after the summary fallback fails the job. The scoreboard is read first. If it omits DraftKings and kickoff has not passed, the game summary's DraftKings pickcenter line is used and tagged `espn_summary`.
+
+If kickoff passes with no stored pre-kickoff ESPN snapshot, the job stores the nflverse closing spread and total and tags that game `nflverse_close`. Stephen approved that for the week-5 games the Sunday job missed, and as the ongoing fallback when a snapshot is missed. It is a different book. It is not same-book CLV, and it does not count toward the line-move half of the week-18 test. A late ESPN read is not written back into the pre-kickoff slot.
+
+If kickoff has passed and the nflverse close is missing too, the job exits non-zero. The game stays on the card. It is not dropped. Lines that were captured in the same run are saved before that exit, so one miss does not erase the others.
 
 ## What is frozen
 

@@ -4,8 +4,10 @@ A card is written once, before kickoff, with the ESPN DraftKings number at that
 moment. Later runs may fill the pre-kickoff snapshot and the final score.
 They do not change the pick or the pick-time line.
 
-Closing-line value compares those two ESPN DraftKings numbers. nflverse closes
-stay on the historical ledger only.
+Same-book closing-line value compares those two ESPN DraftKings numbers.
+If that pre-kickoff snapshot never landed and kickoff has passed, the nflverse
+schedule close is stored instead and labeled ``nflverse_close``. That is a
+different book. It is not called CLV. The 2022–2025 ledger is unchanged.
 """
 from __future__ import annotations
 
@@ -156,22 +158,104 @@ def total_is_active(selection: dict) -> bool:
     return bool(selection.get("total_qualifies")) and not selection.get("total_voided")
 
 
+ESPN_LINE_SOURCES = {"espn_scoreboard", "espn_summary"}
+NFLVERSE_CLOSE_SOURCE = "nflverse_close"
+NFLVERSE_FALLBACK_REASON = (
+    "Kickoff passed with no ESPN DraftKings pre-kickoff line. "
+    "This close is the nflverse schedule spread_line and total_line, a different book. "
+    "Not same-book CLV."
+)
+
+
+def same_book_close(pre: dict | None) -> bool:
+    """True when the stored close is ESPN DraftKings, not an nflverse fallback."""
+    if not pre:
+        return False
+    if pre.get("source") == NFLVERSE_CLOSE_SOURCE or pre.get("same_book") is False:
+        return False
+    return True
+
+
 def _line_block(captured_at: str, line: dict) -> dict:
     if line.get("missing") or line.get("home_margin") is None or line.get("total") is None:
         raise MissingLineError(
             f"{line.get('away_team')} @ {line.get('home_team')}: ESPN DraftKings line is missing"
         )
+    source = line.get("source") or "espn_scoreboard"
+    if source not in ESPN_LINE_SOURCES:
+        raise MissingLineError(
+            f"{line.get('away_team')} @ {line.get('home_team')}: refusing line source {source}"
+        )
     return {
         "captured_at": captured_at,
         "captured_at_ct": captured_ct(captured_at).isoformat(),
         "provider": "DraftKings",
-        "source": "espn_scoreboard",
+        "source": source,
+        "line_source": "espn_draftkings",
+        "same_book": True,
+        "fallback": False,
         "home_margin": float(line["home_margin"]),
         "total": float(line["total"]),
         "spread_display": line.get("spread_display"),
         "kickoff_utc": line.get("kickoff_utc"),
         "espn_id": line.get("espn_id"),
     }
+
+
+def nflverse_close_block(captured_at: str, game: dict, close: dict) -> dict:
+    margin = close.get("home_margin")
+    total = close.get("total")
+    if margin is None or total is None:
+        raise MissingLineError(
+            f"{game.get('away_team')} @ {game.get('home_team')}: nflverse close is missing a spread or total"
+        )
+    pick = game.get("pick_time") or {}
+    return {
+        "captured_at": captured_at,
+        "captured_at_ct": captured_ct(captured_at).isoformat(),
+        "provider": "nflverse",
+        "source": NFLVERSE_CLOSE_SOURCE,
+        "line_source": NFLVERSE_CLOSE_SOURCE,
+        "same_book": False,
+        "fallback": True,
+        "fallback_reason": NFLVERSE_FALLBACK_REASON,
+        "home_margin": float(margin),
+        "total": float(total),
+        "spread_display": close.get("spread_display"),
+        "kickoff_utc": game.get("kickoff_utc"),
+        "espn_id": pick.get("espn_id"),
+    }
+
+
+def closes_from_schedule(slate: pd.DataFrame) -> dict:
+    """Map game_id and (away, home) to the nflverse closing spread and total.
+
+    ``spread_line`` is already the lab home margin (positive means home favored).
+    A blank close is stored as None so the caller fails loud instead of inventing one.
+    """
+    out: dict = {}
+    if slate is None or len(slate) == 0:
+        return out
+    for rec in slate.to_dict(orient="records"):
+        row = {"home_margin": _num(rec.get("spread_line")), "total": _num(rec.get("total_line"))}
+        game_id = rec.get("game_id")
+        if game_id:
+            out[game_id] = row
+        out[(rec.get("away_team"), rec.get("home_team"))] = row
+    return out
+
+
+def _lookup_close(closes: dict | None, game: dict) -> dict | None:
+    if not closes:
+        return None
+    for key in (game.get("game_id"), (game.get("away_team"), game.get("home_team"))):
+        row = closes.get(key)
+        if not row:
+            continue
+        if row.get("home_margin") is None or row.get("total") is None:
+            return None
+        return row
+    return None
 
 
 def _match_line(game: dict, lines: list[dict]) -> dict:
@@ -285,7 +369,7 @@ def grade_game(game: dict, home_score, away_score) -> dict | None:
             )
         if total_is_active(sel):
             grading["total_outcome"] = grade_total(sel["total_pick"], actual_total, line["total"])
-    if pre:
+    if pre and same_book_close(pre):
         if sel["spread_qualifies"]:
             clv = spread_clv(sel["spread_pick"], game["home_team"], line["home_margin"], pre["home_margin"])
             grading["spread_clv"] = clv
@@ -297,8 +381,15 @@ def grade_game(game: dict, home_score, away_score) -> dict | None:
     return grading
 
 
-def apply_pre_kickoff(games: list[dict], lines: list[dict], captured_at: str, now: datetime) -> list[str]:
-    """Fill empty pre-kickoff snapshots inside the window. Raise if a due line is missing."""
+def apply_pre_kickoff(games: list[dict], lines: list[dict], captured_at: str, now: datetime,
+                      closes: dict | None = None) -> list[str]:
+    """Fill empty pre-kickoff snapshots inside the window.
+
+    Before kickoff, only an ESPN DraftKings line is accepted. After kickoff, a
+    game that still has no snapshot gets the nflverse close when one was passed
+    in. A late ESPN read is not written into that slot. Anything still missing
+    raises, after the lines that could be stored have been written onto ``games``.
+    """
     problems = []
     window = timedelta(minutes=PRE_KICKOFF_MINUTES)
     for game in games:
@@ -311,12 +402,17 @@ def apply_pre_kickoff(games: list[dict], lines: list[dict], captured_at: str, no
         kick = datetime.fromisoformat(kick_raw)
         if kick.tzinfo is None:
             kick = kick.replace(tzinfo=UTC)
-        if now >= kick:
-            problems.append(
-                f"{game['away_team']} @ {game['home_team']}: kickoff passed with no pre-kickoff ESPN line"
-            )
+        if kick - now > window and now < kick:
             continue
-        if kick - now > window:
+        if now >= kick:
+            close = _lookup_close(closes, game)
+            if close is None:
+                problems.append(
+                    f"{game['away_team']} @ {game['home_team']}: "
+                    "kickoff passed with no pre-kickoff ESPN line and no nflverse close"
+                )
+                continue
+            game["pre_kickoff"] = nflverse_close_block(captured_at, game, close)
             continue
         try:
             line = _match_line(game, lines)
@@ -326,6 +422,54 @@ def apply_pre_kickoff(games: list[dict], lines: list[dict], captured_at: str, no
     if problems:
         raise MissingLineError("; ".join(problems))
     return [g["game_id"] for g in games if g.get("pre_kickoff") and g["pre_kickoff"]["captured_at"] == captured_at]
+
+
+def line_source_of(block: dict | None) -> str | None:
+    """espn_draftkings or nflverse_close for a stored line block. Reads older cards too."""
+    if not block:
+        return None
+    if block.get("line_source"):
+        return block["line_source"]
+    if block.get("source") == NFLVERSE_CLOSE_SOURCE:
+        return NFLVERSE_CLOSE_SOURCE
+    return "espn_draftkings"
+
+
+def label_line_sources(card: dict) -> dict:
+    """Add line_source next to source on each game and its line blocks.
+
+    source is left as-is so existing readers keep working.
+    """
+    for game in card.get("games") or []:
+        for key in ("pick_time", "pre_kickoff"):
+            block = game.get(key)
+            if block:
+                block["line_source"] = line_source_of(block)
+        game["line_source"] = line_source_of(game.get("pre_kickoff"))
+    return card
+
+
+def annotate_close_fallback(card: dict) -> dict:
+    """Record, on the card, which closes are nflverse rather than DraftKings."""
+    label_line_sources(card)
+    used = [
+        g for g in card.get("games") or []
+        if (g.get("pre_kickoff") or {}).get("source") == NFLVERSE_CLOSE_SOURCE
+    ]
+    if not used:
+        return card
+    teams = ", ".join(f"{g['away_team']}-{g['home_team']}" for g in used)
+    card["close_fallback_note"] = (
+        f"{len(used)} games missed the DraftKings line we record just before kickoff ({teams}). "
+        "Those games use the nflverse closing line instead, from a different sportsbook. "
+        "We do not count that as the same-book line move. "
+        "The picks and the DraftKings lines from lock time are unchanged."
+    )
+    card["same_book_clv"] = (
+        "ESPN DraftKings at pick time vs ESPN DraftKings pre-kickoff. "
+        "Games tagged source nflverse_close are a different book and are not included."
+    )
+    return card
 
 
 def merge_card(existing: dict, incoming_games: list[dict]) -> dict:

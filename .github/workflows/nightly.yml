@@ -1,15 +1,18 @@
 name: nightly
 
 # One command. Refresh data and the pick card, then commit JSON.
-# A missing ESPN DraftKings line fails the job. The schedule stays alive
-# because a successful run commits.
+# A missing ESPN DraftKings line still fails the job. Captured lines are
+# committed first, so one miss does not throw away the rest of the run.
 
 on:
   schedule:
     # Morning refresh, US time, so a new week is ready before Thursday.
     - cron: "15 11 * * *"
-    # Hourly during NFL kickoff windows (Thu–Mon, afternoon through late night ET).
-    - cron: "15 16-23,0-4 * * 0,1,4,5,6"
+    # Hourly on NFL days, from 12:15 UTC through 04:15 UTC.
+    # 12:15 and 13:15 UTC sit inside the two-hour window for a 13:30 UTC
+    # London kickoff. The old 16:15 start left that window empty (the 11:15
+    # refresh is 15 minutes too early), which is how PHI-JAX was missed.
+    - cron: "15 12-23,0-4 * * 0,1,4,5,6"
   workflow_dispatch:
     inputs:
       command:
@@ -44,10 +47,10 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             CMD="${{ inputs.command }}"
-          elif [ "${{ github.event.schedule }}" = "15 16-23,0-4 * * 0,1,4,5,6" ]; then
-            CMD="line-snapshot"
-          else
+          elif [ "${{ github.event.schedule }}" = "15 11 * * *" ]; then
             CMD="refresh"
+          else
+            CMD="line-snapshot"
           fi
           case "$CMD" in
             refresh|pick-card|line-snapshot) ;;
@@ -55,8 +58,18 @@ jobs:
           esac
           echo "command=$CMD" >> "$GITHUB_OUTPUT"
       - name: Run
-        run: uv run nfl-lab ${{ steps.cmd.outputs.command }}
+        id: lab
+        run: |
+          set +e
+          uv run nfl-lab ${{ steps.cmd.outputs.command }}
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit $code
+      # Exit 2 means a partial snapshot was saved on purpose. Commit that, and
+      # nothing else: a crash (exit 1) or a cancelled run must not push a
+      # half-written public/api. The job still fails afterward.
       - name: Commit snapshots
+        if: always() && (steps.lab.outputs.exit_code == '0' || steps.lab.outputs.exit_code == '2')
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -68,3 +81,6 @@ jobs:
           git commit -m "refresh: pick card and site JSON"
           # checkout leaves a detached HEAD, so name the branch explicitly.
           git push origin "HEAD:${GITHUB_REF_NAME}"
+      - name: Fail when the command failed
+        if: always() && steps.lab.outputs.exit_code != '0' && steps.lab.outputs.exit_code != ''
+        run: exit 1
