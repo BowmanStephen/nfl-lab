@@ -16,7 +16,9 @@ from nfl_lab.picks import (
     grade_game,
     grade_spread,
     health_summary,
+    label_line_sources,
     merge_card,
+    nflverse_close_block,
     spread_clv,
     total_clv,
     total_is_active,
@@ -487,9 +489,12 @@ def test_week5_voids_only_the_eight_totals():
         grading = game.get("grading") or {}
         assert grading.get("total_outcome") is None
         assert grading.get("total_clv") is None
+        assert game["pick_time"]["line_source"] == "espn_draftkings"
         if game["game_id"] in fallback:
             margin, total = fallback[game["game_id"]]
             assert pre["source"] == "nflverse_close"
+            assert pre["line_source"] == "nflverse_close"
+            assert game["line_source"] == "nflverse_close"
             assert pre["provider"] == "nflverse"
             assert pre["same_book"] is False
             assert pre["fallback"] is True
@@ -501,10 +506,14 @@ def test_week5_voids_only_the_eight_totals():
                 assert grading.get("spread_outcome") in {"win", "loss", "push"}
         elif game["game_id"] == "2026_05_TB_DAL":
             assert pre["source"] == "espn_scoreboard"
+            assert pre["line_source"] == "espn_draftkings"
+            assert game["line_source"] == "espn_draftkings"
             assert pre["provider"] == "DraftKings"
+            assert pre["home_margin"] == 9.5
             assert grading["spread_clv"] == -1.0
         else:
             assert game["game_id"] == "2026_05_BUF_LA"
+            assert game.get("line_source") is None
             assert pre is None or pre.get("source") in {"espn_scoreboard", "espn_summary"}
     assert live["health"]["clv_samples"] == 1
     assert live["health"]["average_clv"] == -1.0
@@ -518,3 +527,36 @@ def test_week5_voids_only_the_eight_totals():
         if game["game_id"] in VOIDED_TOTALS:
             assert row["total_pick"] is None
         assert row["is_pick"] is game["selection"]["spread_qualifies"]
+
+
+def test_nflverse_sign_matches_tb_at_dal_draftkings_lock():
+    """TB @ DAL locked at DAL -8.5 on ESPN DraftKings (home_margin +8.5).
+
+    nflverse spread_line is positive when the home team is favored, the same
+    sign as home_margin, so +8.5 must stay +8.5 (DAL -8.5), never flip to TB.
+    nflverse's actual close for 2026_05_TB_DAL is 9.5 / 49.5, still DAL favored.
+    """
+    card = json.loads((LIVE_DIR / "2026-week-05.json").read_text())
+    game = next(g for g in card["games"] if g["game_id"] == "2026_05_TB_DAL")
+    assert game["pick_time"]["home_margin"] == 8.5
+    assert game["pick_time"]["spread_display"] == "DAL -8.5"
+    assert game["pre_kickoff"]["home_margin"] == 9.5
+    assert game["pre_kickoff"]["spread_display"] == "DAL -9.5"
+
+    slate = pd.DataFrame([
+        {"game_id": "2026_05_TB_DAL", "away_team": "TB", "home_team": "DAL",
+         "spread_line": 8.5, "total_line": 49.5},
+    ])
+    close = closes_from_schedule(slate)["2026_05_TB_DAL"]
+    assert close["home_margin"] == game["pick_time"]["home_margin"]
+
+    actual = closes_from_schedule(slate.assign(spread_line=9.5))["2026_05_TB_DAL"]
+    block = nflverse_close_block("2026-10-09T05:00:00+00:00", game, actual)
+    assert block["home_margin"] == 9.5 > 0
+    assert block["line_source"] == "nflverse_close"
+    assert block["source"] == "nflverse_close"
+
+    label_line_sources(card)
+    for row in card["games"]:
+        assert row["pick_time"]["line_source"] == "espn_draftkings"
+        assert row["line_source"] in {"espn_draftkings", "nflverse_close", None}

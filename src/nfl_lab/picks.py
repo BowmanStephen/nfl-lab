@@ -191,6 +191,7 @@ def _line_block(captured_at: str, line: dict) -> dict:
         "captured_at_ct": captured_ct(captured_at).isoformat(),
         "provider": "DraftKings",
         "source": source,
+        "line_source": "espn_draftkings",
         "same_book": True,
         "fallback": False,
         "home_margin": float(line["home_margin"]),
@@ -214,6 +215,7 @@ def nflverse_close_block(captured_at: str, game: dict, close: dict) -> dict:
         "captured_at_ct": captured_ct(captured_at).isoformat(),
         "provider": "nflverse",
         "source": NFLVERSE_CLOSE_SOURCE,
+        "line_source": NFLVERSE_CLOSE_SOURCE,
         "same_book": False,
         "fallback": True,
         "fallback_reason": NFLVERSE_FALLBACK_REASON,
@@ -422,8 +424,34 @@ def apply_pre_kickoff(games: list[dict], lines: list[dict], captured_at: str, no
     return [g["game_id"] for g in games if g.get("pre_kickoff") and g["pre_kickoff"]["captured_at"] == captured_at]
 
 
+def line_source_of(block: dict | None) -> str | None:
+    """espn_draftkings or nflverse_close for a stored line block. Reads older cards too."""
+    if not block:
+        return None
+    if block.get("line_source"):
+        return block["line_source"]
+    if block.get("source") == NFLVERSE_CLOSE_SOURCE:
+        return NFLVERSE_CLOSE_SOURCE
+    return "espn_draftkings"
+
+
+def label_line_sources(card: dict) -> dict:
+    """Add line_source next to source on each game and its line blocks.
+
+    source is left as-is so existing readers keep working.
+    """
+    for game in card.get("games") or []:
+        for key in ("pick_time", "pre_kickoff"):
+            block = game.get(key)
+            if block:
+                block["line_source"] = line_source_of(block)
+        game["line_source"] = line_source_of(game.get("pre_kickoff"))
+    return card
+
+
 def annotate_close_fallback(card: dict) -> dict:
     """Record, on the card, which closes are nflverse rather than DraftKings."""
+    label_line_sources(card)
     used = [
         g for g in card.get("games") or []
         if (g.get("pre_kickoff") or {}).get("source") == NFLVERSE_CLOSE_SOURCE
