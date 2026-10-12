@@ -81,7 +81,7 @@ a:hover { text-decoration-thickness: 2px; }
 main:focus { outline: none; } /* skip-link target, not a control */
 p { margin: 0.6rem 0; max-width: var(--measure); text-wrap: pretty; }
 strong { font-weight: 700; }
-code { font-family: var(--mono); font-size: 0.82em; overflow-wrap: anywhere; }
+code { font-family: var(--mono); font-size: max(0.82em, 0.75rem); overflow-wrap: anywhere; }
 
 h1, h2, h3 { font-family: var(--serif); font-weight: 400; color: var(--ink); text-wrap: balance; }
 h1 {
@@ -246,7 +246,7 @@ nav a[aria-current="page"] {
 .card header strong { font-size: 1rem; }
 .card header .meta {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -273,7 +273,7 @@ nav a[aria-current="page"] {
 .nums span {
   display: block;
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   line-height: 1.3;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -297,7 +297,7 @@ nav a[aria-current="page"] {
   align-items: center;
   margin: 0.3rem 0;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .gap-row b { color: var(--ink); text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; font-size: 0.8rem; }
@@ -388,7 +388,7 @@ body[data-page="home"] .kicker { margin-bottom: 0.45rem; }
 }
 .count-pill {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -416,7 +416,7 @@ body[data-page="home"] .kicker { margin-bottom: 0.45rem; }
 .compare-col span {
   display: block;
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   line-height: 1.3;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -454,7 +454,7 @@ body[data-page="home"] .kicker { margin-bottom: 0.45rem; }
 .edge-line span {
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .edge-line b {
@@ -599,7 +599,7 @@ p.quiet-pick, .game p.quiet-pick {
 .lesson span {
   display: block;
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   line-height: 1.45;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -658,13 +658,13 @@ table {
 th, td { text-align: left; padding: 0.55rem 0.9rem 0.55rem 0; border-bottom: 1px solid var(--hair); vertical-align: top; }
 th {
   font-weight: 400;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
   border-bottom: 1px solid var(--ink);
 }
-td code { font-size: 1em; overflow-wrap: normal; white-space: nowrap; }
+td code { font-size: 1em; overflow-wrap: anywhere; white-space: normal; }
 
 /* ---------- Teams ---------- */
 .team {
@@ -679,11 +679,11 @@ td code { font-size: 1em; overflow-wrap: normal; white-space: nowrap; }
 .bars { display: grid; gap: 0.3rem; max-width: 34rem; }
 .bar-row {
   display: grid;
-  grid-template-columns: 2.4rem minmax(0, 1fr) 4rem;
+  grid-template-columns: 2.6rem minmax(0, 1fr) 4.6rem;
   gap: 0.6rem;
   align-items: center;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .bar-row b { color: var(--ink); font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
@@ -732,7 +732,7 @@ footer p { max-width: 52rem; }
   display: block;
   line-height: 2;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--muted);
   margin: 0.8rem 0 0;
 }
@@ -774,12 +774,12 @@ footer p { max-width: 52rem; }
   padding-top: 0.5rem;
   border-top: 1px solid var(--hair);
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--muted);
 }
-.pw-axis-scale { position: relative; height: 2.4rem; }
+.pw-axis-scale { position: relative; height: 2.8rem; }
 .pw-axis-scale span { position: absolute; top: 0; transform: translateX(-50%); font-variant-numeric: tabular-nums; }
-.pw-axis-scale .dir { top: 1.2rem; text-transform: uppercase; letter-spacing: 0.08em; transform: none; }
+.pw-axis-scale .dir { top: 1.45rem; text-transform: uppercase; letter-spacing: 0.08em; transform: none; }
 .pw-axis-scale .dir.worse { right: 50%; margin-right: 0.5rem; }
 .pw-axis-scale .dir.better { left: 50%; margin-left: 0.5rem; }
 
@@ -789,7 +789,9 @@ footer p { max-width: 52rem; }
 .rate-bar .bar-fill, .mae-bar .bar-fill { fill: var(--hit); }
 .rate-bar .bar-miss, .mae-bar .bar-miss { fill: var(--miss); }
 .rate-bar .break, .mae-bar .break { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 3 3; }
-.rate-bar .axis, .mae-bar .axis { fill: var(--muted); font-size: 11px; }
+.rate-bar .axis, .mae-bar .axis { fill: var(--muted); font-size: 0.75rem; }
+/* The record sits under the bar name. Nudge it clear of the 13.5px label. */
+.rate-bar .label + .axis { transform: translateY(4px); }
 .rate-bar .val, .mae-bar .val { fill: var(--paper); font-size: 14px; font-variant-numeric: tabular-nums; }
 .rate-bar .val.out, .mae-bar .val.out { fill: var(--ink); }
 .rate-bar .label, .mae-bar .label { fill: var(--ink); font-size: 14px; font-family: var(--serif); }
@@ -813,7 +815,7 @@ footer p { max-width: 52rem; }
   display: block;
   margin-top: 0.2rem;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--muted);
@@ -821,7 +823,7 @@ footer p { max-width: 52rem; }
 .game-row.is-pick .match small { color: var(--hit); }
 .game-row .edge-tag {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   line-height: 1.45;
   color: var(--muted);
   text-align: right;
@@ -848,7 +850,7 @@ footer p { max-width: 52rem; }
   justify-content: space-between;
   margin-top: 0.2rem;
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -926,7 +928,7 @@ footer p { max-width: 52rem; }
 .rc-week:last-child { border-bottom: 0; }
 .rc-week-head {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -948,11 +950,11 @@ footer p { max-width: 52rem; }
   margin: 0;
 }
 .rc-lesson h3 { font-size: clamp(1.5rem, 3vw, 2.1rem); line-height: 1.08; margin: 0.35rem 0 0.15rem; }
-.rc-lesson .meta { margin: 0 0 1rem; font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.rc-lesson .meta { margin: 0 0 1rem; font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
 .rc-tag {
   margin: 0;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -962,7 +964,7 @@ footer p { max-width: 52rem; }
 .rc-lesson dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 2.25rem; margin: 0; max-width: 60rem; }
 .rc-lesson dt {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -980,6 +982,12 @@ footer p { max-width: 52rem; }
 /* ---------- Small screens ---------- */
 @media (max-width: 44rem) {
   .top { flex-direction: column; align-items: stretch; gap: 0.5rem; padding-top: 1.1rem; padding-bottom: 0; }
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    min-height: max(44px, 2.75rem);
+  }
   nav {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -989,9 +997,17 @@ footer p { max-width: 52rem; }
   nav a {
     display: flex;
     align-items: center;
-    min-height: 2.75rem;
-    padding: 0.35rem 0;
+    min-height: max(44px, 2.75rem);
+    padding: 0.35rem 0.4rem 0.35rem 0;
     border-bottom: 1px solid var(--hair);
+    line-height: 1.25;
+  }
+  .foot-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: max(44px, 2.75rem);
+    min-width: max(44px, 2.75rem);
+    padding: 0.35rem 0.15rem;
   }
   h1 { letter-spacing: -0.035em; }
   .chart-grid { grid-template-columns: minmax(0, 1fr); }
@@ -1005,25 +1021,64 @@ footer p { max-width: 52rem; }
   .rc-week-head { display: none; }
   .rc-cell::before {
     font-family: var(--mono);
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
-    min-width: 4.5rem;
+    min-width: 4.75rem;
   }
   .rc-cell:nth-of-type(1)::before { content: "Spreads"; }
   .rc-cell:nth-of-type(2)::before { content: "Totals"; }
   .rc-cell { justify-content: flex-start; }
   .rc-cell b { margin-left: auto; }
   .rc-big b { font-size: clamp(2.4rem, 12vw, 3.4rem); }
-  .pw-row, .pw-axis { grid-template-columns: 2.4rem minmax(0, 1fr) 2.9rem; gap: 0.5rem; }
-  body[data-page="home"] nav a {
-    font-size: 0.72rem;
-    letter-spacing: 0.01em;
-  }
+  .pw-row, .pw-axis { grid-template-columns: 2.5rem minmax(0, 1fr) 3.1rem; gap: 0.5rem; }
   .compare-col { padding-right: 0.55rem; }
+  /* Dates and hashes are wider than a phone. Stack each file instead of clipping the row. */
+  body[data-page="freshness"] .table-scroll { overflow-x: visible; }
+  body[data-page="freshness"] table,
+  body[data-page="freshness"] tbody,
+  body[data-page="freshness"] tr,
+  body[data-page="freshness"] td { display: block; width: auto; }
+  body[data-page="freshness"] thead {
+    display: block;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  body[data-page="freshness"] tr {
+    padding: 0.85rem 0 0.7rem;
+    border-bottom: 1px solid var(--hair);
+  }
+  body[data-page="freshness"] td {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: 0.35rem 0.75rem;
+    align-items: baseline;
+    border-bottom: 0;
+    padding: 0.12rem 0;
+  }
+  body[data-page="freshness"] td::before {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  body[data-page="freshness"] td:nth-child(1)::before { content: "File"; }
+  body[data-page="freshness"] td:nth-child(2)::before { content: "Updated"; }
+  body[data-page="freshness"] td:nth-child(3)::before { content: "Bytes"; }
+  body[data-page="freshness"] td:nth-child(4)::before { content: "Hash"; }
   .compare-col + .compare-col { padding-left: 0.55rem; }
   .compare-col b { font-size: 1.25rem; }
+}
+
+/* Narrow phones: two columns so "Week 5 previews" and "2026 so far" stay on one line. */
+@media (max-width: 27.5rem) {
+  nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 

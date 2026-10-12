@@ -72,8 +72,10 @@ per game). The palette above stays; the type is now one sans family.
 
 ## Layout
 
-- One masthead on every page, with a thin ink rule under it. On phones the nine
-  links become a 3 by 3 grid with 44px tap targets.
+- One masthead on every page, with a thin ink rule under it. On phones the links
+  sit in a grid with at least a 44px tap target: three columns when the names
+  fit, two columns on a narrow phone so "Week 5 previews" and "2026 so far"
+  stay on one line. The wordmark is a 44px target too.
 - Section heads open with a full-width ink rule.
 - Pick cards sit on a shelf grid that goes from one column on phones to three on
   wide screens.
@@ -115,9 +117,9 @@ animation would get old fast.
   ledger, which has no loading slot, it takes the place of the page body).
 - The skip link's target (`main`) gets no focus ring. Focus does move there, and
   a ring around the whole page body would look like an error.
-- Some monospace labels are 11–13.5px, under the 14px some guides suggest
-  (navigation and status lines are 14–15px). They are short, high-contrast and
-  never carry a whole sentence.
+- Monospace labels are at least 0.75rem (13.5px at the default size). They are
+  short, high-contrast, and never carry a whole sentence. Navigation and status
+  lines stay a step larger.
 - No `translate="no"` on team codes. That would mean touching content markup on
   every page.
 
