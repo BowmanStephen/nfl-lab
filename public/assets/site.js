@@ -478,7 +478,8 @@ function trackRecordGames(rc, card) {
     let result = "pending";
     if (played) {
       const actual = g.home_score - g.away_score;
-      if (actual === 0 || !g.margin) result = "tie";
+      if (actual === 0) result = "tie";
+      else if (!g.margin) result = "nocall";
       else result = (actual > 0) === (g.margin > 0) ? "right" : "wrong";
     }
     return { ...g, said: g.margin > 0 ? g.home : g.away, result };
@@ -553,7 +554,10 @@ async function renderTrackRecord() {
       let line, pill;
       if (g.result === "pending") {
         line = `Our model says ${esc(nick(g.said))}. ${esc(nick(g.away))} at ${esc(nick(g.home))} has not been played.`;
-        pill = `<span class="pill even">Not played</span>`;
+        pill = `<span class="pill even">Not played yet</span>`;
+      } else if (g.result === "nocall") {
+        line = `Our model had ${esc(nick(g.away))} and ${esc(nick(g.home))} even.`;
+        pill = `<span class="pill even">No call</span>`;
       } else if (g.result === "tie") {
         line = `Our model said ${esc(nick(g.said))}. ${esc(nick(g.away))} and ${esc(nick(g.home))} tied ${hs}-${as}.`;
         pill = `<span class="pill even">= Tie</span>`;
