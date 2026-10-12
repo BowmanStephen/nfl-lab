@@ -54,12 +54,12 @@ per game). The palette above stays; the type is now one sans family.
 - Page titles (`h1`): 28px, bold. Section heads 20px.
 - Game rows: team names 17px semibold.
 - Body: 16px, line height 1.5.
-- Captions, labels and footer text: 13px, never smaller.
+- Captions, labels and footer text: 13.5px, never smaller.
 - Every number uses `font-variant-numeric: tabular-nums`.
 - Headings are sentence case and state the takeaway ("Week 5: who we think
   wins", "Week 5 is final"). No uppercase labels.
 - Tokens: `--fs-h1` 28px, `--fs-call` 17px, `--fs-body` 16px, `--fs-small`
-  13px, `--lh` 1.5, `--tap` 44px.
+  13.5px, `--lh` 1.5, `--tap` 44px.
 - Our model and our pick use one accent, `--accent` (= `--hit`). Vegas stays
   neutral grey (`--vegas` = `--muted` #55584f). `--line-mark` #7d7e74 (3.6:1)
   is for graphics only, never text. Right is green with "✓ Right", wrong is
@@ -72,10 +72,10 @@ per game). The palette above stays; the type is now one sans family.
 
 ## Layout
 
-- One masthead on every page, with a thin ink rule under it. On phones the links
-  sit in a grid with at least a 44px tap target: three columns when the names
-  fit, two columns on a narrow phone so "Week 5 previews" and "2026 so far"
-  stay on one line. The wordmark is a 44px target too.
+- One masthead on every page, with a thin ink rule under it. The primary nav is
+  the five links from the home redesign (This week, Last week, Teams, How it
+  works, Glossary), at least 44px tall. On a phone those links wrap onto a
+  second line instead of scrolling sideways. The wordmark is a 44px target too.
 - Section heads open with a full-width ink rule.
 - Pick cards sit on a shelf grid that goes from one column on phones to three on
   wide screens.
@@ -117,9 +117,8 @@ animation would get old fast.
   ledger, which has no loading slot, it takes the place of the page body).
 - The skip link's target (`main`) gets no focus ring. Focus does move there, and
   a ring around the whole page body would look like an error.
-- Monospace labels are at least 0.75rem (13.5px at the default size). They are
-  short, high-contrast, and never carry a whole sentence. Navigation and status
-  lines stay a step larger.
+- Labels and captions are at least 13.5px. They stay short and high-contrast.
+  Navigation links stay a step larger (15px).
 - No `translate="no"` on team codes. That would mean touching content markup on
   every page.
 
