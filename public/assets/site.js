@@ -498,15 +498,13 @@ async function renderTeams() {
 
 async function renderFreshness() {
   const data = await load("freshness.json");
-  const stale = new Date(data.stale_after).getTime() < Date.now();
+  const stale = data.stale_after && new Date(data.stale_after).getTime() < Date.now();
   if (stale) {
     $("stale").hidden = false;
     $("stale").textContent = "This data is out of date. The last refresh was more than 36 hours ago.";
   }
-  $("when").textContent = when(data.generated_at);
-  $("files").innerHTML = data.files.map((f) =>
-    `<tr><td><code>${esc(f.path)}</code></td><td>${esc(when(f.updated_at))}</td><td>${f.bytes}</td><td><code>${esc(f.sha256.slice(0, 12))}</code></td></tr>`
-  ).join("");
+  const stamp = savedCT(data.generated_at);
+  $("when").textContent = stamp ? `Updated ${stamp}` : "Updated";
 }
 
 
