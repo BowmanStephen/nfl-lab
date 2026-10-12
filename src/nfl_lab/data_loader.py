@@ -47,22 +47,33 @@ def _to_pandas(frame) -> pd.DataFrame:
     return frame.to_pandas()
 
 
-def load_schedules(seasons: Iterable[int] | None = None, force: bool = False) -> pd.DataFrame:
-    """NFL schedules from nflverse (spread_line is home margin: positive means home favored)."""
+def load_schedules(seasons: Iterable[int] | None = None, force: bool = False,
+                   force_seasons: Iterable[int] = ()) -> pd.DataFrame:
+    """NFL schedules from nflverse (spread_line is home margin: positive means home favored).
+
+    ``force_seasons`` re-downloads those seasons even when the cache already has
+    them, so the live season picks up final scores and closing lines. The cache
+    otherwise keeps a season forever after the first download.
+    """
     seasons_list = list(seasons) if seasons is not None else None
+    refresh_seasons = {int(s) for s in force_seasons}
     cache = _cache_path("schedules.parquet")
     if force or not cache.exists():
         df = _to_pandas(nfl.load_schedules(seasons_list if seasons_list is not None else True))
         df.to_parquet(cache, index=False)
     else:
         df = pd.read_parquet(cache)
-        if seasons_list is not None:
-            have = set(int(s) for s in df["season"].unique())
-            missing = [s for s in seasons_list if s not in have]
-            if missing:
-                extra = _to_pandas(nfl.load_schedules(missing))
-                df = pd.concat([df, extra], ignore_index=True)
-                df.to_parquet(cache, index=False)
+        have = set(int(s) for s in df["season"].unique()) if len(df) else set()
+        if seasons_list is None:
+            needed = sorted(refresh_seasons)
+        else:
+            needed = [s for s in seasons_list if s not in have or s in refresh_seasons]
+        if needed:
+            extra = _to_pandas(nfl.load_schedules(needed))
+            if len(df):
+                df = df[~df["season"].isin(needed)]
+            df = pd.concat([df, extra], ignore_index=True)
+            df.to_parquet(cache, index=False)
     if seasons_list is not None:
         df = df[df["season"].isin(seasons_list)].copy()
     return normalize_teams(df.reset_index(drop=True))

@@ -577,9 +577,9 @@
   "live_2026": {
     "label": "Official week-5 picks, locked Mon Oct 5 6:38 PM CT, DraftKings lines at lock",
     "holdout_note": "2026 live record starts with these picks. Holdout record 48.8% ATS vs 52.4% break-even stays as-is.",
-    "settled_picks": 0,
-    "wins": 0,
-    "losses": 0,
-    "pushes": 0
+    "settled_picks": 7,
+    "wins": 2,
+    "losses": 4,
+    "pushes": 1
   }
 }
