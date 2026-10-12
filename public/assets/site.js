@@ -378,11 +378,28 @@ function tooCloseRow(g, now = Date.now()) {
 
 function agreeGroup(games, now = Date.now()) {
   if (!games.length) return "";
-  const items = games.map((g) => `<li>${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}</li>`).join("");
+  const items = games.map((g) => {
+    const id = String(g.game_id).replace(/[^\w-]/g, "");
+    return `<li id="b-${id}">${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}</li>`;
+  }).join("");
   return `<div class="agree-group">
     <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span></button>
     <div class="row-panel" id="d-agree" role="region" aria-labelledby="b-agree" hidden><ul>${items}</ul></div>
   </div>`;
+}
+
+function revealHash() {
+  const id = (location.hash || "").slice(1);
+  if (!id) return;
+  const el = document.getElementById(id);
+  if (!el) return;
+  const panel = el.closest("[hidden]");
+  if (panel) {
+    panel.hidden = false;
+    const btn = document.getElementById(panel.getAttribute("aria-labelledby") || "");
+    if (btn) btn.setAttribute("aria-expanded", "true");
+  }
+  el.scrollIntoView({ block: "center" });
 }
 
 function bindToggles(root) {
@@ -473,6 +490,7 @@ async function renderHome() {
   const prev = $("previews-link");
   if (prev) { prev.textContent = `Read the week ${card.week} game previews`; prev.href = `previews/week${card.week}.html`; }
   bindToggles($("main"));
+  revealHash();
 }
 
 function record(r) {
@@ -997,6 +1015,36 @@ async function renderReportCard() {
   $("rc-foot").textContent = `Backtest generated ${t} CT. Final Vegas lines and scores from nflverse. This is a research record, not betting advice.`;
 }
 
+function officialLine(game, names) {
+  const selection = game.selection || {};
+  if (!selection.spread_qualifies) return "no pick";
+  const side = selection.spread_pick;
+  const price = pickLineDisplay(game, side);
+  const number = price.slice(String(side).length).trim();
+  return `${(names && names[side]) || side} ${number}`;
+}
+
+async function renderOfficialPicks() {
+  const nodes = [...document.querySelectorAll(".official-pick")];
+  if (!nodes.length) return;
+  const picksUrl = new URL("../api/picks.json", document.baseURI);
+  const teamsUrl = new URL("../api/teams.json", document.baseURI);
+  const [picksRes, teamsRes] = await Promise.all([fetch(picksUrl), fetch(teamsUrl)]);
+  if (!picksRes.ok) throw new Error(`picks.json (${picksRes.status})`);
+  const picks = await picksRes.json();
+  const teams = teamsRes.ok ? await teamsRes.json() : { teams: [] };
+  const names = Object.fromEntries((teams.teams || []).map((t) => [t.team, t.name]));
+  const byId = Object.fromEntries((picks.games || []).map((g) => [g.game_id, g]));
+  nodes.forEach((node) => {
+    const id = node.dataset.game;
+    const game = byId[id];
+    const link = node.querySelector("a");
+    if (link && id) link.href = `../index.html#b-${id}`;
+    const slot = node.querySelector(".official-line");
+    if (slot) slot.textContent = game ? officialLine(game, names) : "no pick";
+  });
+}
+
 const page = document.body.dataset.page;
 const run = {
   home: renderHome,
@@ -1006,6 +1054,13 @@ const run = {
   model: renderModel,
   "report-card": renderReportCard,
 }[page];
+if (document.querySelector(".official-pick")) {
+  renderOfficialPicks().catch(() => {
+    document.querySelectorAll(".official-line").forEach((slot) => {
+      if (!slot.textContent) slot.textContent = "unavailable";
+    });
+  });
+}
 if (run) {
   run().catch((err) => {
     const slot = $("health") || $("live-record") || $("when") || $("ratings-caption") || $("rec-caption") || document.querySelector("main");
