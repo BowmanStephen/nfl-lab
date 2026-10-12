@@ -1,42 +1,42 @@
 {
-  "generated_at": "2026-10-12T10:35:37.050215-05:00",
-  "stale_after": "2026-10-13T22:35:37.050215-05:00",
+  "generated_at": "2026-10-12T17:28:49.779236-05:00",
+  "stale_after": "2026-10-14T05:28:49.779236-05:00",
   "files": [
     {
       "path": "api/baseline.json",
       "bytes": 4704,
       "sha256": "99c3be16425e12796a9ad9e458a5c9a2f28a3466dc8ac87c8bf52277a0ec6344",
-      "updated_at": "2026-10-12T10:35:37.050215-05:00"
+      "updated_at": "2026-10-12T17:28:49.779236-05:00"
     },
     {
       "path": "api/model.json",
       "bytes": 15037,
       "sha256": "af9e4d1cdd3c3640eebe539178c1283a15dc4ebf437dc3426293f87f9e28088a",
-      "updated_at": "2026-10-12T10:35:37.050215-05:00"
+      "updated_at": "2026-10-12T17:28:49.779236-05:00"
     },
     {
       "path": "api/picks.json",
-      "bytes": 38062,
-      "sha256": "a2d904559a18e7528b9706e3b0ead4301c9d7617f0501312d267de5c88595366",
-      "updated_at": "2026-10-12T10:35:37.050215-05:00"
+      "bytes": 38844,
+      "sha256": "51d48f106a59fd8cc864888e9df13df5262cb141563e243d4ded1d7ab0310cb5",
+      "updated_at": "2026-10-12T17:28:49.779236-05:00"
     },
     {
       "path": "api/report_card.json",
       "bytes": 48810,
       "sha256": "40fb20883563347c351f6c0a62991bd5eb3cda915bd5decd3251a6e5e00c0b58",
-      "updated_at": "2026-10-12T10:35:37.050215-05:00"
+      "updated_at": "2026-10-12T17:28:49.779236-05:00"
     },
     {
       "path": "api/summary.json",
       "bytes": 498,
-      "sha256": "5a26dc2faff4e264ec98c6a87f9879e4e941b6230c8d0ebf6cb2c732f6200bf0",
-      "updated_at": "2026-10-12T10:35:37.050215-05:00"
+      "sha256": "447fdae40290db3ef943f2bafa11e967c138747808dd183a5160285c2bf772ff",
+      "updated_at": "2026-10-12T17:28:49.779236-05:00"
     },
     {
       "path": "api/teams.json",
       "bytes": 29854,
       "sha256": "5a78f5d1d1cc67a1b73bee51c719533fe70322c1febf459899974f52049e5604",
-      "updated_at": "2026-10-12T10:35:37.050215-05:00"
+      "updated_at": "2026-10-12T17:28:49.779236-05:00"
     }
   ]
 }

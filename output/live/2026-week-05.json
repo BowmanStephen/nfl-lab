@@ -1026,7 +1026,20 @@
         "espn_id": "401872994",
         "line_source": "espn_draftkings"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-12T22:28:49.582367+00:00",
+        "captured_at_ct": "2026-10-12T17:28:49.582367-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "line_source": "espn_draftkings",
+        "same_book": true,
+        "fallback": false,
+        "home_margin": 3.5,
+        "total": 55.5,
+        "spread_display": "LAR -3.5",
+        "kickoff_utc": "2026-10-13T00:15Z",
+        "espn_id": "401872994"
+      },
       "selection": {
         "model_margin": 4.2530603844,
         "base_margin": 4.1222746211,
@@ -1048,8 +1061,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "espn_draftkings"
     }
   ],
   "health": {
