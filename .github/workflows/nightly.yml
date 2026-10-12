@@ -22,6 +22,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: nfl-lab-nightly
@@ -30,6 +31,8 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # A hung download must not hold the concurrency slot past the next hourly run.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -66,10 +69,15 @@ jobs:
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           exit $code
       # Exit 2 means a partial snapshot was saved on purpose. Commit that, and
-      # nothing else: a crash (exit 1) or a cancelled run must not push a
-      # half-written public/api. The job still fails afterward.
-      - name: Commit snapshots
+      # nothing else: a crash (exit 1), stale source data (exit 3) or a
+      # cancelled run must not push a half-written public/api. The job still
+      # fails afterward.
+      - name: Validate JSON before commit
+        id: validate
         if: always() && (steps.lab.outputs.exit_code == '0' || steps.lab.outputs.exit_code == '2')
+        run: uv run python -m nfl_lab.safe_io public/api output/live
+      - name: Commit snapshots
+        if: always() && steps.validate.outcome == 'success'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -79,8 +87,47 @@ jobs:
             exit 0
           fi
           git commit -m "refresh: pick card and site JSON"
+          # main may have moved during the run (a merged PR). Rebase once;
+          # a real conflict fails the job instead of force-pushing.
+          git pull --rebase origin "${GITHUB_REF_NAME}"
           # checkout leaves a detached HEAD, so name the branch explicitly.
           git push origin "HEAD:${GITHUB_REF_NAME}"
       - name: Fail when the command failed
         if: always() && steps.lab.outputs.exit_code != '0' && steps.lab.outputs.exit_code != ''
         run: exit 1
+      # One open issue labeled routine-failure collects every failed scheduled
+      # run. Each comment carries one JSON block (format in AGENTS.md) so a
+      # relay bot can parse it.
+      - name: Open or update routine-failure issue
+        if: failure() && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CMD: ${{ steps.cmd.outputs.command }}
+          CODE: ${{ steps.lab.outputs.exit_code }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          case "$CMD" in
+            line-snapshot) job="capture" ;;
+            *) job="refresh" ;;
+          esac
+          case "$CODE" in
+            1) reason="crash or missing DraftKings line; nothing committed" ;;
+            2) reason="partial snapshot committed; a line is still missing" ;;
+            3) reason="source data missing or stale; nothing written or committed" ;;
+            0) reason="command passed but validate/commit/push failed" ;;
+            "") reason="failed before the command ran" ;;
+            *) reason="unexpected exit $CODE" ;;
+          esac
+          payload=$(jq -cn --arg run_url "$RUN_URL" --arg job "$job" \
+            --arg exit_code "${CODE:-none}" --arg reason "$reason" \
+            --arg timestamp_utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{run_url:$run_url, job:$job, exit_code:$exit_code, reason:$reason, timestamp_utc:$timestamp_utc}')
+          body=$(printf '<!-- routine-failure v1 -->\n```json\n%s\n```\n' "$payload")
+          gh label create routine-failure --color B60205 \
+            --description "A scheduled nfl-lab run failed" 2>/dev/null || true
+          num=$(gh issue list --label routine-failure --state open --limit 1 --json number --jq '.[0].number // empty')
+          if [ -n "$num" ]; then
+            gh issue comment "$num" --body "$body"
+          else
+            gh issue create --title "Scheduled nfl-lab run failing" --label routine-failure --body "$body"
+          fi
