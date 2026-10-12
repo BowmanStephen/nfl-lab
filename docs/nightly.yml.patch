@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/nightly.yml b/docs/nightly.yml.proposed
-index 223f120..f416b8c 100644
+index 223f120..94b25a4 100644
 --- a/.github/workflows/nightly.yml
 +++ b/docs/nightly.yml.proposed
 @@ -22,6 +22,7 @@ on:
@@ -38,7 +38,7 @@ index 223f120..f416b8c 100644
          run: |
            git config user.name "github-actions[bot]"
            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-@@ -79,8 +87,38 @@ jobs:
+@@ -79,8 +87,47 @@ jobs:
              exit 0
            fi
            git commit -m "refresh: pick card and site JSON"
@@ -50,8 +50,9 @@ index 223f120..f416b8c 100644
        - name: Fail when the command failed
          if: always() && steps.lab.outputs.exit_code != '0' && steps.lab.outputs.exit_code != ''
          run: exit 1
-+      # One open issue labeled routine-failure collects every failed run, so a
-+      # bad game day shows up in one place instead of 14 red runs.
++      # One open issue labeled routine-failure collects every failed scheduled
++      # run. Each comment carries one JSON block (format in AGENTS.md) so a
++      # relay bot can parse it.
 +      - name: Open or update routine-failure issue
 +        if: failure() && github.event_name == 'schedule'
 +        env:
@@ -60,20 +61,28 @@ index 223f120..f416b8c 100644
 +          CODE: ${{ steps.lab.outputs.exit_code }}
 +          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 +        run: |
-+          case "$CODE" in
-+            1) why="crash or missing DraftKings line; nothing committed" ;;
-+            2) why="partial snapshot committed; a line is still missing" ;;
-+            3) why="source data missing or stale; nothing written or committed" ;;
-+            "") why="failed before the command ran" ;;
-+            *) why="exit $CODE" ;;
++          case "$CMD" in
++            line-snapshot) job="capture" ;;
++            *) job="refresh" ;;
 +          esac
-+          body="$(date -u +%FT%TZ) \`${CMD:-?}\` failed: ${why}. ${RUN_URL}"
++          case "$CODE" in
++            1) reason="crash or missing DraftKings line; nothing committed" ;;
++            2) reason="partial snapshot committed; a line is still missing" ;;
++            3) reason="source data missing or stale; nothing written or committed" ;;
++            0) reason="command passed but validate/commit/push failed" ;;
++            "") reason="failed before the command ran" ;;
++            *) reason="unexpected exit $CODE" ;;
++          esac
++          payload=$(jq -cn --arg run_url "$RUN_URL" --arg job "$job" \
++            --arg exit_code "${CODE:-none}" --arg reason "$reason" \
++            --arg timestamp_utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
++            '{run_url:$run_url, job:$job, exit_code:$exit_code, reason:$reason, timestamp_utc:$timestamp_utc}')
++          body=$(printf '<!-- routine-failure v1 -->\n```json\n%s\n```\n' "$payload")
 +          gh label create routine-failure --color B60205 \
 +            --description "A scheduled nfl-lab run failed" 2>/dev/null || true
 +          num=$(gh issue list --label routine-failure --state open --limit 1 --json number --jq '.[0].number // empty')
 +          if [ -n "$num" ]; then
 +            gh issue comment "$num" --body "$body"
 +          else
-+            gh issue create --title "Scheduled nfl-lab run failing" --label routine-failure \
-+              --body "$body"$'\n\n'"Close this once the routine is green again; the next failure reopens a fresh one."
++            gh issue create --title "Scheduled nfl-lab run failing" --label routine-failure --body "$body"
 +          fi

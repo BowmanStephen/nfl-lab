@@ -407,7 +407,7 @@ def _next_card(schedules, pbp, depth, injuries):
     return week, card, message, captured_at, ratings, stats, weekly, through
 
 
-def run(mode: str = "refresh") -> dict:
+def run(mode: str = "refresh") -> dict | None:
     now = _clock()
     captured_at = now.isoformat()
     existing = None
@@ -418,7 +418,10 @@ def run(mode: str = "refresh") -> dict:
         cards = sorted(card_path(LIVE_SEASON, w) for w in range(LIVE_START_WEEK, 23))
         present = [p for p in cards if p.exists()]
         if not present:
-            raise MissingLineError("no pick card yet. Run `nfl-lab pick-card` before kickoff.")
+            # Nothing to capture before the week's card exists. Quiet exit 0:
+            # nothing written, nothing committed. The morning refresh makes the card.
+            log("line-snapshot: no pick card yet; nothing to capture")
+            return None
         existing = json.loads(present[-1].read_text())
         if not _due(existing["games"], now):
             log("no pre-kickoff snapshots are due")

@@ -90,3 +90,27 @@ def test_cli_exit_3_on_stale(monkeypatch):
 
     monkeypatch.setattr(cli, "run", stale)
     assert cli.main(["refresh"]) == 3
+
+
+def test_line_snapshot_without_card_exits_0_and_writes_nothing(tmp_path, monkeypatch, capsys):
+    from nfl_lab import refresh
+
+    monkeypatch.setattr(refresh, "card_path", lambda season, week: tmp_path / f"{season}-week-{week:02d}.json")
+    saved = []
+    monkeypatch.setattr(refresh, "save_card", lambda card: saved.append(card))
+    monkeypatch.setattr(refresh, "publish_card", lambda *a, **k: saved.append(a))
+    monkeypatch.setattr(refresh, "fetch_week_lines", lambda *a, **k: pytest.fail("must not fetch"))
+    assert cli.main(["line-snapshot"]) == 0
+    assert saved == []
+    assert list(tmp_path.iterdir()) == []
+    assert "no pick card yet" in "".join(capsys.readouterr())
+
+
+def test_line_snapshot_other_failures_still_fail(monkeypatch):
+    from nfl_lab.odds_espn import MissingLineError
+
+    def missing(mode="refresh"):
+        raise MissingLineError("CHI @ GB: ESPN DraftKings line is missing")
+
+    monkeypatch.setattr(cli, "run", missing)
+    assert cli.main(["line-snapshot"]) == 1
