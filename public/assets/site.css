@@ -1124,3 +1124,28 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 .score { color: var(--ink); font-weight: 600; }
 .retry { min-height: var(--tap); padding: 0 16px; font: inherit; font-weight: 600; background: var(--ink); color: var(--paper); border: 0; border-radius: var(--radius); cursor: pointer; }
 .next-link a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 600; }
+
+/* ---------- Track record ---------- */
+.tr-tiles { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--ink); margin: 1.5rem 0 0.75rem; max-width: 46rem; }
+.tr-tile { padding: 0.9rem 1rem 1rem 0; border-bottom: 1px solid var(--hair); }
+.tr-tile .label { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0; }
+.tr-tile .num { font-size: clamp(2.2rem, 5vw, 3.5rem); line-height: 1.05; letter-spacing: -0.035em; margin: 0.2rem 0 0; font-variant-numeric: tabular-nums; }
+.tr-tile .tile-gloss { font-size: 0.9rem; line-height: 1.4; color: var(--muted); margin: 0.35rem 0 0; }
+.tr-strip { list-style: none; padding: 0; margin: 1rem 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem; max-width: 46rem; }
+.tr-strip li { border-top: 1px solid var(--hair); padding-top: 0.5rem; font-family: var(--mono); font-size: 0.75rem; line-height: 1.4; font-variant-numeric: tabular-nums; }
+.tr-strip .wk { color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; display: block; }
+.tr-strip .sym { font-family: var(--serif); font-size: 1.6rem; display: block; margin: 0.15rem 0; }
+.tr-strip .ok .sym { color: var(--hit); }
+.tr-strip .no .sym { color: var(--miss); }
+.tr-strip .tag { color: var(--muted); display: block; margin-top: 0.2rem; }
+.tr-week { margin: 1.5rem 0 0; max-width: 46rem; }
+.tr-week h3 { font-family: var(--mono); font-weight: 400; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); border-top: 1px solid var(--ink); padding-top: 0.6rem; margin: 0 0 0.25rem; }
+.tr-game { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--hair); }
+.tr-game p { margin: 0; line-height: 1.45; }
+.tr-game .date { display: block; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+.pill { flex: none; font-family: var(--mono); font-size: 0.75rem; padding: 0.15rem 0.5rem; white-space: nowrap; }
+.pill.ok { background: var(--hit-tint); color: var(--hit); }
+.pill.no { background: var(--miss-tint); color: var(--miss); }
+.pill.even { border: 1px solid var(--hair); color: var(--muted); }
+.tr-bettors { margin: 2.5rem 0 0; border-top: 1px solid var(--ink); padding-top: 0.25rem; }
+.tr-bettors > summary { cursor: pointer; font-family: var(--mono); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; min-height: 44px; display: flex; align-items: center; }

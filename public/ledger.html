@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f2efe7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#181917" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23181917'/><path d='M5 12.5 11 3.5' stroke='%23f2efe7' stroke-width='2'/></svg>">
-  <title>NFL Lab: ledger</title>
+  <title>NFL Lab: track record</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="ledger">
@@ -23,8 +23,19 @@
       </nav>
     </header>
     <main id="main" tabindex="-1">
+    <p class="kicker">Track record · 2026</p>
+    <h1>Did the model pick the winner?</h1>
+    <p class="lede">Each week, the model calls a score for every game. This shows how often the team it had ahead won.</p>
+    <div class="tr-tiles" id="tr-tiles" aria-live="polite"></div>
+    <p class="gloss" id="tr-scope">…</p>
+    <h2>Last five weeks</h2>
+    <ol class="tr-strip" id="tr-strip"></ol>
+    <h2>Every game</h2>
+    <div id="tr-games"></div>
+    <details class="tr-bettors">
+      <summary>For bettors</summary>
     <p class="kicker">2022 to 2025 test, graded once</p>
-    <h1>2022 to 2025 did not clear the bar</h1>
+    <h2>2022 to 2025 did not clear the bar</h2>
     <p class="gloss">A standard bet costs $110 to win $100. Bettors call that -110 odds. At that price you have to win 52.4% of bets to break even.</p>
     <div class="spent">
       <p>Spreads</p>
@@ -54,6 +65,7 @@
       <tbody id="live"></tbody>
     </table>
     </div>
+    </details>
     </main>
     <footer>
       <nav class="foot-nav" aria-label="More pages">
