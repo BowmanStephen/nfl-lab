@@ -344,6 +344,7 @@ def test_graded_week_is_kept_when_the_next_card_fails(monkeypatch, capsys):
             "same_book": True, "captured_at": "2026-10-12T23:45:00+00:00",
         })],
     }}
+    ungraded = json.loads(json.dumps(store["5"]))
     monkeypatch.setattr("nfl_lab.refresh.load_card",
                         lambda season, week: json.loads(json.dumps(store[str(week)])) if str(week) in store else None)
     monkeypatch.setattr("nfl_lab.refresh.save_card",
@@ -364,6 +365,103 @@ def test_graded_week_is_kept_when_the_next_card_fails(monkeypatch, capsys):
     assert "6" not in store  # no fabricated week 6 card or line
 
     # The CLI maps this to exit 2: nightly.yml commits, then fails the job.
+    # Start from the ungraded card again; an unchanged re-grade is exit 1.
+    store["5"] = ungraded
     monkeypatch.setattr("sys.argv", ["nfl-lab", "refresh"])
     assert cli.main() == 2
     assert "next pick card failed" in capsys.readouterr().err
+
+
+def _week5_store(monkeypatch, pre):
+    store = {"5": {
+        "season": 2026, "week": 5, "created_at": "2026-10-05T23:38:47+00:00",
+        "games": [_buf_game(pre=pre)],
+    }}
+    monkeypatch.setattr("nfl_lab.refresh.load_card",
+                        lambda season, week: json.loads(json.dumps(store[str(week)])) if str(week) in store else None)
+    monkeypatch.setattr("nfl_lab.refresh.save_card",
+                        lambda card: store.__setitem__(str(card["week"]), json.loads(json.dumps(card))))
+    monkeypatch.setattr("nfl_lab.refresh.write_site",
+                        lambda *a, **k: pytest.fail("no site write without a next card"))
+    return store
+
+
+def _week5_done_week6_open(monkeypatch):
+    schedules = pd.DataFrame([
+        _schedule_row(5, "2026_05_BUF_LA", "BUF", "LA", 2.5, 47.5, kick_score=(30, 20)),
+        _schedule_row(6, "2026_06_SEA_DEN", "SEA", "DEN", -3.0, 45.0),
+    ])
+    now = datetime(2026, 10, 13, 11, 15, tzinfo=UTC)
+    _install_loaders(monkeypatch, schedules, lambda: now)
+
+    def no_line(season, week, now=None):
+        raise MissingLineError("SEA @ DEN has no DraftKings spread")
+
+    monkeypatch.setattr("nfl_lab.refresh.fetch_week_lines", no_line)
+
+
+_PRE = {"home_margin": 2.5, "total": 47.5, "source": "espn_scoreboard",
+        "same_book": True, "captured_at": "2026-10-12T23:45:00+00:00"}
+
+
+def test_unchanged_regrade_keeps_exit_1_when_the_next_card_fails(monkeypatch, capsys):
+    """Week 5 was already graded on a prior run: re-grading changes nothing, so exit 1."""
+    from nfl_lab import cli
+    from nfl_lab.odds_espn import PartialSnapshot
+
+    _week5_done_week6_open(monkeypatch)
+    store = _week5_store(monkeypatch, _PRE)
+    with pytest.raises(PartialSnapshot):
+        run("refresh")  # first run grades week 5 (exit-2 path)
+    settled = json.loads(json.dumps(store))
+
+    monkeypatch.setattr("sys.argv", ["nfl-lab", "refresh"])
+    assert cli.main() == 1
+    assert store == settled  # nothing new to commit
+    assert "next pick card failed" not in capsys.readouterr().err
+
+
+def test_partial_snapshot_from_next_card_is_not_rewrapped(monkeypatch):
+    from nfl_lab.odds_espn import PartialSnapshot
+
+    _week5_done_week6_open(monkeypatch)
+    _week5_store(monkeypatch, _PRE)
+    inner = PartialSnapshot("SEA @ DEN close still missing")
+
+    def boom(*a, **k):
+        raise inner
+
+    monkeypatch.setattr("nfl_lab.refresh._next_card", boom)
+    with pytest.raises(PartialSnapshot) as err:
+        run("refresh")
+    assert err.value is inner
+    assert err.value.__cause__ is None
+
+
+def test_code_bug_exits_1_with_traceback_after_week_already_graded(monkeypatch, capsys):
+    """A real bug in _project must stay exit 1 once week 5 is graded and unchanged."""
+    from nfl_lab import cli
+
+    schedules = pd.DataFrame([
+        _schedule_row(5, "2026_05_BUF_LA", "BUF", "LA", 2.5, 47.5, kick_score=(30, 20)),
+        _schedule_row(6, "2026_06_SEA_DEN", "SEA", "DEN", -3.0, 45.0, kick_score=(20, 17)),
+        _schedule_row(7, "2026_07_KC_LV", "KC", "LV", -3.0, 45.0),
+    ])
+    now = datetime(2026, 10, 20, 11, 15, tzinfo=UTC)
+    _install_loaders(monkeypatch, schedules, lambda: now)
+    store = _week5_store(monkeypatch, _PRE)
+
+    def boom(*a, **k):
+        raise KeyError("typo_in_code")
+
+    monkeypatch.setattr("nfl_lab.refresh._project", boom)
+    monkeypatch.setattr("sys.argv", ["nfl-lab", "refresh"])
+    cli.main()  # prior run: grades week 5 for the first time
+    capsys.readouterr()
+    settled = json.loads(json.dumps(store))
+
+    assert cli.main() == 1
+    err = capsys.readouterr().err
+    assert "Traceback" in err and "typo_in_code" in err
+    assert "next pick card failed" not in err
+    assert store == settled
