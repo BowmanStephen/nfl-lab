@@ -185,9 +185,7 @@ function showLock(card) {
   if (label && card.lock_label) label.textContent = card.lock_label;
   const note = $("holdout-note");
   if (note && card.holdout_note) {
-    note.textContent = document.body.dataset.page === "home"
-      ? holdoutCalmLine(card.holdout_note)
-      : card.holdout_note;
+    note.textContent = card.holdout_note;
   }
   const voidNote = $("totals-void-note");
   if (voidNote) {
@@ -218,165 +216,242 @@ function liveRecordLine(health) {
   return `The 2026 record so far is ${health.wins}-${health.losses}-${health.pushes}${rate}.`;
 }
 
-function holdoutCalmLine(note) {
-  if (!note) return "";
-  const m = String(note).match(/Holdout record\s+[\d.]+%\s+ATS\s+vs\s+[\d.]+%\s+break-even/i);
-  if (m) return `${m[0]}.`;
-  return note;
+/* Home: one row per game. Build spec: critiques/nfl-lab/home-nav-build-spec.md */
+const AGREE_WITHIN = 1.0; // display split only, not a data field
+const HOUR = 3600 * 1000;
+let homeNames = {};
+
+function nowMs() {
+  const q = new URLSearchParams(location.search).get("now");
+  const t = q ? Date.parse(q) : NaN;
+  return Number.isFinite(t) ? t : Date.now();
 }
 
-/* Home: one row per game (Apple Sports style). Data: picks.json + teams.json. */
-const AMBIGUOUS_CITY = /^(New York|Los Angeles)\b/;
-
-function teamShort(abbr, names) {
-  const full = names[abbr];
-  if (!full) return abbr;
-  const parts = full.split(" ");
-  const nick = parts[parts.length - 1];
-  const city = parts.slice(0, -1).join(" ");
-  return AMBIGUOUS_CITY.test(full) || !city ? nick : city;
-}
-
-function pts(n) {
-  const v = Math.abs(Number(n));
-  if (!Number.isFinite(v)) return "?";
-  const r = Math.round(v * 2) / 2;
-  return Number.isInteger(r) ? String(r) : r.toFixed(1);
-}
+function fullName(abbr) { return homeNames[abbr] || abbr; }
 
 function kickoffCT(iso) {
   if (!iso) return "";
   return new Date(iso).toLocaleString("en-US", {
     weekday: "short", hour: "numeric", minute: "2-digit", timeZone: "America/Chicago",
+  }).replace(",", "") + " CT";
+}
+
+function timeTag(iso) {
+  return `<time datetime="${esc(iso)}">${esc(kickoffCT(iso))}</time>`;
+}
+
+function vegasFavored(g) {
+  const d = String((g.pick_time && g.pick_time.spread_display) || "");
+  const team = d.split(" ")[0];
+  if (team === g.home_team || team === g.away_team) return team;
+  return Number(g.pick_time && g.pick_time.home_margin) > 0 ? g.home_team : g.away_team;
+}
+
+function modelPlain(g) {
+  return marginPlain(g.selection.model_margin, fullName(g.home_team), fullName(g.away_team));
+}
+
+function homeSentence(g) {
+  const s = g.selection;
+  const pick = s.spread_pick;
+  const mm = Number(s.model_margin);
+  const modelFav = mm > 0 ? g.home_team : g.away_team;
+  let x;
+  if (pick && pick !== vegasFavored(g)) {
+    x = modelFav === pick ? `${fullName(pick)} wins` : `${fullName(pick)} keeps it within ${Math.abs(mm).toFixed(1)}`;
+  } else {
+    x = modelPlain(g);
+  }
+  return `Our model says ${x}. Vegas says ${g.pick_time.spread_display}.`;
+}
+
+function pageState(card, fresh, now) {
+  if (!card.games.length) return "empty";
+  const kicks = card.games.map((g) => Date.parse(g.kickoff_utc));
+  const scored = (g) => g.grading && g.grading.home_score != null;
+  if (card.games.every(scored)) return "final";
+  if (now < Math.min(...kicks)) return "pre";
+  if (kicks.every((k) => k + 4 * HOUR < now)) return "awaiting";
+  return "live";
+}
+
+function teamsLabel(g) {
+  return `<span class="teams" aria-label="${esc(fullName(g.away_team))} at ${esc(fullName(g.home_team))}"><span class="chip">${esc(g.away_team)}</span> <span class="at" aria-hidden="true">@</span> <span class="chip">${esc(g.home_team)}</span></span>`;
+}
+
+function savedCT(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleString("en-US", {
+    weekday: "short", hour: "numeric", minute: "2-digit", timeZone: "America/Chicago",
+  }).replace(",", "") + " CT";
+}
+
+function detailList(g, withGap) {
+  const s = g.selection;
+  const rows = [
+    ["Vegas says", `${g.pick_time.spread_display} (saved ${savedCT(g.pick_time.captured_at_ct || g.pick_time.captured_at)})`],
+    ["Our model says", modelPlain(g)],
+  ];
+  if (withGap) rows.push(["Model's gap vs Vegas", `${Math.abs(Number(s.spread_edge)).toFixed(1)} points toward ${fullName(s.spread_pick)}`]);
+  if (g.pre_kickoff && g.pre_kickoff.spread_display) rows.push(["Line before kickoff", g.pre_kickoff.spread_display]);
+  if (s.away_qb || s.home_qb) rows.push(["Quarterbacks", `${g.away_team} ${s.away_qb || "not listed"} · ${g.home_team} ${s.home_qb || "not listed"}`]);
+  if (!withGap && s.total_voided) rows.push(["Over/under", `Over/under pick pulled (${s.total_pick} ${Number(g.pick_time.total).toFixed(1)})`]);
+  const notes = s.qb_notes || [];
+  const qb = notes.length
+    ? `<p class="small">QB note: ${esc(notes[0])}</p>${notes.length > 1 ? `<details class="more"><summary>More</summary>${notes.slice(1).map((n) => `<p class="small">${esc(n)}</p>`).join("")}</details>` : ""}`
+    : "";
+  return `<dl class="row-detail">${rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd class="num">${esc(v)}</dd></div>`).join("")}</dl>${qb}`;
+}
+
+function resultPill(g) {
+  let o = g.grading && g.grading.spread_outcome;
+  if (!o && g.grading && g.grading.actual_margin != null) {
+    // fallback: compare final home margin with the pick-time line
+    const line = Number(g.pick_time.home_margin);
+    const am = Number(g.grading.actual_margin);
+    const homeCover = am - line;
+    const pickHome = g.selection.spread_pick === g.home_team;
+    o = Math.abs(homeCover) < 1e-9 ? "push" : ((homeCover > 0) === pickHome ? "win" : "loss");
+  }
+  if (o === "win") return '<span class="result-pill right" aria-label="Our pick was right">✓ Right</span>';
+  if (o === "loss") return '<span class="result-pill wrong" aria-label="Our pick was wrong">✗ Wrong</span>';
+  if (o === "push") return '<span class="result-pill tie" aria-label="Push, no result">Tie</span>';
+  return "";
+}
+
+function expander(g, cls, sentence, extra, detail) {
+  const id = String(g.game_id).replace(/[^\w-]/g, "");
+  return `<div class="game-row ${cls}">
+    <button class="row-toggle" id="b-${id}" aria-expanded="false" aria-controls="d-${id}">
+      <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
+      <span class="call">${esc(sentence)}</span>
+    </button>
+    <div class="row-panel" id="d-${id}" role="region" aria-labelledby="b-${id}" hidden>${detail}</div>
+  </div>`;
+}
+
+function gameRow(g, state, now) {
+  if (state === "final") return finalRow(g);
+  const started = state === "live" && Date.parse(g.kickoff_utc) <= now ? ' <span class="tag">Started</span>' : "";
+  const price = pickLineDisplay(g, g.selection.spread_pick);
+  return expander(g, "pick-row", homeSentence(g),
+    `${timeTag(g.kickoff_utc)}${started}`,
+    `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`);
+}
+
+function finalRow(g) {
+  const gr = g.grading;
+  const price = pickLineDisplay(g, g.selection.spread_pick);
+  const am = Number(gr.actual_margin ?? (gr.home_score - gr.away_score));
+  const winner = am === 0 ? null : (am > 0 ? g.home_team : g.away_team);
+  const sentence = `We had ${fullName(g.selection.spread_pick)} ${price.split(" ").slice(1).join(" ")}. ${winner ? `${fullName(winner)} won by ${Math.abs(am)}.` : "It ended in a tie."}`;
+  return expander(g, "pick-row final", sentence,
+    `<span class="score num">${esc(g.away_team)} ${esc(gr.away_score)} · ${esc(g.home_team)} ${esc(gr.home_score)}</span> ${resultPill(g)}`,
+    detailList(g, true));
+}
+
+function tooCloseRow(g) {
+  return expander(g, "quiet", `Too close to call. Vegas says ${g.pick_time.spread_display}; our model says ${modelPlain(g)}.`,
+    timeTag(g.kickoff_utc), detailList(g, false));
+}
+
+function agreeGroup(games) {
+  if (!games.length) return "";
+  const items = games.map((g) => `<li>${esc(g.away_team)} @ ${esc(g.home_team)} · ${timeTag(g.kickoff_utc)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}</li>`).join("");
+  return `<div class="agree-group">
+    <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span></button>
+    <div class="row-panel" id="d-agree" role="region" aria-labelledby="b-agree" hidden><ul>${items}</ul></div>
+  </div>`;
+}
+
+function bindToggles(root) {
+  root.querySelectorAll(".row-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", String(!open));
+      document.getElementById(btn.getAttribute("aria-controls")).hidden = open;
+    });
   });
 }
 
-function vegasSays(g, nm) {
-  const line = Number(g.pick_time && g.pick_time.home_margin);
-  if (!Number.isFinite(line)) return "Vegas has no line yet.";
-  if (Math.abs(line) < 0.25) return "Vegas calls it even.";
-  const fav = line > 0 ? g.home_team : g.away_team;
-  return `Vegas says ${teamShort(fav, nm)} by ${pts(line)}.`;
+function showHomeError() {
+  const main = $("main");
+  main.innerHTML = `<div class="state-banner"><h1>We couldn't load this week's picks</h1><p>We couldn't load this week's picks. Try refreshing.</p><button type="button" class="retry" id="retry">Try again</button></div>`;
+  $("retry").addEventListener("click", () => { location.reload(); });
 }
 
-function modelSays(g, nm) {
-  const s = g.selection;
-  const mm = Number(s.model_margin);
-  const line = Number(g.pick_time && g.pick_time.home_margin);
-  if (!Number.isFinite(mm)) return "Our model has no number for this game.";
-  if (Math.abs(mm) < 0.5) return "Our model calls it a toss-up.";
-  const modelFav = mm > 0 ? g.home_team : g.away_team;
-  const vegasFav = line > 0 ? g.home_team : g.away_team;
-  if (s.spread_qualifies && s.spread_pick !== modelFav && Number.isFinite(line)) {
-    return `Our model says ${teamShort(s.spread_pick, nm)} keeps it within ${pts(mm)}.`;
-  }
-  if (Number.isFinite(line) && modelFav !== vegasFav) {
-    return `Our model says ${teamShort(modelFav, nm)} wins by ${pts(mm)}.`;
-  }
-  return `Our model says ${teamShort(modelFav, nm)} by ${pts(mm)}.`;
-}
-
-function hasScore(g) {
-  return g.grading && g.grading.home_score != null && g.grading.away_score != null;
-}
-
-function resultMark(g) {
-  const o = g.grading && g.grading.spread_outcome;
-  if (!g.selection.spread_qualifies || !o) return "";
-  if (o === "win") return '<span class="mark-right"><span aria-hidden="true">✓</span> Right</span>';
-  if (o === "loss") return '<span class="mark-wrong"><span aria-hidden="true">✗</span> Wrong</span>';
-  return '<span class="mark-push">Tie with Vegas</span>';
-}
-
-function gameRow(g, nm) {
-  const s = g.selection;
-  const pick = s.spread_qualifies;
-  const away = teamShort(g.away_team, nm);
-  const home = teamShort(g.home_team, nm);
-  const sentence = pick ? `${modelSays(g, nm)} ${vegasSays(g, nm)}` : "Too close to call.";
-  const score = hasScore(g)
-    ? `<span class="row-score">${esc(g.grading.away_score)}-${esc(g.grading.home_score)}</span>${resultMark(g)}`
-    : `<span class="row-time">${esc(kickoffCT(g.kickoff_utc))}</span>`;
-  const gap = Number.isFinite(Number(s.spread_edge))
-    ? (pick
-      ? `${pts(s.spread_edge)} points apart, toward ${teamShort(s.spread_pick, nm)}`
-      : `${pts(s.spread_edge)} points apart. We need 2 to make a call.`)
-    : "Not available";
-  const qbs = s.away_qb || s.home_qb
-    ? `<div><dt>Starting QBs</dt><dd>${esc(away)}: ${esc(s.away_qb || "not listed")}. ${esc(home)}: ${esc(s.home_qb || "not listed")}.</dd></div>`
-    : "";
-  const notes = (s.qb_notes || []).map((n) => `<p class="caption">${esc(n)}</p>`).join("");
-  return `<details class="hrow${pick ? " is-pick" : ""}">
-    <summary>
-      <span class="row-teams"><span class="abbr">${esc(g.away_team)}</span> ${esc(away)} <span class="at">at</span> <span class="abbr">${esc(g.home_team)}</span> ${esc(home)}</span>
-      <span class="row-when">${score}</span>
-      <span class="row-say">${esc(sentence)}</span>
-    </summary>
-    <dl class="row-detail">
-      <div><dt>Vegas says</dt><dd class="vegas">${esc(vegasSays(g, nm).replace(/^Vegas says /, "").replace(/\.$/, ""))}</dd></div>
-      <div><dt>Our model says</dt><dd class="ours">${esc(modelSays(g, nm).replace(/^Our model says /, "").replace(/\.$/, ""))}</dd></div>
-      <div><dt>Gap vs Vegas</dt><dd>${esc(gap)}</dd></div>
-      ${qbs}
-    </dl>
-    ${notes}
-  </details>`;
-}
-
-function weekIsFinal(card) {
-  return card.games.length > 0 && card.games.every(hasScore);
-}
-
-function homeNotices(card) {
-  const out = [];
-  if (card.totals_void_note) {
-    const m = String(card.totals_void_note).match(/voided (\w{3} \d+)/i);
-    out.push(`Over/unders pulled${m ? ` ${m[1]}` : ""} (bug fixed). Winner calls stand.`);
-  }
-  if (card.games.some((g) => (g.selection.qb_notes || []).length)) {
-    out.push("Some starting QBs are uncertain. Open a game to see the note.");
-  }
-  return out;
-}
-
-function homeRecord(health) {
-  const past = "In a 2022 to 2025 test the model was right 48.8% of the time against Vegas.";
-  if (!health || !health.settled_picks) return `2026 record: no calls graded yet. ${past}`;
-  const ties = health.pushes ? `, ${health.pushes} even` : "";
-  return `2026 record: ${health.wins} right, ${health.losses} wrong${ties}. ${past}`;
+async function recapExists(week) {
+  try { const r = await fetch(`recaps/week${week}.html`, { method: "HEAD" }); return r.ok; } catch { return false; }
 }
 
 async function renderHome() {
-  const [card, teams] = await Promise.all([
-    load("picks.json"),
-    load("teams.json").catch(() => ({ teams: [] })),
-  ]);
-  const nm = Object.fromEntries((teams.teams || []).map((t) => [t.team, t.name]));
-  const final = weekIsFinal(card);
-  $("home-title").textContent = final
-    ? `Week ${card.week} is final`
-    : `Week ${card.week}: who we think wins`;
-  document.title = `NFL Lab: ${$("home-title").textContent}`;
-  const lockTime = card.created_at ? whenCT(card.created_at).replace(/,? CDT|,? CST/, "") : "";
-  $("lock-label").textContent = lockTime
-    ? `Calls locked ${lockTime} CT, before any kickoff. All times CT.`
-    : "All times CT.";
-  $("notices").innerHTML = homeNotices(card).map((n) => `<li>${esc(n)}</li>`).join("");
+  let card;
+  let fresh = {};
+  try {
+    const [c, f, teams] = await Promise.all([
+      load("picks.json"),
+      load("freshness.json").catch(() => ({})),
+      load("teams.json").catch(() => ({ teams: [] })),
+    ]);
+    card = c; fresh = f;
+    homeNames = Object.fromEntries((teams.teams || []).map((t) => [t.team, t.name]));
+  } catch (err) {
+    showHomeError();
+    return;
+  }
+  const now = nowMs();
+  const state = pageState(card, fresh, now);
+  const games = card.games.slice().sort((a, b) => Date.parse(a.kickoff_utc) - Date.parse(b.kickoff_utc));
+  const picks = games.filter((g) => g.selection.spread_qualifies);
+  const close = games.filter((g) => !g.selection.spread_qualifies && Math.abs(Number(g.selection.spread_edge)) >= AGREE_WITHIN);
+  const agree = games.filter((g) => !g.selection.spread_qualifies && Math.abs(Number(g.selection.spread_edge)) < AGREE_WITHIN);
 
-  const byKick = (a, b) => String(a.kickoff_utc).localeCompare(String(b.kickoff_utc));
-  const picks = card.games.filter((g) => g.selection.spread_qualifies).sort(byKick);
-  const close = card.games.filter((g) => !g.selection.spread_qualifies).sort(byKick);
-  $("games").innerHTML = picks.length
-    ? picks.map((g) => gameRow(g, nm)).join("")
-    : "<p>Our model agrees with Vegas on every game this week.</p>";
-  $("close-games").innerHTML = close.length
-    ? `<details class="hrow close-group">
-        <summary><span class="row-teams">${close.length} games: too close to call</span><span class="row-say">Our model and Vegas roughly agree on these, so we make no call.</span></summary>
-        <div class="close-list">${close.map((g) => gameRow(g, nm)).join("")}</div>
-      </details>`
-    : "";
-  $("previews-link").textContent = `Read the week ${card.week} game previews`;
-  $("previews-link").href = `previews/week${card.week}.html`;
-  $("live-record").textContent = homeRecord(card.health);
+  $("kicker").textContent = `Week ${card.week} · ${card.season}`;
+  const h1 = {
+    pre: `Week ${card.week}: who we think wins`,
+    live: `Week ${card.week}: games underway`,
+    awaiting: `Week ${card.week} is over`,
+    final: `Week ${card.week} is final`,
+    empty: `Week ${card.week}: who we think wins`,
+  }[state];
+  $("home-title").textContent = h1;
+  document.title = `NFL Lab: ${h1}`;
+  const provider = (games[0] && games[0].pick_time && games[0].pick_time.provider) || "DraftKings";
+  $("updated").textContent = fresh.generated_at
+    ? `Updated ${savedCT(fresh.generated_at)} · Lines from ${provider}`
+    : `Lines from ${provider}`;
+
+  const notices = [];
+  if (fresh.stale_after && Date.parse(fresh.stale_after) < now) {
+    notices.push(`<p class="notice">This page hasn't updated since ${esc(savedCT(fresh.generated_at))}.</p>`);
+  }
+  if (state === "awaiting") notices.push('<p class="notice">Results are being graded. Check back soon.</p>');
+  if (games.some((g) => g.selection.total_voided) && notices.length < 2) {
+    notices.push(`<details class="notice"><summary>Over/under picks were pulled on Oct 8 after we found a bug. <span class="why">Why</span></summary><p class="small">${esc(card.totals_void_note || "")} <a href="report-card.html#totals">More on the 2026 replay</a></p></details>`);
+  }
+  $("notices").innerHTML = notices.slice(0, 2).join("");
+
+  if (state === "final") {
+    let w = 0, l = 0, p = 0;
+    picks.forEach((g) => { const o = resultPill(g); if (o.includes("right")) w++; else if (o.includes("wrong")) l++; else if (o) p++; });
+    const recap = await recapExists(card.week);
+    $("final-line").innerHTML = `Our picks went ${w}-${l}${p ? `-${p}` : ""}. ${recap ? `<a href="recaps/week${card.week}.html">See week ${card.week} recap →</a> ` : ""}Week ${card.week + 1} picks are coming.`;
+    $("final-line").hidden = false;
+  }
+
+  if (state === "empty") {
+    $("games").innerHTML = `<p>No games on the card yet for week ${card.week}.</p>`;
+    $("picks-h").hidden = true; $("close-h").hidden = true;
+  } else {
+    $("picks-h").textContent = `Our picks (${picks.length})`;
+    $("games").innerHTML = picks.map((g) => gameRow(g, state, now)).join("");
+    $("close-h").textContent = `Too close to call (${close.length})`;
+    $("close-h").hidden = !close.length;
+    $("close-games").innerHTML = close.map(tooCloseRow).join("") + agreeGroup(agree);
+  }
+  const prev = $("previews-link");
+  if (prev) { prev.textContent = `Read the week ${card.week} game previews`; prev.href = `previews/week${card.week}.html`; }
+  bindToggles($("main"));
 }
 
 function record(r) {
@@ -801,7 +876,7 @@ if (run) {
     const slot = $("health") || $("live-record") || $("when") || $("ratings-caption") || $("rec-caption") || document.querySelector("main");
     if (slot) {
       if (slot.hidden) slot.hidden = false;
-      slot.textContent = `Could not load the latest JSON (${err.message}).`;
+      slot.textContent = "We couldn't load the latest numbers. Try refreshing.";
     }
   });
 }

@@ -58,12 +58,16 @@ per game). The palette above stays; the type is now one sans family.
 - Every number uses `font-variant-numeric: tabular-nums`.
 - Headings are sentence case and state the takeaway ("Week 5: who we think
   wins", "Week 5 is final"). No uppercase labels.
-- Our model has one accent colour, `--ours` (#1d4f91 light, #9cc0f5 dark).
-  Vegas stays neutral grey (`--muted`). Right is green with a check mark,
-  wrong is red with a cross; colour is never used alone.
+- Tokens: `--fs-h1` 28px, `--fs-call` 17px, `--fs-body` 16px, `--fs-small`
+  13px, `--lh` 1.5, `--tap` 44px.
+- Our model and our pick use one accent, `--accent` (= `--hit`). Vegas stays
+  neutral grey (`--vegas` = `--muted` #55584f). `--line-mark` #7d7e74 (3.6:1)
+  is for graphics only, never text. Right is green with "✓ Right", wrong is
+  red with "✗ Wrong"; colour is never used alone.
+- Home page states: pre, live, awaiting, final, stale, error, empty.
 - Contrast on the paper background (computed, WCAG): ink 15.35, muted/Vegas
-  6.31, right 6.32, wrong 5.69, caution 6.02, our model 7.09. Dark mode: muted
-  7.51, right 9.89, wrong 7.87, caution 9.17, our model 9.47.
+  6.31, right 6.32, wrong 5.69, caution 6.02. Dark mode: muted 7.51,
+  right 9.89, wrong 7.87, caution 9.17.
 - Tap targets are at least 44px tall. All times are Central Time.
 
 ## Layout

@@ -15,7 +15,7 @@
   <div class="wrap">
     <header class="top">
       <a class="mark" href="index.html">NFL<span>/</span>LAB</a>
-      <nav class="primary" aria-label="Primary">
+      <nav class="nav primary" aria-label="Primary">
         <a href="index.html" aria-current="page">This week</a>
         <a href="recaps/week4.html">Last week</a>
         <a href="teams.html">Teams</a>
@@ -25,29 +25,29 @@
     </header>
 
     <main id="main" tabindex="-1">
-      <h1 id="home-title">This week: who we think wins</h1>
-      <p class="caption" id="lock-label">Picks locked before kickoff. All times CT.</p>
-      <ul class="notices" id="notices"></ul>
+      <p class="kicker" id="kicker">This week</p>
+      <h1 id="home-title">Loading this week's picks…</h1>
+      <p class="updated" id="updated">&nbsp;</p>
+      <p class="final-line" id="final-line" hidden></p>
+      <div id="notices"></div>
 
-      <div class="health" id="health" hidden>Loading this week's games...</div>
-      <div class="games" id="games" aria-live="polite"></div>
-      <div id="close-games"></div>
+      <h2 id="picks-h">Our picks</h2>
+      <div class="games" id="games"><div class="game-row placeholder" aria-hidden="true"></div></div>
+
+      <h2 id="close-h">Too close to call</h2>
+      <div class="games" id="close-games"></div>
 
       <p class="next-link"><a href="previews/week5.html" id="previews-link">Read the game previews</a></p>
-      <p class="caption how-line">We call a winner against Vegas only when our model's margin is 2 or more points away from theirs. <a href="model.html">How it works</a></p>
-      <p class="record-line" id="live-record">Loading the 2026 record...</p>
     </main>
 
     <footer>
       <nav class="foot-nav" aria-label="More pages">
         <a href="ledger.html">Track record</a>
-        <a href="report-card.html">2026 so far</a>
+        <a href="freshness.html">Data updates</a>
+        <a href="report-card.html">2026 replay</a>
         <a href="previews/week5.html">Week 5 previews</a>
-        <a href="recaps/week4.html">Week 4 recaps</a>
-        <a href="freshness.html">Data freshness</a>
       </nav>
-      <p>Vegas lines are DraftKings, from ESPN. We save them when we make the pick and check them again just before kickoff. ESPN's feed is unofficial and can change.</p>
-      <p>Our predicted margin includes a starting-quarterback adjustment. We tested it on 2016 to 2021 games only, so the 2022 to 2025 record does not include it.</p>
+      <p class="foot-line">Lines: DraftKings via ESPN. Stats: nflverse. For fun, not betting advice.</p>
     </footer>
   </div>
   <script src="assets/site.js"></script>
