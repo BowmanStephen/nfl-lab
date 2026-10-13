@@ -19,6 +19,17 @@ import sys
 import pandas as pd
 
 
+def _play(r) -> str:
+    return f"Q{int(r.qtr)} {r.time} {r.posteam}: {str(r.desc)[:220]}"
+
+
+def qb_points(p: pd.DataFrame) -> dict:
+    db = p[(p.qb_dropback == 1) & (p.two_point_attempt != 1)]
+    q = db.groupby(["posteam", "name"]).qb_epa.agg(["size", "sum"])
+    return {f"{t} {n}": {"dropbacks": int(r["size"]), "qb_points": round(float(r["sum"]), 1)}
+            for (t, n), r in q.iterrows() if r["size"] >= 3}
+
+
 def team_facts(g: pd.DataFrame, t: str) -> dict:
     o = g[g.posteam == t]
     plays = o[o.play_type.isin(["pass", "run"]) & (o.qb_kneel != 1) & (o.qb_spike != 1)
@@ -30,8 +41,9 @@ def team_facts(g: pd.DataFrame, t: str) -> dict:
     db = o[(o.qb_dropback == 1) & (o.two_point_attempt != 1)]
     qbs = db.groupby("name").agg(dropbacks=("qb_epa", "size"), qb_points=("qb_epa", "sum"),
                                  play_epa=("epa", "sum"))
-    ints = o[o.interception == 1]
-    fum = g[(g.fumble_lost == 1) & (g.fumbled_1_team == t) & (g.fumble_recovery_1_team != t)]
+    ints = o[(o.interception == 1) & (o.two_point_attempt != 1)]
+    fum = g[(g.fumble_lost == 1) & (g.fumbled_1_team == t) & (g.fumble_recovery_1_team != t)
+            & (g.two_point_attempt != 1)]
     to = pd.concat([ints, fum])
     rz = g[(g.posteam == t) & g.play_type.isin(["pass", "run", "field_goal"])
            & (g.two_point_attempt != 1) & (g.yardline_100 <= 20)]
@@ -39,6 +51,8 @@ def team_facts(g: pd.DataFrame, t: str) -> dict:
     st = g[g.play_type.isin(["punt", "kickoff", "field_goal", "extra_point"])]
     fg = g[(g.posteam == t) & (g.play_type == "field_goal")]
     conv = lambda d: int(((d.first_down == 1) | (d.touchdown == 1)).sum())
+    rushers = (rush.groupby("rusher_player_name").yards_gained.agg(["size", "sum"])
+               .sort_values("sum", ascending=False).head(3))
     return {
         "plays": int(len(plays)),
         "epa_per_play": round(float(plays.epa.mean()), 3),
@@ -59,6 +73,8 @@ def team_facts(g: pd.DataFrame, t: str) -> dict:
         "red_zone_tds": int((rz_res == "Touchdown").sum()),
         "special_teams_net_epa": round(float(st[st.posteam == t].epa.sum() - st[st.defteam == t].epa.sum()), 1),
         "field_goals": [f"{int(r.kick_distance)} {r.field_goal_result}" for _, r in fg.iterrows()],
+        "top_rushers": {n: {"carries": int(r["size"]), "yards": int(r["sum"])} for n, r in rushers.iterrows()},
+        "turnover_plays": [_play(r) for _, r in to.iterrows()],
         "qbs": {n: {"dropbacks": int(r.dropbacks), "qb_points": round(float(r.qb_points), 1),
                     "play_epa": round(float(r.play_epa), 1)}
                 for n, r in qbs.iterrows() if r.dropbacks >= 3},
@@ -66,8 +82,9 @@ def team_facts(g: pd.DataFrame, t: str) -> dict:
 
 
 def main(path: str, season: int, week: int, out: str) -> None:
-    p = pd.read_parquet(path)
-    p = p[(p.season == season) & (p.week == week) & (p.season_type == "REG")]
+    full = pd.read_parquet(path)
+    full = full[(full.season == season) & (full.season_type == "REG")]
+    p = full[full.week == week]
     games = {}
     for gid, g in p.groupby("game_id"):
         last = g.iloc[-1]
@@ -76,6 +93,9 @@ def main(path: str, season: int, week: int, out: str) -> None:
             "away": a, "home": h,
             "away_score": int(last.total_away_score), "home_score": int(last.total_home_score),
             "overtime": bool((g.qtr == 5).any()),
+            "scoring_and_kicks": [_play(r) for _, r in g.iterrows()
+                                  if r.sp == 1 or r.play_type == "field_goal"
+                                  or (r.play_type == "kickoff" and (r.return_yards or 0) >= 40)],
             a: team_facts(g, a), h: team_facts(g, h),
         }
     # Week-wide checks the opening lines rely on
@@ -100,7 +120,8 @@ def main(path: str, season: int, week: int, out: str) -> None:
     }
     with open(out, "w") as f:
         json.dump({"season": season, "week": week, "source": "nflverse play_by_play",
-                   "summary": summary, "games": games}, f, indent=1)
+                   "summary": summary, "games": games,
+                   "prior_week_qbs": qb_points(full[full.week == week - 1])}, f, indent=1)
 
 
 if __name__ == "__main__":
