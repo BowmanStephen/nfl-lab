@@ -432,7 +432,10 @@ def test_voided_total_drops_off_the_model_chart():
 def test_week5_voids_only_the_eight_totals():
     live = json.loads((LIVE_DIR / "2026-week-05.json").read_text())
     published = json.loads((PUBLIC_API / "picks.json").read_text())
-    assert published == live
+    # The site publishes the current card; once week 6 is live, the site JSON moves on.
+    week5_published = published.get("season") == 2026 and published.get("week") == 5
+    if week5_published:
+        assert published == live
     assert live["season"] == 2026
     assert live["week"] == 5
     assert live["official_lock"] is True
@@ -512,11 +515,18 @@ def test_week5_voids_only_the_eight_totals():
             assert pre["home_margin"] == 9.5
             assert grading["spread_clv"] == -1.0
         else:
+            # BUF-LA (Monday) was never filled from nflverse; its pre-kickoff
+            # line, once captured, is ESPN DraftKings.
             assert game["game_id"] == "2026_05_BUF_LA"
-            assert game.get("line_source") is None
-            assert pre is None or pre.get("source") in {"espn_scoreboard", "espn_summary"}
+            if pre is None:
+                assert game.get("line_source") is None
+            else:
+                assert pre.get("source") in {"espn_scoreboard", "espn_summary"}
+                assert game.get("line_source") == "espn_draftkings"
     assert live["health"]["clv_samples"] == 1
     assert live["health"]["average_clv"] == -1.0
+    if not week5_published:
+        return
     summary = json.loads((PUBLIC_API / "summary.json").read_text())
     assert summary["n_spread_picks"] == 7
     assert summary["n_total_picks"] == 0
