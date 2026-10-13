@@ -8,7 +8,7 @@
     3,
     4
   ],
-  "generated_at": "2026-10-05T23:54:26.547217-05:00",
+  "generated_at": "2026-10-13T10:25:32.284034-05:00",
   "breakeven": 0.5238095238095238,
   "rule": {
     "spread_edge_min": 2.0,
@@ -29,7 +29,7 @@
       2025
     ],
     "qb_adjustment": false,
-    "note": "Same frozen model and path as the 2022-2025 holdout. The live card adds a starting-QB term; this backtest does not."
+    "note": "Margins are the frozen 2016-2021 model, same path as the 2022-2025 holdout. Totals use the defense-sign fix, with those two coefficients refit on 2016-2021 only. The holdout was not regraded. The live card adds a starting-QB term; this backtest does not."
   },
   "lines": "nflverse closing spread_line / total_line (home margin, positive = home favored)",
   "games_graded": 64,
@@ -50,54 +50,54 @@
     "beats_breakeven": true
   },
   "total": {
-    "bets": 29,
-    "wins": 10,
-    "losses": 19,
+    "bets": 24,
+    "wins": 6,
+    "losses": 18,
     "pushes": 0,
-    "win_rate": 0.3448275862068966,
+    "win_rate": 0.25,
     "win_rate_ci95": [
-      0.19940718526674994,
-      0.5265489590952385
+      0.11999366228595001,
+      0.4489944400515401
     ],
-    "p_value_vs_breakeven_one_sided": 0.9832883719238533,
-    "roi_at_minus_110": -0.34169278996865204,
-    "units_at_minus_110": -9.90909090909091,
+    "p_value_vs_breakeven_one_sided": 0.9983908917640738,
+    "roi_at_minus_110": -0.5227272727272728,
+    "units_at_minus_110": -12.545454545454547,
     "beats_breakeven": false
   },
   "total_by_side": {
     "over": {
-      "bets": 21,
-      "wins": 8,
-      "losses": 13,
+      "bets": 18,
+      "wins": 6,
+      "losses": 12,
       "pushes": 0,
-      "win_rate": 0.38095238095238093,
+      "win_rate": 0.3333333333333333,
       "win_rate_ci95": [
-        0.20751011368564493,
-        0.5912134622488425
+        0.16278774750833697,
+        0.5625053270405489
       ],
-      "p_value_vs_breakeven_one_sided": 0.9373030909374126,
-      "roi_at_minus_110": -0.27272727272727276,
-      "units_at_minus_110": -5.7272727272727275,
+      "p_value_vs_breakeven_one_sided": 0.9689782571987179,
+      "roi_at_minus_110": -0.36363636363636365,
+      "units_at_minus_110": -6.545454545454546,
       "beats_breakeven": false
     },
     "under": {
-      "bets": 8,
-      "wins": 2,
+      "bets": 6,
+      "wins": 0,
       "losses": 6,
       "pushes": 0,
-      "win_rate": 0.25,
+      "win_rate": 0.0,
       "win_rate_ci95": [
-        0.071479212752109,
-        0.5907245696898311
+        0.0,
+        0.3903342879021653
       ],
-      "p_value_vs_breakeven_one_sided": 0.9740897431723393,
-      "roi_at_minus_110": -0.5227272727272727,
-      "units_at_minus_110": -4.181818181818182,
+      "p_value_vs_breakeven_one_sided": 1.0,
+      "roi_at_minus_110": -1.0,
+      "units_at_minus_110": -6.0,
       "beats_breakeven": false
     }
   },
-  "base_total": 46.15196331795182,
-  "points_per_combined_off": 19.41067783178249,
+  "base_total": 46.1282012331322,
+  "points_per_combined_off": 36.01451640614665,
   "names": {
     "ARI": "Cardinals",
     "ATL": "Falcons",
@@ -163,8 +163,8 @@
     "beats_breakeven": false
   },
   "proj_total_range": [
-    44.12477269517656,
-    48.16262343445231
+    42.14444826969859,
+    49.14414814668426
   ],
   "line_total_range": [
     37.5,
@@ -188,17 +188,17 @@
     },
     "total": {
       "bets": 64,
-      "wins": 26,
-      "losses": 38,
+      "wins": 22,
+      "losses": 42,
       "pushes": 0,
-      "win_rate": 0.40625,
+      "win_rate": 0.34375,
       "win_rate_ci95": [
-        0.2945690924971961,
-        0.5285479187139549
+        0.23923142078443355,
+        0.46596359790081815
       ],
-      "p_value_vs_breakeven_one_sided": 0.9777916055805584,
-      "roi_at_minus_110": -0.22443181818181818,
-      "units_at_minus_110": -14.363636363636363,
+      "p_value_vs_breakeven_one_sided": 0.998759203477711,
+      "roi_at_minus_110": -0.34375,
+      "units_at_minus_110": -22.0,
       "beats_breakeven": false
     }
   },
@@ -259,18 +259,18 @@
         "beats_breakeven": true
       },
       "total": {
-        "bets": 6,
+        "bets": 5,
         "wins": 2,
-        "losses": 4,
+        "losses": 3,
         "pushes": 0,
-        "win_rate": 0.3333333333333333,
+        "win_rate": 0.4,
         "win_rate_ci95": [
-          0.09677141110578047,
-          0.700006684861608
+          0.11762077423264794,
+          0.769275718723987
         ],
-        "p_value_vs_breakeven_one_sided": 0.9113869216494005,
-        "roi_at_minus_110": -0.3636363636363636,
-        "units_at_minus_110": -2.1818181818181817,
+        "p_value_vs_breakeven_one_sided": 0.8408462474360943,
+        "roi_at_minus_110": -0.2363636363636364,
+        "units_at_minus_110": -1.1818181818181819,
         "beats_breakeven": false
       }
     },
@@ -293,18 +293,18 @@
         "beats_breakeven": true
       },
       "total": {
-        "bets": 9,
-        "wins": 3,
-        "losses": 6,
+        "bets": 7,
+        "wins": 2,
+        "losses": 5,
         "pushes": 0,
-        "win_rate": 0.3333333333333333,
+        "win_rate": 0.2857142857142857,
         "win_rate_ci95": [
-          0.12058381838691096,
-          0.6457978644196036
+          0.08221892400405673,
+          0.6410655481673807
         ],
-        "p_value_vs_breakeven_one_sided": 0.9314347625444898,
-        "roi_at_minus_110": -0.36363636363636365,
-        "units_at_minus_110": -3.272727272727273,
+        "p_value_vs_breakeven_one_sided": 0.9516958783427183,
+        "roi_at_minus_110": -0.45454545454545453,
+        "units_at_minus_110": -3.1818181818181817,
         "beats_breakeven": false
       }
     },
@@ -327,18 +327,18 @@
         "beats_breakeven": true
       },
       "total": {
-        "bets": 8,
-        "wins": 4,
-        "losses": 4,
+        "bets": 6,
+        "wins": 1,
+        "losses": 5,
         "pushes": 0,
-        "win_rate": 0.5,
+        "win_rate": 0.16666666666666666,
         "win_rate_ci95": [
-          0.21521606221387757,
-          0.7847839377861224
+          0.03005336974830669,
+          0.5635028221864702
         ],
-        "p_value_vs_breakeven_one_sided": 0.6874482733531904,
-        "roi_at_minus_110": -0.04545454545454547,
-        "units_at_minus_110": -0.36363636363636376,
+        "p_value_vs_breakeven_one_sided": 0.9883403844275527,
+        "roi_at_minus_110": -0.6818181818181818,
+        "units_at_minus_110": -4.090909090909091,
         "beats_breakeven": false
       }
     }
@@ -373,7 +373,7 @@
           "off_plays_2026": 129
         }
       },
-      "off_env": 0.03344944774277786,
+      "off_env": 0.01775795702190383,
       "line_home_margin": -3.5,
       "model_home_margin": 3.727628477145079,
       "actual_home_margin": 20,
@@ -393,29 +393,29 @@
       "kind": "spread",
       "outcome": "loss",
       "home_off_epa_before": 0.06384431626643403,
-      "away_off_epa_before": 0.11701635896819979,
-      "home_def_epa_before": 0.05256008140102737,
-      "away_def_epa_before": -0.011581912187108578,
+      "away_off_epa_before": 0.11701635896819974,
+      "home_def_epa_before": 0.052560081401027324,
+      "away_def_epa_before": -0.01158191218710855,
       "weeks_of_2026_data": 2,
       "model_used": {
         "MIA": {
           "off_epa": -0.0027252541951707917,
-          "def_epa": 0.015757258061591752,
+          "def_epa": 0.01575725806159175,
           "weight_2026_off": 0.08745247148288973,
           "off_plays_2026": 115
         },
         "KC": {
-          "off_epa": 0.024185091623625955,
-          "def_epa": -0.006408893349075694,
+          "off_epa": 0.02418509162362595,
+          "def_epa": -0.006408893349075692,
           "weight_2026_off": 0.10846953937592868,
           "off_plays_2026": 146
         }
       },
-      "off_env": 0.012111472715939105,
+      "off_env": 0.030808202140971214,
       "line_home_margin": -10.0,
-      "model_home_margin": -2.515656564145318,
+      "model_home_margin": -2.5156565641453166,
       "actual_home_margin": -14,
-      "edge": 7.484343435854682,
+      "edge": 7.484343435854683,
       "pick": "MIA",
       "model_miss_pts": 11.484343435854683,
       "line_miss_pts": 4.0
@@ -423,68 +423,68 @@
     {
       "label": "Biggest total miss",
       "week": 4,
-      "game_id": "2026_04_MIA_MIN",
-      "matchup": "Miami Dolphins at Minnesota Vikings",
-      "away": "MIA",
-      "home": "MIN",
-      "final": "Vikings 15, Dolphins 10",
+      "game_id": "2026_04_GB_TB",
+      "matchup": "Green Bay Packers at Tampa Bay Buccaneers",
+      "away": "GB",
+      "home": "TB",
+      "final": "Packers 17, Buccaneers 14",
       "kind": "total",
       "outcome": "loss",
-      "home_off_epa_before": -0.15042262849043975,
-      "away_off_epa_before": -0.05530449179241624,
-      "home_def_epa_before": -0.19921199308173626,
-      "away_def_epa_before": -0.03240565371644028,
+      "home_off_epa_before": -0.11712858122382677,
+      "away_off_epa_before": -0.0004876203113753303,
+      "home_def_epa_before": -0.06620759676275995,
+      "away_def_epa_before": 0.2734910641407653,
       "weeks_of_2026_data": 3,
       "model_used": {
-        "MIN": {
-          "off_epa": -0.03261411383342152,
-          "def_epa": -0.05490947414314251,
-          "weight_2026_off": 0.1260014566642389,
-          "off_plays_2026": 173
+        "TB": {
+          "off_epa": -0.005017389472812208,
+          "def_epa": -0.008948741384273992,
+          "weight_2026_off": 0.1366906474820144,
+          "off_plays_2026": 190
         },
-        "MIA": {
-          "off_epa": -0.015362428021803858,
-          "def_epa": 0.0067773524646887184,
-          "weight_2026_off": 0.13544668587896252,
-          "off_plays_2026": 188
+        "GB": {
+          "off_epa": 0.02491683657172806,
+          "def_epa": 0.03907070401537,
+          "weight_2026_off": 0.13854989231873654,
+          "off_plays_2026": 193
         }
       },
-      "off_env": 0.0001555798232284189,
+      "off_env": 0.05002140973001186,
       "line_total": 38.5,
-      "model_total": 46.15498322777763,
-      "actual_total": 25,
-      "edge": 7.6549832277776275,
+      "model_total": 47.9296981145123,
+      "actual_total": 31,
+      "edge": 9.429698114512298,
       "pick": "over",
-      "model_miss_pts": 21.154983227777628,
-      "line_miss_pts": 13.5
+      "model_miss_pts": 16.9296981145123,
+      "line_miss_pts": 7.5
     }
   ],
   "week2_note": "With one game per team, the frozen opponent adjustment nets every team to zero, so weeks 1 and 2 ran on the 2023-2025 prior alone. 2026 games start counting from week 3.",
   "leak_check": [
     {
       "week": 1,
-      "plays_poisoned": 11155,
+      "plays_poisoned": 13842,
       "week_unchanged_when_future_poisoned": true,
       "week_moves_when_past_poisoned": null,
       "games": 16
     },
     {
       "week": 2,
-      "plays_poisoned": 8399,
+      "plays_poisoned": 11086,
       "week_unchanged_when_future_poisoned": true,
       "week_moves_when_past_poisoned": null,
       "games": 16
     },
     {
       "week": 3,
-      "plays_poisoned": 5666,
+      "plays_poisoned": 8353,
       "week_unchanged_when_future_poisoned": true,
       "week_moves_when_past_poisoned": true,
       "games": 16
     },
     {
       "week": 4,
-      "plays_poisoned": 2844,
+      "plays_poisoned": 5531,
       "week_unchanged_when_future_poisoned": true,
       "week_moves_when_past_poisoned": true,
       "games": 16
@@ -505,8 +505,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 47.5,
-      "proj_total": 46.195415665,
-      "total_edge": -1.304584335,
+      "proj_total": 46.0154944289,
+      "total_edge": -1.4845055711,
       "total_pick": "under",
       "total_bet_locked_rule": false,
       "total_outcome": "win"
@@ -525,8 +525,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 40.5,
-      "proj_total": 45.9637055696,
-      "total_edge": 5.4637055696,
+      "proj_total": 45.8274028599,
+      "total_edge": 5.3274028599,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -545,8 +545,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 48.5,
-      "proj_total": 46.8978919531,
-      "total_edge": -1.6021080469,
+      "proj_total": 47.3975409247,
+      "total_edge": -1.1024590753,
       "total_pick": "under",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -565,8 +565,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 44.5,
-      "proj_total": 47.2572477822,
-      "total_edge": 2.7572477822,
+      "proj_total": 46.3453165727,
+      "total_edge": 1.8453165727,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "win"
@@ -585,8 +585,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 47.5,
-      "proj_total": 45.3590273774,
-      "total_edge": -2.1409726226,
+      "proj_total": 46.1182017261,
+      "total_edge": -1.3817982739,
       "total_pick": "under",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -605,10 +605,10 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 40.5,
-      "proj_total": 45.5278012988,
-      "total_edge": 5.0278012988,
+      "proj_total": 43.3635926696,
+      "total_edge": 2.8635926696,
       "total_pick": "over",
-      "total_bet_locked_rule": true,
+      "total_bet_locked_rule": false,
       "total_outcome": "win"
     },
     {
@@ -625,8 +625,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 47.5,
-      "proj_total": 45.2224666703,
-      "total_edge": -2.2775333297,
+      "proj_total": 47.274550331,
+      "total_edge": -0.225449669,
       "total_pick": "under",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -645,8 +645,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 42.5,
-      "proj_total": 46.8140405726,
-      "total_edge": 4.3140405726,
+      "proj_total": 45.7913189738,
+      "total_edge": 3.2913189738,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -665,11 +665,11 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 46.5,
-      "proj_total": 47.0023442911,
-      "total_edge": 0.5023442911,
-      "total_pick": "over",
+      "proj_total": 45.5136270719,
+      "total_edge": -0.9863729281,
+      "total_pick": "under",
       "total_bet_locked_rule": false,
-      "total_outcome": "win"
+      "total_outcome": "loss"
     },
     {
       "game_id": "2026_01_MIA_LV",
@@ -685,8 +685,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 40.5,
-      "proj_total": 44.8596130075,
-      "total_edge": 4.3596130075,
+      "proj_total": 44.4873728884,
+      "total_edge": 3.9873728884,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -705,8 +705,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "push",
       "total_line": 44.5,
-      "proj_total": 46.5910272567,
-      "total_edge": 2.0910272567,
+      "proj_total": 45.5944760205,
+      "total_edge": 1.0944760205,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -725,10 +725,10 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "win",
       "total_line": 49.5,
-      "proj_total": 46.5597660586,
-      "total_edge": -2.9402339414,
+      "proj_total": 45.5707304687,
+      "total_edge": -3.9292695313,
       "total_pick": "under",
-      "total_bet_locked_rule": false,
+      "total_bet_locked_rule": true,
       "total_outcome": "loss"
     },
     {
@@ -745,8 +745,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 39.5,
-      "proj_total": 44.1879763887,
-      "total_edge": 4.6879763887,
+      "proj_total": 45.2684050786,
+      "total_edge": 5.7684050786,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -765,11 +765,11 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "win",
       "total_line": 47.5,
-      "proj_total": 47.4954291131,
-      "total_edge": -0.0045708869,
-      "total_pick": "under",
+      "proj_total": 48.2136505288,
+      "total_edge": 0.7136505288,
+      "total_pick": "over",
       "total_bet_locked_rule": false,
-      "total_outcome": "win"
+      "total_outcome": "loss"
     },
     {
       "game_id": "2026_01_TB_CIN",
@@ -785,10 +785,10 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 50.5,
-      "proj_total": 46.1222009474,
-      "total_edge": -4.3777990526,
+      "proj_total": 48.0214175812,
+      "total_edge": -2.4785824188,
       "total_pick": "under",
-      "total_bet_locked_rule": true,
+      "total_bet_locked_rule": false,
       "total_outcome": "loss"
     },
     {
@@ -805,10 +805,10 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "win",
       "total_line": 43.5,
-      "proj_total": 46.3754591352,
-      "total_edge": 2.8754591352,
+      "proj_total": 47.2481216052,
+      "total_edge": 3.7481216052,
       "total_pick": "over",
-      "total_bet_locked_rule": false,
+      "total_bet_locked_rule": true,
       "total_outcome": "win"
     },
     {
@@ -825,8 +825,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 43.5,
-      "proj_total": 45.2666644884,
-      "total_edge": 1.7666644884,
+      "proj_total": 46.1153247739,
+      "total_edge": 2.6153247739,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -845,8 +845,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 45.5,
-      "proj_total": 46.2219839313,
-      "total_edge": 0.7219839313,
+      "proj_total": 46.3478393431,
+      "total_edge": 0.8478393431,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -865,10 +865,10 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 41.5,
-      "proj_total": 45.7436971693,
-      "total_edge": 4.2436971693,
+      "proj_total": 43.7699761378,
+      "total_edge": 2.2699761378,
       "total_pick": "over",
-      "total_bet_locked_rule": true,
+      "total_bet_locked_rule": false,
       "total_outcome": "win"
     },
     {
@@ -885,8 +885,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 54.5,
-      "proj_total": 47.5181876589,
-      "total_edge": -6.9818123411,
+      "proj_total": 48.1699530329,
+      "total_edge": -6.3300469671,
       "total_pick": "under",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -905,8 +905,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 44.5,
-      "proj_total": 45.6936777766,
-      "total_edge": 1.1936777766,
+      "proj_total": 46.608455394,
+      "total_edge": 2.108455394,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -925,8 +925,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 46.5,
-      "proj_total": 46.583613508,
-      "total_edge": 0.083613508,
+      "proj_total": 46.8133252446,
+      "total_edge": 0.3133252446,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "win"
@@ -945,8 +945,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 45.5,
-      "proj_total": 46.4863698724,
-      "total_edge": 0.9863698724,
+      "proj_total": 45.7009623202,
+      "total_edge": 0.2009623202,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -965,8 +965,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "win",
       "total_line": 43.5,
-      "proj_total": 45.530452828,
-      "total_edge": 2.030452828,
+      "proj_total": 43.8758103178,
+      "total_edge": 0.3758103178,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -985,10 +985,10 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 44.5,
-      "proj_total": 46.2221043269,
-      "total_edge": 1.7221043269,
+      "proj_total": 47.5532516485,
+      "total_edge": 3.0532516485,
       "total_pick": "over",
-      "total_bet_locked_rule": false,
+      "total_bet_locked_rule": true,
       "total_outcome": "win"
     },
     {
@@ -1005,8 +1005,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 46.5,
-      "proj_total": 46.3863742984,
-      "total_edge": -0.1136257016,
+      "proj_total": 44.5477130941,
+      "total_edge": -1.9522869059,
       "total_pick": "under",
       "total_bet_locked_rule": false,
       "total_outcome": "win"
@@ -1025,8 +1025,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 45.5,
-      "proj_total": 46.512318157,
-      "total_edge": 1.012318157,
+      "proj_total": 45.7053834085,
+      "total_edge": 0.2053834085,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -1045,8 +1045,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "win",
       "total_line": 47.5,
-      "proj_total": 46.393581915,
-      "total_edge": -1.106418085,
+      "proj_total": 46.7755903402,
+      "total_edge": -0.7244096598,
       "total_pick": "under",
       "total_bet_locked_rule": false,
       "total_outcome": "win"
@@ -1065,8 +1065,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 39.5,
-      "proj_total": 45.8400793881,
-      "total_edge": 6.3400793881,
+      "proj_total": 45.4245999495,
+      "total_edge": 5.9245999495,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "win"
@@ -1085,8 +1085,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 41.5,
-      "proj_total": 46.0112569304,
-      "total_edge": 4.5112569304,
+      "proj_total": 45.9318331744,
+      "total_edge": 4.4318331744,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -1105,8 +1105,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 40.5,
-      "proj_total": 46.5142143954,
-      "total_edge": 6.0142143954,
+      "proj_total": 46.0611661209,
+      "total_edge": 5.5611661209,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -1125,10 +1125,10 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 51.5,
-      "proj_total": 45.4892468208,
-      "total_edge": -6.0107531792,
+      "proj_total": 48.6774935719,
+      "total_edge": -2.8225064281,
       "total_pick": "under",
-      "total_bet_locked_rule": true,
+      "total_bet_locked_rule": false,
       "total_outcome": "loss"
     },
     {
@@ -1145,11 +1145,11 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 48.5,
-      "proj_total": 47.1354521852,
-      "total_edge": -1.3645478148,
-      "total_pick": "under",
+      "proj_total": 48.8823657184,
+      "total_edge": 0.3823657184,
+      "total_pick": "over",
       "total_bet_locked_rule": false,
-      "total_outcome": "loss"
+      "total_outcome": "win"
     },
     {
       "game_id": "2026_03_ATL_GB",
@@ -1165,8 +1165,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 43.5,
-      "proj_total": 46.017069434,
-      "total_edge": 2.517069434,
+      "proj_total": 45.6453731488,
+      "total_edge": 2.1453731488,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "win"
@@ -1185,8 +1185,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "push",
       "total_line": 53.5,
-      "proj_total": 46.4703200355,
-      "total_edge": -7.0296799645,
+      "proj_total": 48.8079157758,
+      "total_edge": -4.6920842242,
       "total_pick": "under",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -1205,8 +1205,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 41.5,
-      "proj_total": 44.447214796,
-      "total_edge": 2.947214796,
+      "proj_total": 44.0496330593,
+      "total_edge": 2.5496330593,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -1225,10 +1225,10 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 42.5,
-      "proj_total": 45.243479548,
-      "total_edge": 2.743479548,
+      "proj_total": 46.4124206975,
+      "total_edge": 3.9124206975,
       "total_pick": "over",
-      "total_bet_locked_rule": false,
+      "total_bet_locked_rule": true,
       "total_outcome": "win"
     },
     {
@@ -1245,8 +1245,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 41.5,
-      "proj_total": 46.4008883809,
-      "total_edge": 4.9008883809,
+      "proj_total": 44.5759454127,
+      "total_edge": 3.0759454127,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -1265,8 +1265,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 45.5,
-      "proj_total": 46.3870552129,
-      "total_edge": 0.8870552129,
+      "proj_total": 47.2377437346,
+      "total_edge": 1.7377437346,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -1285,10 +1285,10 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 50.5,
-      "proj_total": 46.8258234454,
-      "total_edge": -3.6741765546,
+      "proj_total": 49.0244943122,
+      "total_edge": -1.4755056878,
       "total_pick": "under",
-      "total_bet_locked_rule": true,
+      "total_bet_locked_rule": false,
       "total_outcome": "win"
     },
     {
@@ -1305,10 +1305,10 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 43.5,
-      "proj_total": 47.703220011,
-      "total_edge": 4.203220011,
+      "proj_total": 44.0032700806,
+      "total_edge": 0.5032700806,
       "total_pick": "over",
-      "total_bet_locked_rule": true,
+      "total_bet_locked_rule": false,
       "total_outcome": "win"
     },
     {
@@ -1325,11 +1325,11 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 43.5,
-      "proj_total": 45.3985314187,
-      "total_edge": 1.8985314187,
-      "total_pick": "over",
+      "proj_total": 42.1444482697,
+      "total_edge": -1.3555517303,
+      "total_pick": "under",
       "total_bet_locked_rule": false,
-      "total_outcome": "win"
+      "total_outcome": "loss"
     },
     {
       "game_id": "2026_03_MIN_TB",
@@ -1345,10 +1345,10 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "win",
       "total_line": 42.5,
-      "proj_total": 46.5965781047,
-      "total_edge": 4.0965781047,
+      "proj_total": 44.2808331235,
+      "total_edge": 1.7808331235,
       "total_pick": "over",
-      "total_bet_locked_rule": true,
+      "total_bet_locked_rule": false,
       "total_outcome": "loss"
     },
     {
@@ -1365,11 +1365,11 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 46.5,
-      "proj_total": 46.3394198933,
-      "total_edge": -0.1605801067,
-      "total_pick": "under",
+      "proj_total": 47.3024576211,
+      "total_edge": 0.8024576211,
+      "total_pick": "over",
       "total_bet_locked_rule": false,
-      "total_outcome": "win"
+      "total_outcome": "loss"
     },
     {
       "game_id": "2026_03_NYJ_DET",
@@ -1385,8 +1385,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "push",
       "total_line": 49.5,
-      "proj_total": 46.0120185927,
-      "total_edge": -3.4879814073,
+      "proj_total": 45.6538480902,
+      "total_edge": -3.8461519098,
       "total_pick": "under",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -1405,8 +1405,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 42.5,
-      "proj_total": 46.8012397717,
-      "total_edge": 4.3012397717,
+      "proj_total": 46.7677454676,
+      "total_edge": 4.2677454676,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -1425,8 +1425,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 40.5,
-      "proj_total": 46.4921896453,
-      "total_edge": 5.9921896453,
+      "proj_total": 46.7209115434,
+      "total_edge": 6.2209115434,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "win"
@@ -1445,8 +1445,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 37.5,
-      "proj_total": 44.1247726952,
-      "total_edge": 6.6247726952,
+      "proj_total": 46.5875139684,
+      "total_edge": 9.0875139684,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -1465,8 +1465,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 44.5,
-      "proj_total": 44.9942123499,
-      "total_edge": 0.4942123499,
+      "proj_total": 47.4565009583,
+      "total_edge": 2.9565009583,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "win"
@@ -1485,10 +1485,10 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 47.5,
-      "proj_total": 45.2533316925,
-      "total_edge": -2.2466683075,
+      "proj_total": 43.7556117643,
+      "total_edge": -3.7443882357,
       "total_pick": "under",
-      "total_bet_locked_rule": false,
+      "total_bet_locked_rule": true,
       "total_outcome": "loss"
     },
     {
@@ -1505,8 +1505,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 48.5,
-      "proj_total": 45.6616268211,
-      "total_edge": -2.8383731789,
+      "proj_total": 46.1219390132,
+      "total_edge": -2.3780609868,
       "total_pick": "under",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -1525,8 +1525,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "win",
       "total_line": 48.5,
-      "proj_total": 48.1626234345,
-      "total_edge": -0.3373765655,
+      "proj_total": 47.7940516934,
+      "total_edge": -0.7059483066,
       "total_pick": "under",
       "total_bet_locked_rule": false,
       "total_outcome": "win"
@@ -1545,8 +1545,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 52.5,
-      "proj_total": 46.0752095122,
-      "total_edge": -6.4247904878,
+      "proj_total": 48.0264352765,
+      "total_edge": -4.4735647235,
       "total_pick": "under",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -1565,8 +1565,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "push",
       "total_line": 38.5,
-      "proj_total": 45.9535373623,
-      "total_edge": 7.4535373623,
+      "proj_total": 47.9296981145,
+      "total_edge": 9.4296981145,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -1585,11 +1585,11 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "loss",
       "total_line": 46.5,
-      "proj_total": 45.5881642199,
-      "total_edge": -0.9118357801,
-      "total_pick": "under",
+      "proj_total": 48.299479549,
+      "total_edge": 1.799479549,
+      "total_pick": "over",
       "total_bet_locked_rule": false,
-      "total_outcome": "win"
+      "total_outcome": "loss"
     },
     {
       "game_id": "2026_04_JAX_CIN",
@@ -1605,10 +1605,10 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 51.5,
-      "proj_total": 46.6808037928,
-      "total_edge": -4.8191962072,
+      "proj_total": 49.1404711277,
+      "total_edge": -2.3595288723,
       "total_pick": "under",
-      "total_bet_locked_rule": true,
+      "total_bet_locked_rule": false,
       "total_outcome": "win"
     },
     {
@@ -1625,8 +1625,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "win",
       "total_line": 47.5,
-      "proj_total": 46.5916513417,
-      "total_edge": -0.9083486583,
+      "proj_total": 44.6311321085,
+      "total_edge": -2.8688678915,
       "total_pick": "under",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -1645,10 +1645,10 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "push",
       "total_line": 42.5,
-      "proj_total": 46.8751939666,
-      "total_edge": 4.3751939666,
+      "proj_total": 42.6102012395,
+      "total_edge": 0.1102012395,
       "total_pick": "over",
-      "total_bet_locked_rule": true,
+      "total_bet_locked_rule": false,
       "total_outcome": "win"
     },
     {
@@ -1665,10 +1665,10 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "loss",
       "total_line": 42.5,
-      "proj_total": 47.304536362,
-      "total_edge": 4.804536362,
+      "proj_total": 45.4494132534,
+      "total_edge": 2.9494132534,
       "total_pick": "over",
-      "total_bet_locked_rule": true,
+      "total_bet_locked_rule": false,
       "total_outcome": "win"
     },
     {
@@ -1685,8 +1685,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 38.5,
-      "proj_total": 46.1549832278,
-      "total_edge": 7.6549832278,
+      "proj_total": 42.6668941935,
+      "total_edge": 4.1668941935,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"
@@ -1705,8 +1705,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 49.5,
-      "proj_total": 46.7321925932,
-      "total_edge": -2.7678074068,
+      "proj_total": 49.1441481467,
+      "total_edge": -0.3558518533,
       "total_pick": "under",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -1725,8 +1725,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 43.5,
-      "proj_total": 45.398440583,
-      "total_edge": 1.898440583,
+      "proj_total": 46.1043158438,
+      "total_edge": 2.6043158438,
       "total_pick": "over",
       "total_bet_locked_rule": false,
       "total_outcome": "loss"
@@ -1745,8 +1745,8 @@
       "spread_bet_locked_rule": true,
       "spread_outcome": "win",
       "total_line": 38.5,
-      "proj_total": 45.2762054038,
-      "total_edge": 6.7762054038,
+      "proj_total": 42.8469658012,
+      "total_edge": 4.3469658012,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "win"
@@ -1765,8 +1765,8 @@
       "spread_bet_locked_rule": false,
       "spread_outcome": "win",
       "total_line": 42.5,
-      "proj_total": 45.5560342076,
-      "total_edge": 3.0560342076,
+      "proj_total": 46.2324650368,
+      "total_edge": 3.7324650368,
       "total_pick": "over",
       "total_bet_locked_rule": true,
       "total_outcome": "loss"

@@ -189,7 +189,7 @@ def build() -> dict:
         "rule": {"spread_edge_min": smin, "total_edge_min": tmin},
         "model": {"fit_on_seasons": locked["fit_on_seasons"], "prior_seasons": [SEASON - 3, SEASON - 2, SEASON - 1],
                   "qb_adjustment": False,
-                  "note": "Same frozen model and path as the 2022-2025 holdout. The live card adds a starting-QB term; this backtest does not."},
+                  "note": "Margins are the frozen 2016-2021 model, same path as the 2022-2025 holdout. Totals use the defense-sign fix, with those two coefficients refit on 2016-2021 only. The holdout was not regraded. The live card adds a starting-QB term; this backtest does not."},
         "lines": "nflverse closing spread_line / total_line (home margin, positive = home favored)",
         "games_graded": int(len(g)),
         "pending": [{"game_id": r.game_id, "matchup": f"{_name(r.away_team)} at {_name(r.home_team)}"} for r in pending.itertuples()],
