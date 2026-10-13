@@ -38,14 +38,14 @@
    "home_score": 23,
    "overtime": true,
    "BAL": {
-    "plays": 72,
+    "plays": 70,
     "epa_per_play": 0.038,
-    "success_rate": 0.472,
+    "success_rate": 0.471,
     "early_down_success": 0.446,
-    "pass_play_epa": -5.6,
-    "rush_epa": 8.4,
-    "rushes": 33,
-    "rush_yards": 208,
+    "pass_play_epa": -4.7,
+    "rush_epa": 7.3,
+    "rushes": 32,
+    "rush_yards": 206,
     "third_down": "8/14",
     "fourth_down": "0/0",
     "explosive": 7,
@@ -62,9 +62,9 @@
     ],
     "qbs": {
      "T.Huntley": {
-      "dropbacks": 38,
-      "qb_points": 2.3,
-      "play_epa": -4.9
+      "dropbacks": 37,
+      "qb_points": 3.2,
+      "play_epa": -3.9
      }
     }
    },
@@ -112,11 +112,11 @@
    "home_score": 34,
    "overtime": true,
    "BUF": {
-    "plays": 58,
-    "epa_per_play": 0.291,
-    "success_rate": 0.552,
+    "plays": 57,
+    "epa_per_play": 0.278,
+    "success_rate": 0.544,
     "early_down_success": 0.56,
-    "pass_play_epa": 20.1,
+    "pass_play_epa": 19.0,
     "rush_epa": -3.2,
     "rushes": 29,
     "rush_yards": 127,
@@ -136,18 +136,18 @@
     ],
     "qbs": {
      "J.Allen": {
-      "dropbacks": 29,
-      "qb_points": 20.1,
-      "play_epa": 20.1
+      "dropbacks": 28,
+      "qb_points": 19.0,
+      "play_epa": 19.0
      }
     }
    },
    "LA": {
-    "plays": 79,
-    "epa_per_play": 0.231,
-    "success_rate": 0.481,
+    "plays": 78,
+    "epa_per_play": 0.246,
+    "success_rate": 0.487,
     "early_down_success": 0.468,
-    "pass_play_epa": 18.5,
+    "pass_play_epa": 19.4,
     "rush_epa": -0.3,
     "rushes": 23,
     "rush_yards": 77,
@@ -166,9 +166,9 @@
     ],
     "qbs": {
      "M.Stafford": {
-      "dropbacks": 56,
-      "qb_points": 18.5,
-      "play_epa": 18.5
+      "dropbacks": 55,
+      "qb_points": 19.4,
+      "play_epa": 19.4
      }
     }
    }
@@ -214,11 +214,11 @@
     }
    },
    "GB": {
-    "plays": 58,
-    "epa_per_play": 0.259,
-    "success_rate": 0.466,
+    "plays": 57,
+    "epa_per_play": 0.245,
+    "success_rate": 0.456,
     "early_down_success": 0.477,
-    "pass_play_epa": 17.2,
+    "pass_play_epa": 16.1,
     "rush_epa": -2.2,
     "rushes": 23,
     "rush_yards": 66,
@@ -238,9 +238,9 @@
     ],
     "qbs": {
      "J.Love": {
-      "dropbacks": 35,
-      "qb_points": 17.2,
-      "play_epa": 17.2
+      "dropbacks": 34,
+      "qb_points": 16.1,
+      "play_epa": 16.1
      }
     }
    }
@@ -281,11 +281,11 @@
     }
    },
    "MIA": {
-    "plays": 64,
-    "epa_per_play": -0.033,
-    "success_rate": 0.469,
+    "plays": 63,
+    "epa_per_play": -0.05,
+    "success_rate": 0.46,
     "early_down_success": 0.429,
-    "pass_play_epa": -5.1,
+    "pass_play_epa": -6.2,
     "rush_epa": 3.0,
     "rushes": 30,
     "rush_yards": 144,
@@ -303,9 +303,9 @@
     ],
     "qbs": {
      "M.Willis": {
-      "dropbacks": 34,
-      "qb_points": -5.1,
-      "play_epa": -5.1
+      "dropbacks": 33,
+      "qb_points": -6.2,
+      "play_epa": -6.2
      }
     }
    }
@@ -823,11 +823,11 @@
     }
    },
    "WAS": {
-    "plays": 60,
-    "epa_per_play": 0.111,
-    "success_rate": 0.45,
+    "plays": 59,
+    "epa_per_play": 0.095,
+    "success_rate": 0.441,
     "early_down_success": 0.468,
-    "pass_play_epa": 7.8,
+    "pass_play_epa": 6.7,
     "rush_epa": -1.1,
     "rushes": 22,
     "rush_yards": 100,
@@ -846,9 +846,9 @@
     ],
     "qbs": {
      "J.Daniels": {
-      "dropbacks": 38,
-      "qb_points": 7.8,
-      "play_epa": 7.8
+      "dropbacks": 37,
+      "qb_points": 6.7,
+      "play_epa": 6.7
      }
     }
    }
@@ -926,11 +926,11 @@
    "home_score": 29,
    "overtime": false,
    "SF": {
-    "plays": 55,
-    "epa_per_play": -0.118,
-    "success_rate": 0.455,
+    "plays": 54,
+    "epa_per_play": -0.14,
+    "success_rate": 0.444,
     "early_down_success": 0.476,
-    "pass_play_epa": -3.6,
+    "pass_play_epa": -4.6,
     "rush_epa": -2.9,
     "rushes": 20,
     "rush_yards": 90,
@@ -949,9 +949,9 @@
     ],
     "qbs": {
      "B.Purdy": {
-      "dropbacks": 35,
-      "qb_points": -3.6,
-      "play_epa": -3.6
+      "dropbacks": 34,
+      "qb_points": -4.6,
+      "play_epa": -4.6
      }
     }
    },
@@ -1025,11 +1025,11 @@
     }
    },
    "DAL": {
-    "plays": 56,
-    "epa_per_play": -0.047,
-    "success_rate": 0.482,
+    "plays": 55,
+    "epa_per_play": -0.03,
+    "success_rate": 0.491,
     "early_down_success": 0.523,
-    "pass_play_epa": -3.3,
+    "pass_play_epa": -2.3,
     "rush_epa": 0.7,
     "rushes": 13,
     "rush_yards": 50,
@@ -1047,9 +1047,9 @@
     ],
     "qbs": {
      "D.Prescott": {
-      "dropbacks": 43,
-      "qb_points": -3.3,
-      "play_epa": -3.3
+      "dropbacks": 42,
+      "qb_points": -2.3,
+      "play_epa": -2.3
      }
     }
    }

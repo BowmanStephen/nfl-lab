@@ -518,8 +518,11 @@ def test_week5_voids_only_the_eight_totals():
             # BUF-LA (Monday) was never filled from nflverse; its pre-kickoff
             # line, once captured, is ESPN DraftKings.
             assert game["game_id"] == "2026_05_BUF_LA"
-            assert game.get("line_source") in {None, "espn_draftkings"}
-            assert pre is None or pre.get("source") in {"espn_scoreboard", "espn_summary"}
+            if pre is None:
+                assert game.get("line_source") is None
+            else:
+                assert pre.get("source") in {"espn_scoreboard", "espn_summary"}
+                assert game.get("line_source") == "espn_draftkings"
     assert live["health"]["clv_samples"] == 1
     assert live["health"]["average_clv"] == -1.0
     if not week5_published:

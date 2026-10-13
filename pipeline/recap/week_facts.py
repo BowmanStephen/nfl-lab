@@ -6,7 +6,7 @@ Reads nflverse play-by-play (play_by_play_{season}.parquet from the
 nflverse-data `pbp` release) and writes every number the recap cites.
 QB points = sum of qb_epa over the QB's dropbacks (dropbacks x EPA per dropback).
 Turnovers = interceptions thrown plus fumbles the team lost (fumbled_1_team).
-Success rate and EPA per play use run and pass plays, no kneels or spikes.
+Success rate and EPA per play use run and pass plays, no kneels, spikes or two-point tries.
 Explosive = pass of 20+ yards or run of 10+ yards.
 Red-zone trip = a drive with a run, pass or field-goal snap at the opponent 20 or closer.
 Special teams = EPA on kickoffs, punts, field goals and extra points, net of the opponent.
@@ -21,12 +21,13 @@ import pandas as pd
 
 def team_facts(g: pd.DataFrame, t: str) -> dict:
     o = g[g.posteam == t]
-    plays = o[o.play_type.isin(["pass", "run"]) & (o.qb_kneel != 1) & (o.qb_spike != 1)]
+    plays = o[o.play_type.isin(["pass", "run"]) & (o.qb_kneel != 1) & (o.qb_spike != 1)
+              & (o.two_point_attempt != 1)]
     early = plays[plays.down.isin([1, 2])]
     third = plays[plays.down == 3]
     fourth = plays[plays.down == 4]
     rush = plays[plays.rush == 1]
-    db = o[o.qb_dropback == 1]
+    db = o[(o.qb_dropback == 1) & (o.two_point_attempt != 1)]
     qbs = db.groupby("name").agg(dropbacks=("qb_epa", "size"), qb_points=("qb_epa", "sum"),
                                  play_epa=("epa", "sum"))
     ints = o[o.interception == 1]
@@ -34,7 +35,7 @@ def team_facts(g: pd.DataFrame, t: str) -> dict:
     to = pd.concat([ints, fum])
     rz = g[(g.posteam == t) & g.play_type.isin(["pass", "run", "field_goal"])
            & (g.two_point_attempt != 1) & (g.yardline_100 <= 20)]
-    rz_res = rz.groupby("drive").fixed_drive_result.first()
+    rz_res = rz.groupby("fixed_drive").fixed_drive_result.first()
     st = g[g.play_type.isin(["punt", "kickoff", "field_goal", "extra_point"])]
     fg = g[(g.posteam == t) & (g.play_type == "field_goal")]
     conv = lambda d: int(((d.first_down == 1) | (d.touchdown == 1)).sum())

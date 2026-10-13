@@ -1,6 +1,6 @@
 # Week 5, in plain English
 
-**The one stat you need: EPA (expected points added).** Before every snap, the down, distance and field spot are worth some number of points. EPA is how much one play moved that number. Add up a QB's throws and you get roughly how many points his passing was worth. Plus is good, minus is bad. College PPA is the same idea.
+**The one stat you need: EPA (expected points added).** Before every snap, the down, distance and field spot are worth some number of points. EPA is how much one play moved that number. Add up a QB's dropbacks (throws, sacks and scrambles) and you get roughly how many points his passing was worth. Plus is good, minus is bad. College PPA is the same idea.
 
 ### What mattered this week
 The better offense won every game. In all 14 games that had a winner, the winner gained more per snap (EPA per play) and had more plays that kept it on schedule (success rate).
@@ -16,7 +16,7 @@ Tampa Bay played without Baker Mayfield and never gave the ball away. Dallas gav
 Philadelphia couldn't run: 17 carries for **20 yards**. Only 31% of its first- and second-down plays worked, the Eagles converted 6 of 15 third downs, and Jalen Hurts's 42 dropbacks were worth about −2 points. Trevor Lawrence's were worth about +11, including touchdowns of 51 and 27 yards to Parker Washington. After Jake Elliott put the Eagles up 17–16 with 12 seconds left, Ameer Abdullah returned the kickoff 53 yards and Cam Little made a 57-yarder at the gun.
 
 ### Packers 31, Bears 7
-Chicago turned it over five times: three interceptions and two lost fumbles. Those five plays cost the Bears about **19 points**, most of the 24-point margin. Case Keenum replaced Tyson Bagent in the fourth quarter, and their passing cost about 17 points combined. Jordan Love's was worth about +17, with touchdowns of 42 and 53 yards to Christian Watson. **Lesson:** one good week isn't a trend. Bagent's passing was worth about +8 against the Jets last week and about −10 here.
+Chicago turned it over five times: three interceptions and two lost fumbles. Those five plays cost the Bears about **19 points**, most of the 24-point margin. Case Keenum replaced Tyson Bagent in the fourth quarter, and their passing cost about 17 points combined. Jordan Love's was worth about +16, with touchdowns of 42 and 53 yards to Christian Watson. **Lesson:** one good week isn't a trend. Bagent's passing was worth about +8 against the Jets last week and about −10 here.
 
 ### Bengals 31, Dolphins 24
 Joe Burrow wasn't sacked once, his passing was worth about +15, and Cincinnati converted 9 of 13 third downs. Miami actually ran the ball better, 144 yards to 108. But Malik Willis threw two interceptions to Jordan Battle and lost a fumble on a sack at his own 5, and those three turnovers cost about **12 points**.
@@ -31,13 +31,13 @@ Cam Ward's passing cost Tennessee about **18 points** over 41 dropbacks, the wor
 Indianapolis scored on six drives, but only one ended in a touchdown. Spencer Shrader kicked five field goals, two of them from 56 and 57 yards, and Daniel Jones's 45 dropbacks were worth almost exactly **zero** points. Pittsburgh ran only 52 plays and made them count: Jaylen Warren scored on an 80-yard catch and a 50-yard run, and Aaron Rodgers threw two more touchdowns to Pat Freiermuth. **Lesson:** field goals keep you close; touchdowns win. Five kicks are 15 points. Four touchdowns are 28.
 
 ### Patriots 45, Raiders 17
-Drake Maye's passing was worth about **+30 points** on 38 dropbacks, the biggest quarterback game of the week. That's almost 0.8 points every time he dropped back. New England scored six touchdowns, had 11 explosive plays and kept 54% of its snaps on schedule. It's Maye's second big week in a row, after about +16 against Buffalo.
+Drake Maye's passing was worth about **+30 points** on 38 dropbacks, the biggest quarterback game of the week. That's almost 0.8 points every time he dropped back. New England scored six touchdowns, had 11 explosive plays and kept 54% of its snaps on schedule. It's Maye's second big week in a row, after about +15 against Buffalo.
 
 ### Vikings 23, Saints 13
 Minnesota fumbled twice inside the Saints' 13, and New Orleans returned one 87 yards for a touchdown. Those two plays cost the Vikings about 18 points. They won anyway because the Saints' offense never got going: 43 plays, **not one** run of 10 yards or pass of 20, and Tyler Shough's passing cost about 12 points. Minnesota converted 10 of 16 third downs and kept the ball. **Lesson:** a quarterback's number isn't the whole passing game. Kyler Murray's passing rates about +13, because EPA charges a fumble after the catch to the receiver. Count that fumble and Minnesota's passing plays were worth only about +3.
 
 ### Giants 27, Commanders 27 (tie)
-The Giants did everything but kick. Jameis Winston dropped back 60 times for about +15 points, New York ran 83 plays to Washington's 60, and it scored a touchdown on all three red-zone trips. But Dominic Zvada missed from 50, 57 and, in overtime, 46 yards, and Cam Skattebo fumbled at the Washington 24 with two minutes left in overtime. Washington scored from distance instead: a 33-yard Jacory Croskey-Merritt run and Jayden Daniels scrambles of 38 and 26 yards. **Lesson:** long field goals aren't points in the bank. The Giants tried five from 46 yards or longer and made **two**.
+The Giants did everything but kick. Jameis Winston dropped back 60 times for about +15 points, New York ran 83 plays to Washington's 59, and it scored a touchdown on all three red-zone trips. But Dominic Zvada missed from 50, 57 and, in overtime, 46 yards, and Cam Skattebo fumbled at the Washington 24 with two minutes left in overtime. Washington scored from distance instead: a 33-yard Jacory Croskey-Merritt run and Jayden Daniels scrambles of 38 and 26 yards. **Lesson:** long field goals aren't points in the bank. The Giants tried five from 46 yards or longer and made **two**.
 
 ### Broncos 23, Chargers 17
 Denver converted 1 of 12 third downs and still won, because the Chargers were worse. Only 27% of their plays succeeded, Justin Herbert was sacked 5 times, and they lost three turnovers that cost about **12 points**. At 17–17 in the fourth quarter, Zach Allen strip-sacked Herbert at the Chargers' 24, and later Brandon Jones picked him off. Both short fields became Wil Lutz field goals.
@@ -49,10 +49,10 @@ Detroit scored a touchdown on **all four** red-zone trips, went 4 for 4 on fourt
 Seattle had the week's worst offense per snap, losing about 0.43 points a play, and its four turnovers cost about **21 points**. One was a George Holani fumble in Seattle's own end zone that Gracen Halton recovered for a 49ers touchdown just before halftime. Jason Myers kept the Seahawks close with five field goals, and Eddy Pineiro's 44-yarder with two minutes left broke a 29–29 tie.
 
 ### Ravens 30, Falcons 23 (overtime)
-With Tyler Huntley at quarterback, Baltimore won on the ground: 33 carries for 208 yards. Its runs added about **+8 points**, and Atlanta's cost about 6. The Ravens trailed 23–15 with 2:35 left, scored with 44 seconds to go and tied it on Derrick Henry's two-point run. In overtime they took seven minutes on a 14-play touchdown drive, and Kyle Hamilton intercepted Tua Tagovailoa, in for Michael Penix Jr., to end it.
+With Tyler Huntley at quarterback, Baltimore won on the ground: 32 carries for 206 yards. Its runs added about **+7 points**, and Atlanta's cost about 6. The Ravens trailed 23–15 with 2:35 left, scored with 44 seconds to go and tied it on Derrick Henry's two-point run. In overtime they took seven minutes on a 14-play touchdown drive, and Kyle Hamilton intercepted Tua Tagovailoa, in for Michael Penix Jr., to end it.
 
 ### Bills 37, Rams 34 (overtime)
-In total, the Rams' offense was as good as Buffalo's. Matthew Stafford's passing was worth about +19 over 56 dropbacks, and Los Angeles scored a touchdown on all five red-zone trips without a turnover. Buffalo was better per snap: Josh Allen's +20 came on only 29 dropbacks, about twice as much each time. The kicking decided it. Harrison Mevis missed from 50 and had a 48-yarder blocked by Greg Rousseau in overtime, and Tyler Bass won it from 45. Kicks and returns swung about **11 points** to Buffalo. **Lesson:** count per play, not per game. The Rams ran 21 more plays, and that is why their total looked as good as Buffalo's.
+In total, the Rams' offense was as good as Buffalo's. Matthew Stafford's passing was worth about +19 over 55 dropbacks, and Los Angeles scored a touchdown on all five red-zone trips without a turnover. Buffalo was better per snap: Josh Allen's passing was worth the same +19 on only 28 dropbacks, about twice as much each time. The kicking decided it. Harrison Mevis missed from 50 and had a 48-yarder blocked by Greg Rousseau in overtime, and Tyler Bass won it from 45. Kicks and returns swung about **11 points** to Buffalo. **Lesson:** count per play, not per game. The Rams ran 21 more plays, and that is why their total looked as good as Buffalo's.
 
 
 ### How the picks did
