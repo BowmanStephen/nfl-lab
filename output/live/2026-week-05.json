@@ -1062,10 +1062,10 @@
         "qb_notes": []
       },
       "grading": {
-        "home_score": null,
-        "away_score": null,
-        "actual_margin": null,
-        "actual_total": null,
+        "home_score": 34.0,
+        "away_score": 37.0,
+        "actual_margin": -3.0,
+        "actual_total": 71.0,
         "spread_outcome": null,
         "total_outcome": null,
         "spread_clv": null,

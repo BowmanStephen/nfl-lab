@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-12T17:28:49.779236-05:00",
+  "generated_at": "2026-10-13T06:27:41.851423-05:00",
   "timezone": "America/Chicago",
   "season": 2026,
-  "week": 5,
-  "through_week": 4,
+  "week": 6,
+  "through_week": 5,
   "health": {
     "line": "Live 2026 record: 2\u20134, 1 pushes (33.3%). Judged once after week 18.",
     "settled_picks": 7,
@@ -15,7 +15,7 @@
     "moved_toward_rate": 0.0,
     "average_clv": -1.0
   },
-  "n_games": 15,
-  "n_spread_picks": 7,
-  "n_total_picks": 0
+  "n_games": 14,
+  "n_spread_picks": 4,
+  "n_total_picks": 6
 }
