@@ -1017,11 +1017,18 @@ async function renderReportCard() {
 
 function officialLine(game, names) {
   const selection = game.selection || {};
-  if (!selection.spread_qualifies) return "no pick";
-  const side = selection.spread_pick;
-  const price = pickLineDisplay(game, side);
-  const number = price.slice(String(side).length).trim();
-  return `${(names && names[side]) || side} ${number}`;
+  const parts = [];
+  if (selection.spread_qualifies) {
+    const side = selection.spread_pick;
+    const price = pickLineDisplay(game, side);
+    const number = price.slice(String(side).length).trim();
+    parts.push(`${(names && names[side]) || side} ${number}`);
+  }
+  if (totalIsActive(selection)) {
+    const word = selection.total_pick === "over" ? "Over" : "Under";
+    parts.push(`${word} ${Number(game.pick_time.total).toFixed(1)}`);
+  }
+  return parts.length ? parts.join(", ") : "no pick";
 }
 
 async function renderOfficialPicks() {
