@@ -321,7 +321,7 @@ function resultPill(g) {
 
 function expander(g, cls, sentence, extra, detail) {
   const id = String(g.game_id).replace(/[^\w-]/g, "");
-  return `<li class="game-row ${cls}" id="b-${id}">
+  return `<li class="game-row ${cls}" id="b-${id}" tabindex="-1">
     <button class="row-toggle" id="toggle-${id}" aria-expanded="false" aria-controls="d-${id}">
       <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
       <span class="call">${esc(sentence)}</span>
@@ -380,7 +380,7 @@ function agreeGroup(games, now = Date.now()) {
   if (!games.length) return "";
   const items = games.map((g) => {
     const id = String(g.game_id).replace(/[^\w-]/g, "");
-    return `<li id="b-${id}">${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}</li>`;
+    return `<li id="b-${id}" tabindex="-1">${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}</li>`;
   }).join("");
   return `<li class="agree-group">
     <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span></button>
@@ -388,16 +388,56 @@ function agreeGroup(games, now = Date.now()) {
   </li>`;
 }
 
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function weekFromAnchor(id) {
+  const match = /^b-\d{4}_(\d{2})_/.exec(id);
+  return match ? Number(match[1]) : 0;
+}
+
+function showMissedPick(id) {
+  const week = weekFromAnchor(id);
+  const notices = $("notices");
+  if (!week || !notices || notices.querySelector(".missed-pick")) return;
+  const note = document.createElement("p");
+  note.className = "missed-pick";
+  note.innerHTML = `That pick was from week ${week}, <a href="recaps/week${week}.html">see the recap →</a>`;
+  notices.appendChild(note);
+}
+
+// location.replace scrolls to the hash. Hold the previous scroll position so
+// reduced motion does not jump.
+function pinScroll(top) {
+  const pin = () => {
+    if (Math.abs(window.scrollY - top) > 1) window.scrollTo(0, top);
+  };
+  history.scrollRestoration = "manual";
+  pin();
+  window.addEventListener("scroll", pin, { capture: true });
+  window.setTimeout(() => window.removeEventListener("scroll", pin, { capture: true }), 1000);
+}
+
 function revealHash() {
   const id = (location.hash || "").slice(1);
   if (!id) return;
   let el = document.getElementById(id);
-  if (!el) return;
+  if (!el) {
+    showMissedPick(id);
+    return;
+  }
+  const reduced = prefersReducedMotion();
+  const top = window.scrollY;
   // Rows are built after load, so :target stays blank until the hash is applied again.
   if (!el.matches(":target")) {
     location.replace(location.pathname + location.search + location.hash);
+    if (reduced) pinScroll(top);
     el = document.getElementById(id);
-    if (!el) return;
+    if (!el) {
+      showMissedPick(id);
+      return;
+    }
   }
   const panel = el.closest("[hidden]");
   if (panel) {
@@ -405,7 +445,9 @@ function revealHash() {
     const btn = document.getElementById(panel.getAttribute("aria-labelledby") || "");
     if (btn) btn.setAttribute("aria-expanded", "true");
   }
-  el.scrollIntoView({ block: "center" });
+  el.tabIndex = -1;
+  if (!reduced) el.scrollIntoView({ block: "center" });
+  el.focus({ preventScroll: true });
 }
 
 function bindToggles(root) {
@@ -1045,7 +1087,12 @@ async function renderOfficialPicks() {
     const id = node.dataset.game;
     const game = byId[id];
     const link = node.querySelector("a");
-    if (link && id) link.href = `../index.html#b-${id}`;
+    if (link && id) {
+      const week = /^(\d{4})_(\d{2})_/.exec(id);
+      link.href = game || !week
+        ? `../index.html#b-${id}`
+        : `../recaps/week${Number(week[2])}.html`;
+    }
     const slot = node.querySelector(".official-line");
     if (slot) slot.textContent = game ? officialLine(game, names) : "no pick";
   });

@@ -18,7 +18,7 @@ Dallas should win a closer game than the market price. The Cowboys’ offense ha
 
 Baker Mayfield is **Out** (dislocated thumb; ESPN return date Oct 25). The depth chart still lists him as QB1, and the nflverse week-5 report leaves his status blank even though he did not practice. The schedule lists **Jalon Daniels**, and ESPN’s next available quarterback is Daniels, so this projection reruns the QB adjustment with Daniels. Dak Prescott starts for Dallas.
 
-**Newcomer tip — EPA/play:** every snap has a “fair” point value before the ball is snapped. EPA is how much the play moved that number. Dallas’s **+0.20** offense means it is gaining about two-tenths of a point per snap on average.
+**Newcomer tip — EPA/play:** every snap has a “fair” point value before the ball is snapped. EPA (points added per play) is how much the play moved that number. Dallas’s **+0.20** offense means it is gaining about two-tenths of a point per snap on average.
 
 **Preview lean (spread):** TB +8.5 — edge 5.0 pts
 
@@ -108,7 +108,7 @@ Pittsburgh should be a small home favorite. The model has the Steelers by **1.3*
 
 New England should win by about a field goal. The model has the Patriots by **3.1** at home with Drake Maye, and the market is **-3.5**. Kirk Cousins is the Raiders’ starter. The spread gap is **0.4** and the total gap is **0.3**.
 
-**Newcomer tip — early-down EPA:** scoring drives are usually won on first and second down. New England’s early-down offense is about **-0.08** EPA/play (26th of 32); Las Vegas is about **-0.03** (20th of 32).
+**Newcomer tip — early-down EPA:** scoring drives are usually won on first and second down. New England’s early-down offense is about **-0.08** EPA/play (points added per play, 26th of 32); Las Vegas is about **-0.03** (20th of 32).
 
 **No preview lean** under the locked rule (need 2+ points on the spread or 3+ on the total).
 
@@ -122,7 +122,7 @@ Minnesota should win by more than a field goal. The Vikings rate better (**+0.02
 
 Tyler Shough is **Questionable** (hand) on the ESPN injury report. This projection assumes he starts. If he does not, the quarterback piece of this number no longer applies.
 
-**Newcomer tip — defense EPA allowed:** lower is better. Minnesota’s defense has allowed about **-0.21** EPA/play. That is a big reason they rate above the Saints.
+**Newcomer tip — defense EPA allowed:** lower is better. Minnesota’s defense has allowed about **-0.21** EPA/play (points added per play). That is a big reason they rate above the Saints.
 
 **Preview lean (spread):** MIN -1.5 — edge 2.8 pts · **Preview lean (total):** OVER 42.5 — edge 3.5 pts
 
@@ -174,7 +174,7 @@ San Francisco should be the better team, and at this price that means taking the
 
 The nflverse schedule still lists Drew Lock. The depth chart and ESPN have Sam Darnold as the starter, and he is not on the injury report. This projection uses Darnold. Brock Purdy starts for San Francisco.
 
-**Newcomer tip — pass EPA:** San Francisco’s passing sits around **+0.54** EPA per pass play (1st of 32). That is the unit carrying a top rating after four weeks.
+**Newcomer tip — pass EPA:** San Francisco’s passing sits around **+0.54** EPA per pass play (points added per play, 1st of 32). That is the unit carrying a top rating after four weeks.
 
 **Preview lean (spread):** SF +2.5 — edge 2.8 pts
 

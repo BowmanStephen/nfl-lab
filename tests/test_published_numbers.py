@@ -84,6 +84,17 @@ def _week_spread_record(card: dict) -> tuple[int, int, int]:
     return _spread_record(card["games"])
 
 
+def _week_fully_scored(card: dict) -> bool:
+    games = card["games"]
+    if not games:
+        return False
+    for game in games:
+        grading = game.get("grading") or {}
+        if grading.get("home_score") is None or grading.get("away_score") is None:
+            return False
+    return True
+
+
 @pytest.fixture(scope="module")
 def published():
     """Build the pages a visitor would see from the committed site files."""
@@ -122,6 +133,8 @@ def test_home_counts_match_saved_card(published):
 
     final = _field(home, "final-line")
     week_line = WEEK_FINAL.search(final)
+    if _week_fully_scored(card):
+        assert week_line, "every game this week has a score, but home does not publish the week record"
     if week_line:
         pushes = int(week_line.group(3) or 0)
         assert (int(week_line.group(1)), int(week_line.group(2)), pushes) == _week_spread_record(card)
@@ -153,36 +166,51 @@ def test_live_record_matches_saved_grades(published):
     assert f"{100 * rate:.1f}%" in recap
 
 
+def test_week_record_is_required_once_every_game_has_a_score():
+    scored = {"games": [{"grading": {"home_score": 24, "away_score": 17}}]}
+    open_card = {"games": [{"grading": {"home_score": None, "away_score": None}}]}
+    assert _week_fully_scored(scored)
+    assert not _week_fully_scored(open_card)
+    assert not _week_fully_scored({"games": []})
+
+
 def test_track_record_ats_matches_saved_grades(published):
-    expected = _spread_record(_games(_cards()))
+    cards = _cards()
+    expected = _spread_record(_games(cards))
+    current_only = _spread_record(_current(cards)["games"])
     tile = re.search(
         r"Against the spread</p><p class=\"num\">([^<]+)",
         _field(published["ledger"], "tr-tiles", "html"),
     )
     assert tile, "track record page does not publish an against-the-spread record"
     shown = tuple(int(part) for part in re.split(r"\s*[–-]\s*", tile.group(1).strip()))
-    if shown == (0, 0, 0) and expected == (2, 4, 1):
+    if shown == current_only and shown != expected:
+        shown_line = "-".join(str(part) for part in shown)
+        expected_line = "-".join(str(part) for part in expected)
         pytest.xfail(
-            "Track record page shows 0-0-0 against the spread; the saved cards "
-            "grade 2-4-1. Known issue owned by the parallel track-record PR. "
-            "This PR does not change that page."
+            f"Track record page counts only the current week's card ({shown_line}). "
+            f"Saved cards grade {expected_line}. Known issue owned by the parallel "
+            "track-record PR. This PR does not change that page."
         )
     assert shown == expected
 
 
 def test_track_record_winner_tile_matches_saved_grades(published):
-    right, decided = _picked_winner(_games(_cards()))
+    cards = _cards()
+    right, decided = _picked_winner(_games(cards))
     expected = f"{right} of {decided}"
+    current_right, current_decided = _picked_winner(_current(cards)["games"])
+    current_only = f"{current_right} of {current_decided}"
     tile = re.search(
         r"Picked the winner</p><p class=\"num\">([^<]+)",
         _field(published["ledger"], "tr-tiles", "html"),
     )
     assert tile, "track record page does not publish the winner count"
     shown = tile.group(1).strip()
-    if shown == "0 of 0" and expected == "10 of 14":
+    if shown == current_only and shown != expected:
         pytest.xfail(
-            "Track record page shows 0 of 0 winners because it only reads the "
-            "current week card. Saved grades are 10 of 14. Known issue owned by "
-            "the parallel track-record PR. This PR does not change that page."
+            f"Track record page counts only the current week's card ({current_only}). "
+            f"Saved grades are {expected}. Known issue owned by the parallel "
+            "track-record PR. This PR does not change that page."
         )
     assert shown == expected

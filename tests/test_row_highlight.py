@@ -1,28 +1,84 @@
-"""An official-pick anchor tints the row, then the tint fades."""
+"""An official-pick anchor tints and focuses the row a visitor lands on."""
 from __future__ import annotations
+
+import json
+import re
+import shutil
+import subprocess
+from pathlib import Path
+
+import pytest
 
 from nfl_lab.config import ROOT
 
-CSS = (ROOT / "public" / "assets" / "site.css").read_text()
-JS = (ROOT / "public" / "assets" / "site.js").read_text()
+PUBLIC = ROOT / "public"
+PROBE = Path(__file__).with_name("highlight_browser.mjs")
+CSS = (PUBLIC / "assets" / "site.css").read_text()
+JS = (PUBLIC / "assets" / "site.js").read_text()
 
 
-def test_pick_rows_are_anchored_list_items():
-    assert '<li class="game-row ${cls}" id="b-${id}">' in JS
-    assert 'href = `../index.html#b-${id}`' in JS
-    # Rows exist only after the card loads, so the hash has to be applied again or :target never matches.
-    assert "location.replace(location.pathname + location.search + location.hash)" in JS
+def _transparent(color: str) -> bool:
+    return color in {"transparent", "rgba(0, 0, 0, 0)"}
 
 
-def test_target_tint_uses_accent_and_fades():
-    assert "li:target" in CSS
-    assert "var(--accent)" in CSS
-    assert "@keyframes target-row-fade" in CSS
-    assert "animation: target-row-fade 2.5s ease forwards" in CSS
+@pytest.fixture(scope="module")
+def highlight():
+    if shutil.which("node") is None:
+        pytest.fail("node is required to open the published page")
+    proc = subprocess.run(
+        ["node", str(PROBE), str(PUBLIC)],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    if proc.returncode != 0:
+        pytest.fail(f"highlight browser check failed\n{proc.stderr}\n{proc.stdout}")
+    return json.loads(proc.stdout)
 
 
-def test_reduced_motion_keeps_a_static_tint():
-    block = CSS.split("@media (prefers-reduced-motion: reduce)")[-1]
-    assert "li:target" in block
-    assert "animation: none" in block
-    assert "var(--accent)" in block
+def test_target_style_is_scoped_to_game_lists():
+    assert ".games li:target" in CSS
+    assert "box-shadow: inset 3px 0 0 var(--accent)" in CSS
+    assert re.search(r"(?<!\.games )li:target", CSS) is None
+    assert 'tabindex="-1"' in JS
+    assert "el.focus({ preventScroll: true })" in JS
+    assert "That pick was from week" in JS
+
+
+def test_anchored_row_is_tinted_and_focused(highlight):
+    row = highlight["row"]
+    assert row["id"] == highlight["pickId"]
+    assert row["activeId"] == row["id"]
+    assert row["tabIndex"] == -1
+    assert row["animationName"] == "target-row-fade"
+    assert "inset" in row["boxShadow"]
+    assert "3px" in row["boxShadow"]
+    assert not _transparent(row["background"])
+    assert row["scrollY"] > 40
+
+
+def test_reduced_motion_keeps_the_bar_without_a_scroll_jump(highlight):
+    row = highlight["reduced"]
+    assert row["activeId"] == row["id"]
+    assert row["tabIndex"] == -1
+    assert row["animationName"] == "none"
+    assert "inset" in row["boxShadow"]
+    assert "3px" in row["boxShadow"]
+    assert not _transparent(row["background"])
+    assert row["scrollY"] < 2
+
+
+def test_missing_hash_points_at_that_weeks_recap(highlight):
+    missed = highlight["missed"]
+    week = highlight["week"]
+    assert f"That pick was from week {week}" in missed["text"]
+    assert missed["href"].endswith(f"recaps/week{week}.html")
+    assert "see the recap" in missed["text"]
+
+
+def test_past_week_official_links_go_to_the_recap(highlight):
+    week = highlight["week"]
+    assert highlight["official"]
+    for href in highlight["official"]:
+        assert href.endswith(f"../recaps/week{week}.html")
