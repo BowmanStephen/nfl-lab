@@ -195,6 +195,10 @@ function rowExpression(id) {
       anim.pause();
       anim.currentTime = 0;
     }
+    const rect = el.getBoundingClientRect();
+    const mid = (rect.top + rect.bottom) / 2;
+    const inView = mid >= 0 && mid < window.innerHeight;
+    if (!inView) return null;
     const cs = getComputedStyle(el);
     return {
       id: el.id,
@@ -204,6 +208,7 @@ function rowExpression(id) {
       tabIndex: el.tabIndex,
       activeId: active.id,
       scrollY: window.scrollY,
+      inView,
     };
   })()`;
 }
@@ -276,7 +281,11 @@ async function main() {
       const note = document.querySelector(".missed-pick");
       if (!note) return null;
       const link = note.querySelector("a");
-      return { text: note.textContent, href: link ? link.getAttribute("href") : "" };
+      return {
+        text: note.textContent,
+        href: link ? link.getAttribute("href") : "",
+        role: note.getAttribute("role") || "",
+      };
     })()`);
 
     const previewPage = await blankPage(browser);

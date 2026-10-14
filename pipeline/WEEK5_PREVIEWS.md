@@ -174,7 +174,7 @@ San Francisco should be the better team, and at this price that means taking the
 
 The nflverse schedule still lists Drew Lock. The depth chart and ESPN have Sam Darnold as the starter, and he is not on the injury report. This projection uses Darnold. Brock Purdy starts for San Francisco.
 
-**Newcomer tip — pass EPA:** San Francisco’s passing sits around **+0.54** EPA per pass play (points added per play, 1st of 32). That is the unit carrying a top rating after four weeks.
+**Newcomer tip — pass EPA:** San Francisco’s passing sits around **+0.54** EPA per pass play (points added per pass play, 1st of 32). That is the unit carrying a top rating after four weeks.
 
 **Preview lean (spread):** SF +2.5 — edge 2.8 pts
 

@@ -68,7 +68,7 @@ def test_newcomer_tips_publish_those_ranks():
         f"−0.03 ({ordinal(early['LV'])} of 32)",
         f"5.3% of snaps ({ordinal(explosive['DEN'])} of 32)",
         f"6.1% ({ordinal(explosive['LAC'])} of 32)",
-        f"+0.54 EPA per pass play (points added per play, {ordinal(passing['SF'])} of 32)",
+        f"+0.54 EPA per pass play (points added per pass play, {ordinal(passing['SF'])} of 32)",
         "−0.21 EPA/play (points added per play, 1st of 32)",
         "EPA (points added per play) is how much the play moved that number.",
     ]

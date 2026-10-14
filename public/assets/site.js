@@ -403,20 +403,9 @@ function showMissedPick(id) {
   if (!week || !notices || notices.querySelector(".missed-pick")) return;
   const note = document.createElement("p");
   note.className = "missed-pick";
+  note.setAttribute("role", "status");
   note.innerHTML = `That pick was from week ${week}, <a href="recaps/week${week}.html">see the recap →</a>`;
   notices.appendChild(note);
-}
-
-// location.replace scrolls to the hash. Hold the previous scroll position so
-// reduced motion does not jump.
-function pinScroll(top) {
-  const pin = () => {
-    if (Math.abs(window.scrollY - top) > 1) window.scrollTo(0, top);
-  };
-  history.scrollRestoration = "manual";
-  pin();
-  window.addEventListener("scroll", pin, { capture: true });
-  window.setTimeout(() => window.removeEventListener("scroll", pin, { capture: true }), 1000);
 }
 
 function revealHash() {
@@ -428,11 +417,9 @@ function revealHash() {
     return;
   }
   const reduced = prefersReducedMotion();
-  const top = window.scrollY;
   // Rows are built after load, so :target stays blank until the hash is applied again.
   if (!el.matches(":target")) {
     location.replace(location.pathname + location.search + location.hash);
-    if (reduced) pinScroll(top);
     el = document.getElementById(id);
     if (!el) {
       showMissedPick(id);
@@ -446,7 +433,7 @@ function revealHash() {
     if (btn) btn.setAttribute("aria-expanded", "true");
   }
   el.tabIndex = -1;
-  if (!reduced) el.scrollIntoView({ block: "center" });
+  el.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
   el.focus({ preventScroll: true });
 }
 

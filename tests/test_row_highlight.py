@@ -44,6 +44,9 @@ def test_target_style_is_scoped_to_game_lists():
     assert 'tabindex="-1"' in JS
     assert "el.focus({ preventScroll: true })" in JS
     assert "That pick was from week" in JS
+    assert "pinScroll" not in JS
+    assert 'scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" })' in JS
+    assert 'setAttribute("role", "status")' in JS
 
 
 def test_anchored_row_is_tinted_and_focused(highlight):
@@ -55,10 +58,11 @@ def test_anchored_row_is_tinted_and_focused(highlight):
     assert "inset" in row["boxShadow"]
     assert "3px" in row["boxShadow"]
     assert not _transparent(row["background"])
+    assert row["inView"] is True
     assert row["scrollY"] > 40
 
 
-def test_reduced_motion_keeps_the_bar_without_a_scroll_jump(highlight):
+def test_reduced_motion_scrolls_the_row_into_view(highlight):
     row = highlight["reduced"]
     assert row["activeId"] == row["id"]
     assert row["tabIndex"] == -1
@@ -66,7 +70,8 @@ def test_reduced_motion_keeps_the_bar_without_a_scroll_jump(highlight):
     assert "inset" in row["boxShadow"]
     assert "3px" in row["boxShadow"]
     assert not _transparent(row["background"])
-    assert row["scrollY"] < 2
+    assert row["inView"] is True
+    assert row["scrollY"] > 40
 
 
 def test_missing_hash_points_at_that_weeks_recap(highlight):
@@ -75,6 +80,7 @@ def test_missing_hash_points_at_that_weeks_recap(highlight):
     assert f"That pick was from week {week}" in missed["text"]
     assert missed["href"].endswith(f"recaps/week{week}.html")
     assert "see the recap" in missed["text"]
+    assert missed["role"] == "status"
 
 
 def test_past_week_official_links_go_to_the_recap(highlight):
