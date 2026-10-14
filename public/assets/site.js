@@ -319,11 +319,16 @@ function resultPill(g) {
   return "";
 }
 
-function expander(g, cls, sentence, extra, detail) {
+// Plain-words pick for the collapsed row, e.g. "Take PHI −1.5" (real minus sign).
+function takeText(g) {
+  return `Take ${pickLineDisplay(g, g.selection.spread_pick).replace(/-/g, "\u2212")}`;
+}
+
+function expander(g, cls, sentence, extra, detail, lead = "") {
   const id = String(g.game_id).replace(/[^\w-]/g, "");
   return `<div class="game-row ${cls}">
     <button class="row-toggle" id="b-${id}" aria-expanded="false" aria-controls="d-${id}">
-      <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
+${lead ? `      <span class="take num">${esc(lead)}</span>\n` : ""}      <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
       <span class="call">${esc(sentence)}</span>
     </button>
     <div class="row-panel" id="d-${id}" role="region" aria-labelledby="b-${id}" hidden>${detail}</div>
@@ -372,7 +377,7 @@ function gameRow(g, state, now) {
   const price = pickLineDisplay(g, g.selection.spread_pick);
   return expander(g, "pick-row", homeSentence(g),
     `${leanTag(g)} ${started ? started.trim() : timeTag(g.kickoff_utc)}`,
-    `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`);
+    `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`, takeText(g));
 }
 
 function finalRow(g) {

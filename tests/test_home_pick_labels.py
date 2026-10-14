@@ -67,3 +67,14 @@ def test_previews_use_same_lean_label():
         assert line.endswith(f"({label})")
     js = SITE_JS.read_text()
     assert js.count("STRONG_LEAN_EDGE = ") == 1
+
+
+def test_pick_row_starts_with_take_team_line():
+    card = json.loads(PICKS.read_text())
+    picks = [g for g in card["games"] if g["selection"]["spread_qualifies"]]
+    for g, html in zip(picks, _run()["rows"]):
+        text = " ".join(re.sub(r"<[^>]+>", " ", html).split())
+        team = re.escape(g["selection"]["spread_pick"])
+        assert re.match(rf"^Take {team} [+\u2212]\d+(\.\d)?\b", text), text
+        assert "-" not in text.split(" ")[2], "use a real minus sign"
+        assert ("Strong lean" in text) or ("Lean" in text)
