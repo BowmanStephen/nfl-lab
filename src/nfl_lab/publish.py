@@ -7,8 +7,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from .config import OUTPUT_DIR, PUBLIC_API, TEAM_NAMES
-from .picks import total_is_active
+from .config import LIVE_SEASON, LIVE_START_WEEK, OUTPUT_DIR, PUBLIC_API, TEAM_NAMES
+from .picks import load_card, total_is_active
 from .safe_io import atomic_write_json
 
 CT = ZoneInfo("America/Chicago")
@@ -85,10 +85,67 @@ def _f(value):
     return float(value)
 
 
+def saved_cards(current: dict | None = None) -> list[dict]:
+    """Every official card on disk. ``current`` replaces the copy for its week."""
+    by_week: dict[int, dict] = {}
+    for week in range(LIVE_START_WEEK, 23):
+        card = load_card(LIVE_SEASON, week)
+        if card:
+            by_week[int(week)] = card
+    if current is not None:
+        by_week[int(current["week"])] = current
+    return [by_week[week] for week in sorted(by_week)]
+
+
+def _track_game(game: dict) -> dict:
+    """Fields the track-record page needs. Pick-time lines stay on the card."""
+    sel = game.get("selection") or {}
+    grading = game.get("grading") or {}
+    spread = bool(sel.get("spread_qualifies"))
+    total = total_is_active(sel)
+    return {
+        "week": int(game["week"]),
+        "gameday": game.get("gameday"),
+        "away_team": game["away_team"],
+        "home_team": game["home_team"],
+        "model_margin": sel.get("model_margin"),
+        "home_score": grading.get("home_score"),
+        "away_score": grading.get("away_score"),
+        "spread_qualifies": spread,
+        "spread_outcome": grading.get("spread_outcome") if spread else None,
+        "total_active": total,
+        "total_outcome": grading.get("total_outcome") if total else None,
+    }
+
+
+def saved_weeks_payload(current: dict | None = None) -> dict:
+    """Official saved weeks for the track record. The current week is the card being published."""
+    cards = saved_cards(current)
+    weeks = [
+        {"week": int(card["week"]), "games": [_track_game(game) for game in card["games"]]}
+        for card in cards
+    ]
+    if current is not None:
+        current_week = int(current["week"])
+    elif weeks:
+        current_week = weeks[-1]["week"]
+    else:
+        current_week = None
+    return {"season": LIVE_SEASON, "current_week": current_week, "weeks": weeks}
+
+
+def write_saved_weeks(current: dict | None = None) -> dict:
+    payload = saved_weeks_payload(current)
+    PUBLIC_API.mkdir(parents=True, exist_ok=True)
+    _write(PUBLIC_API / "saved_weeks.json", payload)
+    return payload
+
+
 def publish_card(card: dict, generated_at: datetime) -> None:
     """Update the pick card the site reads without rebuilding team pages."""
     PUBLIC_API.mkdir(parents=True, exist_ok=True)
     _write(PUBLIC_API / "picks.json", card)
+    write_saved_weeks(card)
     summary_path = PUBLIC_API / "summary.json"
     summary = {}
     if summary_path.exists():
@@ -221,6 +278,7 @@ def write_site(card: dict, ratings, stats, through_week: int, weekly: list[dict]
         "n_total_picks": sum(1 for g in card["games"] if total_is_active(g["selection"])),
     }
     _write(summary_path, summary)
+    write_saved_weeks(card)
     sync_model_page(card, ratings)
     _refresh_freshness(generated_at)
     return summary

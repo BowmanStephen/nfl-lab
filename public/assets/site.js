@@ -499,82 +499,122 @@ function record(r) {
 }
 
 
-// Track record: did the team the model had ahead win? Derived from saved
-// projected margins and final scores already in report_card.json and picks.json.
-function trackRecordGames(rc, card) {
-  const out = [];
-  for (const g of (rc && rc.games) || []) {
-    out.push({ week: g.week, gameday: g.gameday || null, away: g.away_team, home: g.home_team,
-      margin: g.proj_margin, home_score: g.home_score, away_score: g.away_score, live: false });
+// Track record. Saved picks are every official card in saved_weeks.json, from
+// week 5 on. Unplayed games and open picks are the current week only, so a
+// finished week cannot change the "still to play" counts.
+function annotateTrackGame(g) {
+  const played = g.home_score != null && g.away_score != null;
+  let result = "pending";
+  if (played) {
+    const actual = g.home_score - g.away_score;
+    if (actual === 0) result = "tie";
+    else if (!g.margin) result = "nocall";
+    else result = (actual > 0) === (g.margin > 0) ? "right" : "wrong";
   }
-  for (const g of (card && card.games) || []) {
-    const gr = g.grading || {};
-    out.push({ week: g.week, gameday: g.gameday || null, away: g.away_team, home: g.home_team,
-      margin: g.selection.model_margin, home_score: gr.home_score, away_score: gr.away_score, live: true });
-  }
-  return out.map((g) => {
-    const played = g.home_score != null && g.away_score != null;
-    let result = "pending";
-    if (played) {
-      const actual = g.home_score - g.away_score;
-      if (actual === 0) result = "tie";
-      else if (!g.margin) result = "nocall";
-      else result = (actual > 0) === (g.margin > 0) ? "right" : "wrong";
-    }
-    return { ...g, said: g.margin > 0 ? g.home : g.away, result };
-  });
+  return { ...g, said: g.margin > 0 ? g.home : g.away, result };
 }
 
-function trackRecordWeeks(games) {
+function savedTrackGames(saved) {
+  const games = [];
+  for (const week of (saved && saved.weeks) || []) {
+    for (const g of week.games || []) {
+      games.push(annotateTrackGame({
+        week: g.week, gameday: g.gameday || null, away: g.away_team, home: g.home_team,
+        margin: g.model_margin, home_score: g.home_score, away_score: g.away_score, live: true,
+        spread_qualifies: Boolean(g.spread_qualifies), spread_outcome: g.spread_outcome ?? null,
+        total_active: Boolean(g.total_active), total_outcome: g.total_outcome ?? null,
+      }));
+    }
+  }
+  return games;
+}
+
+function remainingSentence(rem) {
+  if (rem.week == null || (!rem.games && !rem.spreads && !rem.totals)) return "";
+  const games = rem.games === 1 ? "1 game has" : `${rem.games} games have`;
+  const spreads = rem.spreads === 1 ? "1 locked spread" : `${rem.spreads} locked spreads`;
+  const totals = rem.totals === 1 ? "1 locked total" : `${rem.totals} locked totals`;
+  return `Week ${rem.week}: ${games} not been played yet, with ${spreads} and ${totals} still to play.`;
+}
+
+function buildTrackRecord(rc, saved) {
+  const savedGames = savedTrackGames(saved);
+  const savedWeeks = new Set(savedGames.map((g) => g.week));
+  const look = [];
+  for (const g of (rc && rc.games) || []) {
+    if (savedWeeks.has(g.week)) continue;
+    look.push(annotateTrackGame({
+      week: g.week, gameday: g.gameday || null, away: g.away_team, home: g.home_team,
+      margin: g.proj_margin, home_score: g.home_score, away_score: g.away_score, live: false,
+      spread_qualifies: false, spread_outcome: null, total_active: false, total_outcome: null,
+    }));
+  }
+  const games = [...look, ...savedGames];
+  const count = (list, r) => list.filter((g) => g.result === r).length;
+  const right = count(savedGames, "right");
+  const wrong = count(savedGames, "wrong");
+  const decided = right + wrong;
+  const pct = decided ? `${Math.round((100 * right) / decided)}%` : "none yet";
+  const outcome = (r) => savedGames.filter((g) => g.spread_qualifies && g.spread_outcome === r).length;
+  const sw = outcome("win"), sl = outcome("loss"), sp = outcome("push");
+  const currentWeek = saved && saved.current_week != null ? saved.current_week : null;
+  const current = savedGames.filter((g) => g.week === currentWeek);
+  const unplayed = (g) => g.home_score == null || g.away_score == null;
+  const remaining = {
+    week: currentWeek,
+    games: current.filter(unplayed).length,
+    spreads: current.filter((g) => g.spread_qualifies && !g.spread_outcome).length,
+    totals: current.filter((g) => g.total_active && !g.total_outcome).length,
+  };
+  const still = remainingSentence(remaining);
   const weeks = new Map();
   for (const g of games) {
-    if (!weeks.has(g.week)) weeks.set(g.week, { week: g.week, live: g.live, right: 0, wrong: 0, ties: 0, pending: 0 });
+    if (!weeks.has(g.week)) weeks.set(g.week, { week: g.week, live: g.live, right: 0, wrong: 0, ties: 0, pending: 0, games: [] });
     const w = weeks.get(g.week);
+    w.games.push(g);
     if (g.result === "right") w.right += 1;
     else if (g.result === "wrong") w.wrong += 1;
     else if (g.result === "tie") w.ties += 1;
     else w.pending += 1;
   }
-  return [...weeks.values()].sort((a, b) => a.week - b.week);
-}
-
-async function renderTrackRecord() {
-  const [rc, card] = await Promise.all([load("report_card.json"), load("picks.json")]);
-  const nick = (t) => (rc.names && rc.names[t]) || t;
-  const games = trackRecordGames(rc, card);
-  const weeks = trackRecordWeeks(games);
-  const count = (list, r) => list.filter((g) => g.result === r).length;
-  const saved = games.filter((g) => g.live);
-  const look = games.filter((g) => !g.live);
-  const right = count(saved, "right");
-  const wrong = count(saved, "wrong");
-  const decided = right + wrong;
-  const pct = decided ? `${Math.round((100 * right) / decided)}%` : "none yet";
-  const spreads = ((card && card.games) || []).filter((g) => g.selection && g.selection.spread_qualifies);
-  const outcome = (r) => spreads.filter((g) => (g.grading || {}).spread_outcome === r).length;
-  const sw = outcome("win"), sl = outcome("loss"), sp = outcome("push");
-  const spPending = spreads.length - sw - sl - sp;
-  const tile = (label, num, gloss) =>
-    `<div class="tr-tile"><p class="label">${label}</p><p class="num">${num}</p><p class="tile-gloss">${gloss}</p></div>`;
-  const winnerGloss = decided ? `${pct} right. Did the team the model had ahead win?` : "Did the team the model had ahead win?";
-  const spreadGloss = `Did the pick beat the betting line?${spPending ? ` ${spPending} ${spPending > 1 ? "games are" : "game is"} left to play.` : ""}`;
-  $("tr-tiles").innerHTML =
-    tile("Picked the winner", `${right} of ${decided}`, winnerGloss) +
-    tile("Against the spread", `${sw}-${sl}-${sp}`, spreadGloss);
-  const ties = count(saved, "tie");
-  const pending = count(saved, "pending");
-  const liveWeeks = [...new Set(saved.map((g) => g.week))].sort((a, b) => a - b);
+  const liveWeeks = [...new Set(savedGames.map((g) => g.week))].sort((a, b) => a - b);
   const testWeeks = [...new Set(look.map((g) => g.week))].sort((a, b) => a - b);
   const bits = [];
   if (liveWeeks.length) bits.push(`Both tiles count only picks saved before kickoff. That starts in week ${liveWeeks[0]}.`);
+  const ties = count(savedGames, "tie");
   if (ties) bits.push(`${ties} tie${ties > 1 ? "s are" : " is"} left out because nobody won.`);
-  if (pending) bits.push(`${pending} game${pending > 1 ? "s have" : " has"} not been played yet.`);
+  if (still) bits.push(still);
   if (testWeeks.length) {
     const lr = count(look, "right");
     const ln = lr + count(look, "wrong");
     bits.push(`Weeks ${testWeeks[0]} to ${testWeeks[testWeeks.length - 1]} are a look back. Those picks were not posted ahead of time. The model got ${lr} of ${ln} right.`);
   }
-  $("tr-scope").textContent = bits.join(" ");
+  return {
+    winner: {
+      num: `${right} of ${decided}`,
+      gloss: decided ? `${pct} right. Did the team the model had ahead win?` : "Did the team the model had ahead win?",
+    },
+    spread: {
+      num: `${sw}-${sl}-${sp}`,
+      gloss: still ? `Did the pick beat the betting line? ${still}` : "Did the pick beat the betting line?",
+    },
+    scope: bits.join(" "),
+    remaining,
+    weeks: [...weeks.values()].sort((a, b) => a.week - b.week),
+  };
+}
+
+async function renderTrackRecord() {
+  const [rc, saved] = await Promise.all([load("report_card.json"), load("saved_weeks.json")]);
+  const nick = (t) => (rc.names && rc.names[t]) || t;
+  const view = buildTrackRecord(rc, saved);
+  const weeks = view.weeks;
+  const tile = (label, num, gloss) =>
+    `<div class="tr-tile"><p class="label">${label}</p><p class="num">${num}</p><p class="tile-gloss">${gloss}</p></div>`;
+  $("tr-tiles").innerHTML =
+    tile("Picked the winner", view.winner.num, view.winner.gloss) +
+    tile("Against the spread", view.spread.num, view.spread.gloss);
+  $("tr-scope").textContent = view.scope;
 
   $("tr-strip").innerHTML = weeks.slice(-5).map((w) => {
     const n = w.right + w.wrong;
@@ -588,7 +628,7 @@ async function renderTrackRecord() {
 
   const date = (d) => d ? new Date(`${d}T12:00:00`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) : "";
   $("tr-games").innerHTML = [...weeks].reverse().map((w) => {
-    const rows = games.filter((g) => g.week === w.week).map((g) => {
+    const rows = w.games.map((g) => {
       const hs = g.home_score, as = g.away_score;
       let line, pill;
       if (g.result === "pending") {
@@ -1049,28 +1089,34 @@ async function renderOfficialPicks() {
   });
 }
 
-const page = document.body.dataset.page;
-const run = {
-  home: renderHome,
-  ledger: renderLedger,
-  teams: renderTeams,
-  freshness: renderFreshness,
-  model: renderModel,
-  "report-card": renderReportCard,
-}[page];
-if (document.querySelector(".official-pick")) {
-  renderOfficialPicks().catch(() => {
-    document.querySelectorAll(".official-line").forEach((slot) => {
-      if (!slot.textContent) slot.textContent = "unavailable";
-    });
-  });
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { buildTrackRecord };
 }
-if (run) {
-  run().catch((err) => {
-    const slot = $("health") || $("live-record") || $("when") || $("ratings-caption") || $("rec-caption") || document.querySelector("main");
-    if (slot) {
-      if (slot.hidden) slot.hidden = false;
-      slot.textContent = "We couldn't load the latest numbers. Try refreshing.";
-    }
-  });
+
+if (typeof document !== "undefined" && document.body) {
+  const page = document.body.dataset.page;
+  const run = {
+    home: renderHome,
+    ledger: renderLedger,
+    teams: renderTeams,
+    freshness: renderFreshness,
+    model: renderModel,
+    "report-card": renderReportCard,
+  }[page];
+  if (document.querySelector(".official-pick")) {
+    renderOfficialPicks().catch(() => {
+      document.querySelectorAll(".official-line").forEach((slot) => {
+        if (!slot.textContent) slot.textContent = "unavailable";
+      });
+    });
+  }
+  if (run) {
+    run().catch((err) => {
+      const slot = $("health") || $("live-record") || $("when") || $("ratings-caption") || $("rec-caption") || document.querySelector("main");
+      if (slot) {
+        if (slot.hidden) slot.hidden = false;
+        slot.textContent = "We couldn't load the latest numbers. Try refreshing.";
+      }
+    });
+  }
 }
