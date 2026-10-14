@@ -1104,7 +1104,7 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 .chip { font-weight: 700; color: var(--ink); border: 1px solid var(--hair-strong); border-radius: 4px; padding: 0 6px; font-size: var(--fs-small); }
 .when { display: inline-flex; gap: 0.5rem; align-items: center; white-space: nowrap; }
 .tag { color: var(--caution); }
-.call { display: block; font-size: var(--fs-call); font-weight: 600; line-height: 1.35; margin-top: 4px; }
+.call { display: block; font-size: var(--fs-call); font-weight: 500; line-height: 1.35; margin-top: 4px; }
 .quiet .call { font-weight: 500; font-size: var(--fs-body); }
 .row-panel { padding: 0 16px 12px; }
 .pick { color: var(--accent); font-weight: 600; margin: 0 0 0.5rem; font-size: var(--fs-body); font-family: var(--sans); letter-spacing: 0; line-height: var(--lh); }

@@ -319,16 +319,31 @@ function resultPill(g) {
   return "";
 }
 
-// Plain-words pick for the collapsed row, e.g. "Take PHI −1.5" (real minus sign).
-function takeText(g) {
-  return `Take ${pickLineDisplay(g, g.selection.spread_pick).replace(/-/g, "\u2212")}`;
+// Plain-words pick for the collapsed row, e.g. "Take PHI −1.5" (real minus sign);
+// a zero line reads "Take PHI (pick'em)".
+function takeParts(g) {
+  const side = g.selection.spread_pick;
+  const line = Number(g.pick_time.home_margin);
+  const signed = side === g.home_team ? -line : line;
+  if (!Number.isFinite(signed) || signed === 0) {
+    return { text: `Take ${side} (pick'em)`, spoken: `Take ${side} pick'em` };
+  }
+  const n = Math.abs(signed).toFixed(1);
+  return signed < 0
+    ? { text: `Take ${side} \u2212${n}`, spoken: `Take ${side} minus ${n}` }
+    : { text: `Take ${side} +${n}`, spoken: `Take ${side} plus ${n}` };
+}
+function takeText(g) { return takeParts(g).text; }
+function takeTag(g) {
+  const t = takeParts(g);
+  return `<span class="take num"><span class="take-pick" aria-label="${esc(t.spoken)}">${esc(t.text)}</span> ${leanTag(g)}</span>`;
 }
 
 function expander(g, cls, sentence, extra, detail, lead = "") {
   const id = String(g.game_id).replace(/[^\w-]/g, "");
   return `<div class="game-row ${cls}">
     <button class="row-toggle" id="b-${id}" aria-expanded="false" aria-controls="d-${id}">
-${lead ? `      <span class="take num">${esc(lead)}</span>\n` : ""}      <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
+${lead ? `      ${lead}\n` : ""}      <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
       <span class="call">${esc(sentence)}</span>
     </button>
     <div class="row-panel" id="d-${id}" role="region" aria-labelledby="b-${id}" hidden>${detail}</div>
@@ -376,8 +391,8 @@ function gameRow(g, state, now) {
   const started = statusTag(g, now) === timeTag(g.kickoff_utc) ? "" : ` ${statusTag(g, now)}`;
   const price = pickLineDisplay(g, g.selection.spread_pick);
   return expander(g, "pick-row", homeSentence(g),
-    `${leanTag(g)} ${started ? started.trim() : timeTag(g.kickoff_utc)}`,
-    `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`, takeText(g));
+    `${started ? started.trim() : timeTag(g.kickoff_utc)}`,
+    `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`, takeTag(g));
 }
 
 function finalRow(g) {
@@ -1069,7 +1084,7 @@ async function renderOfficialPicks() {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { leanLabel, gameRow, officialLine, TOTALS_PAUSED_NOTE, STRONG_LEAN_EDGE };
+  module.exports = { takeText, leanLabel, gameRow, officialLine, TOTALS_PAUSED_NOTE, STRONG_LEAN_EDGE };
 }
 const page = typeof document !== "undefined" && document.body ? document.body.dataset.page : null;
 const run = {
