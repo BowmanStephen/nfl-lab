@@ -56,18 +56,39 @@ function readJson(name) {
   return fs.readFileSync(path.join(API, name), "utf8");
 }
 
-function fetchImpl(url) {
-  const name = String(url).split("?")[0].split("/").pop();
-  if (!name.endsWith(".json")) {
-    return Promise.resolve({ ok: false, status: 404, json: async () => ({}) });
+function makeFetch(picksOverride) {
+  const inflight = new Set();
+  function track(promise) {
+    const wrapped = Promise.resolve(promise).finally(() => inflight.delete(wrapped));
+    inflight.add(wrapped);
+    return wrapped;
   }
-  const body = readJson(name);
-  return Promise.resolve({
-    ok: true,
-    status: 200,
-    json: async () => JSON.parse(body),
-    text: async () => body,
-  });
+  function fetchImpl(url) {
+    const name = String(url).split("?")[0].split("/").pop();
+    return track(Promise.resolve().then(() => {
+      if (!name.endsWith(".json")) {
+        return { ok: false, status: 404, json: async () => ({}) };
+      }
+      const body = name === "picks.json" && picksOverride != null ? picksOverride : readJson(name);
+      return {
+        ok: true,
+        status: 200,
+        json: () => track(Promise.resolve(JSON.parse(body))),
+        text: () => track(Promise.resolve(body)),
+      };
+    }));
+  }
+  async function whenSettled() {
+    // DOM writes run in the promise continuations of these fetches, after the
+    // fetch promises themselves settle. setImmediate runs once that queue drains.
+    for (let turn = 0; turn < 50; turn += 1) {
+      while (inflight.size) await Promise.race([...inflight]);
+      await new Promise((resolve) => setImmediate(resolve));
+      if (inflight.size === 0) return;
+    }
+    throw new Error(`page fetches did not settle (${inflight.size} still running)`);
+  }
+  return { fetchImpl, whenSettled };
 }
 
 function officialPick(gameId) {
@@ -92,12 +113,13 @@ function previewGameIds() {
   return [...html.matchAll(/data-game="([^"]+)"/g)].map((m) => m[1]);
 }
 
-function renderPage(pageName) {
+function renderPage(pageName, picksOverride) {
   const ids = {};
   const get = (id) => {
     if (!ids[id]) ids[id] = new El(id);
     return ids[id];
   };
+  const { fetchImpl, whenSettled } = makeFetch(picksOverride);
   const picks = pageName === "preview" ? previewGameIds().map(officialPick) : [];
   const body = new El("body");
   if (pageName !== "preview") body.dataset.page = pageName;
@@ -154,7 +176,7 @@ function renderPage(pageName) {
   context.globalThis = context;
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(SITE, "utf8"), context, { filename: "site.js" });
-  return { ids, picks, context };
+  return { ids, picks, context, whenSettled };
 }
 
 function dump(rendered) {
@@ -170,6 +192,12 @@ function dump(rendered) {
 }
 
 async function main() {
+  const fixturePath = process.argv[2];
+  if (!fixturePath) {
+    console.error("usage: node tests/render_display_team.js <rams-card.json>");
+    process.exit(1);
+  }
+  const fixtureCard = fs.readFileSync(fixturePath, "utf8");
   const exported = require(SITE);
   const helper = {
     LA: exported.displayTeam("LA"),
@@ -182,9 +210,12 @@ async function main() {
   const pages = {};
   for (const name of ["home", "ledger", "teams", "model", "report-card", "freshness", "preview"]) {
     const rendered = renderPage(name);
-    await new Promise((resolve) => setTimeout(resolve, 30));
+    await rendered.whenSettled();
     pages[name] = dump(rendered);
   }
+  const fixture = renderPage("home", fixtureCard);
+  await fixture.whenSettled();
+  pages.fixture = dump(fixture);
   process.stdout.write(JSON.stringify({ helper, pages }));
 }
 

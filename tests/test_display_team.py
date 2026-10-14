@@ -14,8 +14,8 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "public"
 RENDER = ROOT / "tests" / "render_display_team.js"
-
-pytestmark = pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+FIXTURE = ROOT / "tests" / "fixtures" / "rams_card.json"
+PICKS = PUBLIC / "api" / "picks.json"
 
 # Same franchise, two spellings. A rendered page must not use both.
 ALIAS_GROUPS = (
@@ -41,13 +41,36 @@ def _rams_label(text: str) -> str | None:
 
 
 def _render() -> dict:
-    out = subprocess.run(
-        ["node", str(RENDER)],
-        check=True,
+    if shutil.which("node") is None:
+        pytest.fail("node is required to render the published pages")
+    proc = subprocess.run(
+        ["node", str(RENDER), str(FIXTURE)],
         capture_output=True,
         text=True,
     )
-    return json.loads(out.stdout)
+    if proc.returncode != 0:
+        pytest.fail(f"site render failed\n{proc.stderr}\n{proc.stdout}")
+    return json.loads(proc.stdout)
+
+
+def _rams_games(card: dict) -> list[dict]:
+    return [g for g in card.get("games") or [] if "LA" in (g.get("home_team"), g.get("away_team"))]
+
+
+def _shown_spread(game: dict) -> str:
+    """Vegas line as the page prints it: a leading LA becomes LAR."""
+    raw = str((game.get("pick_time") or {}).get("spread_display") or "")
+    team, sep, rest = raw.partition(" ")
+    shown = "LAR" if team == "LA" else team
+    return f"{shown}{sep}{rest}" if sep else shown
+
+
+def _game_html(source: str, game_id: str) -> str:
+    marker = f"b-{game_id}"
+    start = source.find(marker)
+    assert start >= 0, f"rendered page is missing {game_id}"
+    nxt = source.find('class="game-row', start + len(marker))
+    return source[start:] if nxt < 0 else source[start:nxt]
 
 
 def _static_pages() -> dict[str, str]:
@@ -77,16 +100,40 @@ def _blocks(source: str) -> list[str]:
     )
 
 
+def _assert_rams_row(source: str, game: dict) -> None:
+    """The row for this stored LA game shows LAR, including the Vegas line."""
+    block = _game_html(source, game["game_id"])
+    visible = _visible(block)
+    assert _rams_label(visible) is None, visible
+    chips = re.findall(r'class="chip">([^<]+)<', block)
+    if chips:
+        assert "LAR" in chips, block
+        assert "LA" not in chips, block
+    shown = _shown_spread(game)
+    if shown:
+        assert shown in visible, visible
+
+
 def test_rendered_pages_use_lar_for_the_rams():
     rendered = _render()
     pages = dict(rendered["pages"])
     pages.update(_static_pages())
     assert pages["home"], "home page did not render"
     assert "couldn't load" not in pages["home"]
-    assert "LAR -13.5" in _visible(pages["home"])
-    rams_row = next(block for block in _blocks(pages["home"]) if "LAR -13.5" in _visible(block))
-    assert re.search(r'class="chip">LAR<', rams_row)
-    assert not re.search(r'class="chip">LA<', rams_row)
+
+    card = json.loads(PICKS.read_text())
+    rams = _rams_games(card)
+    if rams:
+        for game in rams:
+            _assert_rams_row(pages["home"], game)
+    else:
+        assert "fixture" in pages, "bye week needs the fixture card"
+
+    fixture_card = json.loads(FIXTURE.read_text())
+    fixture_games = _rams_games(fixture_card)
+    assert fixture_games, "fixture card must include an LA game"
+    for game in fixture_games:
+        _assert_rams_row(pages["fixture"], game)
 
     visible = {name: _visible(source) for name, source in pages.items()}
     for name, text in visible.items():
@@ -95,7 +142,9 @@ def test_rendered_pages_use_lar_for_the_rams():
             found = group.intersection(_tokens(text))
             assert len(found) <= 1, f"{name} mixes {sorted(found)} for one team"
 
-    assert "LAR" in _tokens(visible["home"])
+    assert "LAR" in _tokens(visible["fixture"])
+    if rams:
+        assert "LAR" in _tokens(visible["home"])
     assert "LAC" in _tokens(visible["teams"])
     assert "LAC" in _tokens(visible["model"])
     assert "Los Angeles Chargers" in visible["model"]

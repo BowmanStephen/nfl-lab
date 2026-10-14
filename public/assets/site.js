@@ -8,9 +8,14 @@ function esc(value) {
 
 // One abbreviation on the page. Saved cards keep nflverse codes (the Rams are
 // "LA"); readers see LAR, and the Chargers stay LAC. Every visible team code
-// goes through displayTeam. pickLineDisplay already does, so a "Take LAR −13.5"
+// goes through displayTeam. pickLineDisplay already does, so a "Take LAR −1.5"
 // line (takeText) inherits it. Call displayTeam(code) directly if a label
 // prints a code itself.
+//
+// The model page's rating rows use the short names "LA Rams" and "LA Chargers".
+// displayTeam rewrites those labels too ("Los Angeles Rams" / "Los Angeles
+// Chargers") so the chart does not print LA next to LAR. Display only: the
+// ratings JSON still stores team "LA", which grading and line matching need.
 const DISPLAY_TEAM = {
   LA: "LAR",
   "LA Rams": "Los Angeles Rams",
