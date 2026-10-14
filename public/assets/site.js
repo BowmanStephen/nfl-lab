@@ -399,10 +399,18 @@ function unplayedGame(g, now) {
   return Number.isFinite(kick) && kick > now;
 }
 
+// Team codes on this row. Swap the body for the shared render-time helper (LA -> LAR) when it is on main.
+function upNextTeam(code) {
+  return code;
+}
+
 function upNextMarkup(g) {
-  const line = (g.pick_time && g.pick_time.spread_display) || "";
-  const vegas = line ? `Vegas says ${line}` : "";
-  return `<p class="up-next-row"><span class="up-next-kicker">Up next</span><span class="up-next-game">${esc(g.away_team)} at ${esc(g.home_team)}, ${timeTag(g.kickoff_utc)}</span><span class="up-next-vegas">${esc(vegas)}</span></p>`;
+  const raw = String((g.pick_time && g.pick_time.spread_display) || "");
+  const parts = raw ? raw.split(" ") : [];
+  if (parts.length) parts[0] = upNextTeam(parts[0]);
+  const vegas = parts.length ? `Vegas says ${parts.join(" ")}` : "";
+  const match = `${upNextTeam(g.away_team)} at ${upNextTeam(g.home_team)}`;
+  return `<p class="up-next-row"><span class="up-next-kicker">Up next</span><span class="up-next-game">${esc(match)}, ${timeTag(g.kickoff_utc)}</span><span class="up-next-vegas">${esc(vegas)}</span></p>`;
 }
 
 function showUpNext(games, now) {

@@ -94,10 +94,12 @@ vm.runInContext(fs.readFileSync(path.join(publicDir, "assets", "site.js"), "utf8
   }
   if (jobs.length) throw new Error("home render did not settle");
   const up = elements.get("up-next");
+  const hook = sandbox.upNextTeam;
   process.stdout.write(JSON.stringify({
     hidden: !up || up.hidden,
     text: up ? up.textContent : "",
     html: up ? up.innerHTML : "",
+    hook: hook ? hook("LA") : null,
   }));
 })().catch((err) => {
   console.error(err);
@@ -165,6 +167,22 @@ def test_markup_pins_the_slot_above_our_picks():
     picks = html.find('id="picks-h"')
     assert up != -1 and picks != -1 and up < picks
     assert 'class="up-next" hidden' in html
+
+
+def test_up_next_team_codes_go_through_one_helper():
+    js = (PUBLIC / "assets" / "site.js").read_text()
+    assert js.count("function upNextTeam(") == 1
+    body = js.split("function upNextMarkup(g) {", 1)[1].split("\n}", 1)[0]
+    assert body.count("upNextTeam(") == 3
+    assert "g.away_team" not in body.replace("upNextTeam(g.away_team)", "")
+    assert "g.home_team" not in body.replace("upNextTeam(g.home_team)", "")
+    card = _card([
+        _game("2026_06_LA_SEA", "LA", "SEA", "2026-10-16T00:15:00Z", False, "LA -3.5", 0.4),
+    ])
+    row = render_home(card, "2026-10-14T18:00:00Z")
+    shown = row["hook"]
+    assert f"{shown} at SEA, Thu 7:15 PM CT" in row["text"]
+    assert f"Vegas says {shown} -3.5" in row["text"]
 
 
 def test_up_next_row_when_next_kickoff_is_not_a_pick():
