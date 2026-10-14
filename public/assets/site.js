@@ -388,6 +388,36 @@ function agreeGroup(games, now = Date.now()) {
   </div>`;
 }
 
+// Home "Our picks" are spread picks. A qualifying total is not one of them.
+function isSpreadPick(g) {
+  return Boolean(g.selection && g.selection.spread_qualifies);
+}
+
+function unplayedGame(g, now) {
+  if (isScored(g)) return false;
+  const kick = Date.parse(g.kickoff_utc);
+  return Number.isFinite(kick) && kick > now;
+}
+
+function upNextMarkup(g) {
+  const line = (g.pick_time && g.pick_time.spread_display) || "";
+  const vegas = line ? `Vegas says ${line}` : "";
+  return `<p class="up-next-row"><span class="up-next-kicker">Up next</span><span class="up-next-game">${esc(g.away_team)} at ${esc(g.home_team)}, ${timeTag(g.kickoff_utc)}</span><span class="up-next-vegas">${esc(vegas)}</span></p>`;
+}
+
+function showUpNext(games, now) {
+  const slot = $("up-next");
+  if (!slot) return;
+  const next = games.slice().sort((a, b) => Date.parse(a.kickoff_utc) - Date.parse(b.kickoff_utc)).find((g) => unplayedGame(g, now));
+  if (!next || isSpreadPick(next)) {
+    slot.hidden = true;
+    slot.innerHTML = "";
+    return;
+  }
+  slot.hidden = false;
+  slot.innerHTML = upNextMarkup(next);
+}
+
 function revealHash() {
   const id = (location.hash || "").slice(1);
   if (!id) return;
@@ -468,6 +498,7 @@ async function renderHome() {
     notices.push(`<details class="notice"><summary>Over/under picks were pulled on Oct 8 after we found a bug. <span class="why">Why</span></summary><p class="small">${esc(card.totals_void_note || "")} <a href="report-card.html#totals">More on the 2026 replay</a></p></details>`);
   }
   $("notices").innerHTML = notices.slice(0, 2).join("");
+  showUpNext(games, now);
 
   if (state === "final") {
     let w = 0, l = 0, p = 0;
