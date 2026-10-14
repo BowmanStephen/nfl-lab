@@ -1,4 +1,10 @@
-"""Home pick rows show a lean label, not a win percentage; totals are paused."""
+"""Home pick rows show a lean label, not a win percentage; totals are paused.
+
+Live-data tests derive every expected value from public/api/picks.json, so they
+stay green whatever week it is (including weeks with no qualifying picks).
+Underdog '+', strong lean, and pick'em are checked against a fixed fixture card.
+"""
+import html as htmllib
 import json
 import re
 import shutil
@@ -10,115 +16,164 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 SITE_JS = ROOT / "public" / "assets" / "site.js"
 PICKS = ROOT / "public" / "api" / "picks.json"
-
-pytestmark = pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+STRONG = float(re.search(r"STRONG_LEAN_EDGE = ([\d.]+)", SITE_JS.read_text()).group(1))
+NOW = "2026-01-01T00:00:00Z"  # before any fixture kickoff, so rows render as upcoming
 
 SCRIPT = r"""
 const site = require(process.argv[1]);
-const card = require(process.argv[2]);
-const now = Date.parse("2026-10-14T12:00:00Z");
+const card = JSON.parse(require("fs").readFileSync(process.argv[2], "utf8"));
+const now = Date.parse(process.argv[3]);
 const picks = card.games.filter((g) => g.selection.spread_qualifies);
-const rows = picks.map((g) => site.gameRow(g, "pre", now));
 console.log(JSON.stringify({
-  rows,
+  rows: picks.map((g) => site.gameRow(g, "pre", now)),
   labels: picks.map((g) => [g.selection.spread_edge, site.leanLabel(g)]),
-  note: site.TOTALS_PAUSED_NOTE,
   official: picks.map((g) => site.officialLine(g, {})),
 }));
 """
 
 
-def _run():
-    out = subprocess.run(["node", "-e", SCRIPT, str(SITE_JS), str(PICKS)],
+def _game(gid, away, home, home_margin, pick, edge, kickoff="2026-12-06T18:00Z"):
+    return {
+        "game_id": gid, "season": 2026, "week": 14, "kickoff_utc": kickoff,
+        "away_team": away, "home_team": home,
+        "pick_time": {"captured_at_ct": "2026-12-01T06:00:00-06:00", "provider": "DraftKings",
+                      "home_margin": home_margin, "total": 44.5,
+                      "spread_display": f"{home if home_margin >= 0 else away} -{abs(home_margin)}" if home_margin else "PK",
+                      "kickoff_utc": kickoff},
+        "selection": {"model_margin": home_margin + (edge if pick == home else -edge),
+                      "model_total": 45.0, "spread_edge": edge if pick == home else -edge,
+                      "spread_pick": pick, "spread_qualifies": True,
+                      "total_edge": 0.5, "total_pick": "over", "total_qualifies": False,
+                      "away_qb": "QB A", "home_qb": "QB H", "qb_notes": []},
+        "grading": None,
+    }
+
+
+FIXTURE = {"season": 2026, "week": 14, "games": [
+    _game("FX_FAV", "AAA", "BBB", 3.0, "BBB", STRONG + 0.5),     # favorite, strong lean
+    _game("FX_DOG", "CCC", "DDD", 10.5, "CCC", STRONG - 1.0),    # away underdog, lean
+    _game("FX_PK", "EEE", "FFF", 0.0, "FFF", 2.0),               # pick'em
+]}
+
+
+def _node():
+    node = shutil.which("node")
+    if node is None:
+        pytest.fail("node is required for site.js rendering tests")
+    return node
+
+
+def _run(card_path):
+    out = subprocess.run([_node(), "-e", SCRIPT, str(SITE_JS), str(card_path), NOW],
                          capture_output=True, text=True, check=True).stdout
     return json.loads(out)
 
 
-def test_pick_rows_have_lean_label_and_no_percentage():
-    data = _run()
-    assert data["rows"], "spreads should still be listed"
-    for html in data["rows"]:
-        text = re.sub(r"<[^>]+>", " ", html)
-        assert not re.search(r"\d+(\.\d+)?\s*%", text), text
-        assert ("Strong lean" in text) or ("Lean" in text)
-        assert "title=" not in html
-    for edge, label in data["labels"]:
-        assert label == ("Strong lean" if abs(edge) >= 3.5 else "Lean")
+@pytest.fixture
+def fixture_card(tmp_path):
+    p = tmp_path / "card.json"
+    p.write_text(json.dumps(FIXTURE))
+    return p
 
 
-def test_totals_paused_note_present_and_totals_not_listed():
-    js = SITE_JS.read_text()
-    assert "Over/under picks are paused while we fix that model." in js
-    assert 'id="totals-paused"' in js
-    data = _run()
-    for html in data["rows"]:
-        assert "Over " not in html and "Under " not in html
+def _gid(g):
+    return re.sub(r"[^\w-]", "", str(g["game_id"]))
 
 
-def test_spread_picks_still_listed():
-    card = json.loads(PICKS.read_text())
-    n = sum(1 for g in card["games"] if g["selection"]["spread_qualifies"])
-    assert len(_run()["rows"]) == n > 0
-
-
-def test_previews_use_same_lean_label():
-    data = _run()
-    for line, (_, label) in zip(data["official"], data["labels"]):
-        assert line.endswith(f"({label})")
-    js = SITE_JS.read_text()
-    assert js.count("STRONG_LEAN_EDGE = ") == 1
-
-
-
-def _rows_by_id():
-    card = json.loads(PICKS.read_text())
+def _rows_by_id(card, rows):
     picks = [g for g in card["games"] if g["selection"]["spread_qualifies"]]
-    rows = _run()["rows"]
     out = {}
     for g in picks:
-        gid = re.sub(r"[^\w-]", "", str(g["game_id"]))
-        match = [h for h in rows if f'id="b-{gid}"' in h]
-        assert len(match) == 1, gid
-        out[gid] = (g, match[0])
+        match = [h for h in rows if f'id="b-{_gid(g)}"' in h]
+        assert len(match) == 1, _gid(g)
+        out[_gid(g)] = (g, match[0])
     return out
 
 
 def _text(html):
-    return " ".join(re.sub(r"<[^>]+>", " ", html).split())
+    """Visible text only (screen-reader-only spans removed)."""
+    html = re.sub(r'<span class="sr-only">[^<]*</span>', " ", html)
+    return htmllib.unescape(" ".join(re.sub(r"<[^>]+>", " ", html).split()))
 
 
-def test_pick_row_starts_with_take_team_line():
-    for g, html in _rows_by_id().values():
+def _expected(g):
+    team = g["selection"]["spread_pick"]
+    hm = g["pick_time"]["home_margin"]
+    signed = -hm if team == g["home_team"] else hm
+    if signed > 0:
+        shown, spoken = f"+{abs(signed):.1f}", f"plus {abs(signed):.1f}"
+    elif signed < 0:
+        shown, spoken = f"\u2212{abs(signed):.1f}", f"minus {abs(signed):.1f}"
+    else:
+        shown, spoken = "(pick'em)", "pick'em"
+    label = "Strong lean" if abs(g["selection"]["spread_edge"]) >= STRONG else "Lean"
+    return f"Take {team} {shown}", f"Take {team} {spoken}", label
+
+
+def _check_rows(card, rows):
+    by_id = _rows_by_id(card, rows)
+    assert len(by_id) == len(rows)
+    for g, html in by_id.values():
+        shown, spoken, label = _expected(g)
         text = _text(html)
-        team = g["selection"]["spread_pick"]
-        signed = -g["pick_time"]["home_margin"] if team == g["home_team"] else g["pick_time"]["home_margin"]
-        if signed > 0:
-            line = f"+{abs(signed):.1f}"
-        elif signed < 0:
-            line = f"\u2212{abs(signed):.1f}"
-        else:
-            line = "(pick'em)"
-        assert text.startswith(f"Take {team} {line} "), text
-        label = "Strong lean" if abs(g["selection"]["spread_edge"]) >= 3.5 else "Lean"
-        assert text.startswith(f"Take {team} {line} {label} "), text
-        spoken = {"+": "plus", "\u2212": "minus"}.get(line[0])
-        want = f"Take {team} {spoken} {abs(signed):.1f}" if spoken else f"Take {team} pick'em"
-        assert f'aria-label="{want}"' in html.replace("&#39;", "'")
+        assert text.startswith(f"{shown} {label} "), text
+        h = html.replace("&#39;", "'")
+        assert f'<span class="take-pick" aria-hidden="true">{shown}</span>' in h
+        assert f'<span class="sr-only">{spoken}</span>' in h
+        take = re.search(r'<span class="take num">.*?</span> <span class="lean', h).group(0)
+        assert "aria-label" not in take
+        assert not re.search(r"\d+(\.\d+)?\s*%", text), text
+        assert "title=" not in html
+        assert "Over " not in html and "Under " not in html
+    return by_id
 
 
-def test_underdog_pick_shows_plus():
-    dogs = [(g, h) for g, h in _rows_by_id().values()
-            if g["selection"]["spread_pick"] != g["home_team"] and g["pick_time"]["home_margin"] > 0]
-    assert dogs, "fixture should include an underdog pick (e.g. ARI +13.5)"
-    for g, html in dogs:
-        assert _text(html).startswith(f"Take {g['selection']['spread_pick']} +"), _text(html)
+# ---- live data: expectations derived from picks.json (any week, any count) ----
+
+def test_live_rows_match_picks_data():
+    card = json.loads(PICKS.read_text())
+    data = _run(PICKS)
+    n = sum(1 for g in card["games"] if g["selection"]["spread_qualifies"])
+    assert len(data["rows"]) == n
+    _check_rows(card, data["rows"])
+    for edge, label in data["labels"]:
+        assert label == ("Strong lean" if abs(edge) >= STRONG else "Lean")
+    for line, (_, label) in zip(data["official"], data["labels"]):
+        assert line.endswith(f"({label})")
 
 
-def test_pickem_line_renders_pickem():
-    script = r"""
-const site = require(process.argv[1]);
-const g = {home_team: "PHI", away_team: "CAR", pick_time: {home_margin: 0}, selection: {spread_pick: "PHI"}};
-console.log(site.takeText(g));
-"""
-    out = subprocess.run(["node", "-e", script, str(SITE_JS)], capture_output=True, text=True, check=True).stdout.strip()
-    assert out == "Take PHI (pick'em)"
+def test_totals_paused_note_and_single_cutoff():
+    js = SITE_JS.read_text()
+    assert "Over/under picks are paused while we fix that model." in js
+    assert 'id="totals-paused"' in js
+    assert js.count("STRONG_LEAN_EDGE = ") == 1
+
+
+# ---- fixture card: fixed cases independent of the live week ----
+
+def test_fixture_rows(fixture_card):
+    data = _run(fixture_card)
+    by_id = _check_rows(FIXTURE, data["rows"])
+    assert set(by_id) == {"FX_FAV", "FX_DOG", "FX_PK"}
+
+
+def test_fixture_underdog_shows_plus(fixture_card):
+    by_id = _rows_by_id(FIXTURE, _run(fixture_card)["rows"])
+    _, html = by_id["FX_DOG"]
+    assert _text(html).startswith("Take CCC +10.5 Lean "), _text(html)
+    assert '<span class="sr-only">Take CCC plus 10.5</span>' in html
+
+
+def test_fixture_favorite_strong_lean(fixture_card):
+    by_id = _rows_by_id(FIXTURE, _run(fixture_card)["rows"])
+    _, html = by_id["FX_FAV"]
+    assert _text(html).startswith("Take BBB \u22123.0 Strong lean "), _text(html)
+    assert 'class="lean strong"' in html
+    assert '<span class="sr-only">Take BBB minus 3.0</span>' in html
+
+
+def test_fixture_pickem(fixture_card):
+    by_id = _rows_by_id(FIXTURE, _run(fixture_card)["rows"])
+    _, html = by_id["FX_PK"]
+    assert _text(html).startswith("Take FFF (pick'em) Lean "), _text(html)
+    assert "Take FFF pick'em</span>" in html.replace("&#39;", "'")

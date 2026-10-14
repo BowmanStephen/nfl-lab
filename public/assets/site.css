@@ -1177,3 +1177,4 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 .lean { font-family: var(--sans); font-size: max(0.84rem, 13.5px); color: var(--muted); margin-right: 0.5rem; }
 .lean.strong { color: var(--ink); font-weight: 600; }
 .take { display: block; font-size: var(--fs-call); font-weight: 600; color: var(--ink); line-height: 1.35; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; border: 0; }

@@ -56,9 +56,14 @@ function marginPlain(homeMargin, home, away) {
   return `${away} by ${Math.abs(m).toFixed(1)}`;
 }
 
-function pickLineDisplay(game, side) {
+// Spread from the given side's point of view (negative = that side gives points).
+function sideLine(game, side) {
   const line = Number(game.pick_time.home_margin);
-  const signed = side === game.home_team ? -line : line;
+  return side === game.home_team ? -line : line;
+}
+
+function pickLineDisplay(game, side) {
+  const signed = sideLine(game, side);
   return `${side} ${fmt(signed)}`;
 }
 
@@ -323,8 +328,7 @@ function resultPill(g) {
 // a zero line reads "Take PHI (pick'em)".
 function takeParts(g) {
   const side = g.selection.spread_pick;
-  const line = Number(g.pick_time.home_margin);
-  const signed = side === g.home_team ? -line : line;
+  const signed = sideLine(g, side);
   if (!Number.isFinite(signed) || signed === 0) {
     return { text: `Take ${side} (pick'em)`, spoken: `Take ${side} pick'em` };
   }
@@ -336,7 +340,7 @@ function takeParts(g) {
 function takeText(g) { return takeParts(g).text; }
 function takeTag(g) {
   const t = takeParts(g);
-  return `<span class="take num"><span class="take-pick" aria-label="${esc(t.spoken)}">${esc(t.text)}</span> ${leanTag(g)}</span>`;
+  return `<span class="take num"><span class="take-pick" aria-hidden="true">${esc(t.text)}</span><span class="sr-only">${esc(t.spoken)}</span> ${leanTag(g)}</span>`;
 }
 
 function expander(g, cls, sentence, extra, detail, lead = "") {
