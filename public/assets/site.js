@@ -360,7 +360,8 @@ function leanLabel(g) {
   return Math.abs(Number(g.selection.spread_edge)) >= STRONG_LEAN_EDGE ? "Strong lean" : "Lean";
 }
 function leanTag(g) {
-  return `<span class="lean">${esc(leanLabel(g))}</span>`;
+  const label = leanLabel(g);
+  return `<span class="${label === "Strong lean" ? "lean strong" : "lean"}">${esc(label)}</span>`;
 }
 
 const TOTALS_PAUSED_NOTE = "Over/under picks are paused while we fix that model.";
