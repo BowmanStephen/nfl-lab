@@ -1017,11 +1017,18 @@ async function renderReportCard() {
 
 function officialLine(game, names) {
   const selection = game.selection || {};
-  if (!selection.spread_qualifies) return "no pick";
-  const side = selection.spread_pick;
-  const price = pickLineDisplay(game, side);
-  const number = price.slice(String(side).length).trim();
-  return `${(names && names[side]) || side} ${number}`;
+  const parts = [];
+  if (selection.spread_qualifies) {
+    const side = selection.spread_pick;
+    const price = pickLineDisplay(game, side);
+    const number = price.slice(String(side).length).trim();
+    parts.push(`${(names && names[side]) || side} ${number}`);
+  }
+  if (totalIsActive(selection)) {
+    const word = selection.total_pick === "over" ? "Over" : "Under";
+    parts.push(`${word} ${Number(game.pick_time.total).toFixed(1)}`);
+  }
+  return parts.length ? parts.join(", ") : "no pick";
 }
 
 async function renderOfficialPicks() {
@@ -1034,6 +1041,20 @@ async function renderOfficialPicks() {
   const picks = await picksRes.json();
   const teams = teamsRes.ok ? await teamsRes.json() : { teams: [] };
   const names = Object.fromEntries((teams.teams || []).map((t) => [t.team, t.name]));
+  const pageWeek = Number(document.body.dataset.week || 0);
+  const pageSeason = Number(document.body.dataset.season || 0);
+  if (pageWeek && (Number(picks.week) !== pageWeek || (pageSeason && Number(picks.season) !== pageSeason))) {
+    // picks.json has moved on to a later week. Point at the saved card instead of saying "no pick".
+    const nn = String(pageWeek).padStart(2, "0");
+    const cardUrl = `https://github.com/BowmanStephen/nfl-lab/blob/main/output/live/${pageSeason || picks.season}-week-${nn}.json`;
+    nodes.forEach((node) => {
+      const link = node.querySelector("a");
+      if (link) { link.href = cardUrl; link.textContent = "Saved card"; }
+      const slot = node.querySelector(".official-line");
+      if (slot) slot.textContent = `official picks for week ${pageWeek}`;
+    });
+    return;
+  }
   const byId = Object.fromEntries((picks.games || []).map((g) => [g.game_id, g]));
   nodes.forEach((node) => {
     const id = node.dataset.game;
