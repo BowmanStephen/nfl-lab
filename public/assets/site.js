@@ -399,25 +399,34 @@ function unplayedGame(g, now) {
   return Number.isFinite(kick) && kick > now;
 }
 
-// Team codes on this row. Swap the body for the shared render-time helper (LA -> LAR) when it is on main.
+// Swap this body for `return displayTeam(code)` when that helper is on main.
 function upNextTeam(code) {
   return code;
 }
 
 function upNextMarkup(g) {
-  const raw = String((g.pick_time && g.pick_time.spread_display) || "");
-  const parts = raw ? raw.split(" ") : [];
-  if (parts.length) parts[0] = upNextTeam(parts[0]);
-  const vegas = parts.length ? `Vegas says ${parts.join(" ")}` : "";
+  const raw = String((g.pick_time && g.pick_time.spread_display) || "").trim();
+  let vegas = "";
+  if (raw) {
+    const space = raw.indexOf(" ");
+    const head = space === -1 ? raw : raw.slice(0, space);
+    const rest = space === -1 ? "" : raw.slice(space);
+    vegas = `Vegas says ${upNextTeam(head)}${rest}`;
+  }
   const match = `${upNextTeam(g.away_team)} at ${upNextTeam(g.home_team)}`;
-  return `<p class="up-next-row"><span class="up-next-kicker">Up next</span><span class="up-next-game">${esc(match)}, ${timeTag(g.kickoff_utc)}</span><span class="up-next-vegas">${esc(vegas)}</span></p>`;
+  const line = vegas ? `<span class="up-next-vegas">${esc(vegas)}</span>` : "";
+  return `<p class="up-next-row"><span class="up-next-kicker">Up next</span><span class="up-next-game">${esc(match)}, ${timeTag(g.kickoff_utc)}</span>${line}</p>`;
 }
 
 function showUpNext(games, now) {
   const slot = $("up-next");
   if (!slot) return;
-  const next = games.slice().sort((a, b) => Date.parse(a.kickoff_utc) - Date.parse(b.kickoff_utc)).find((g) => unplayedGame(g, now));
-  if (!next || isSpreadPick(next)) {
+  const upcoming = games.filter((g) => unplayedGame(g, now))
+    .sort((a, b) => Date.parse(a.kickoff_utc) - Date.parse(b.kickoff_utc));
+  const next = upcoming[0];
+  const kick = next ? Date.parse(next.kickoff_utc) : NaN;
+  const sameKick = upcoming.filter((g) => Date.parse(g.kickoff_utc) === kick);
+  if (!next || sameKick.some(isSpreadPick)) {
     slot.hidden = true;
     slot.innerHTML = "";
     return;

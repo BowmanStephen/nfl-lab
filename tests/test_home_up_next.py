@@ -10,7 +10,10 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "public"
 
-pytestmark = pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+
+@pytest.fixture(autouse=True)
+def node_is_installed():
+    assert shutil.which("node"), "node is required to render the home page"
 
 # Renders public/index.html with the real site.js. getElementById only resolves
 # ids that are in the markup, so a missing #up-next cannot pass by accident.
@@ -32,7 +35,12 @@ class El {
     this._html = "";
   }
   set textContent(value) { this._html = value == null ? "" : String(value); }
-  get textContent() { return this._html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim(); }
+  get textContent() {
+    return this._html.replace(/<[^>]+>/g, " ")
+      .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+      .replace(/\s+/g, " ").trim();
+  }
   set innerHTML(value) { this._html = value == null ? "" : String(value); }
   get innerHTML() { return this._html; }
   setAttribute() {}
@@ -161,6 +169,13 @@ def render_home(card, now):
     return json.loads(proc.stdout)
 
 
+def test_up_next_label_uses_muted_text():
+    css = (PUBLIC / "assets" / "site.css").read_text()
+    rule = css.split(".up-next-kicker", 1)[1].split("}", 1)[0]
+    assert "var(--muted)" in rule
+    assert "var(--accent)" not in rule
+
+
 def test_markup_pins_the_slot_above_our_picks():
     html = (PUBLIC / "index.html").read_text()
     up = html.find('id="up-next"')
@@ -169,10 +184,24 @@ def test_markup_pins_the_slot_above_our_picks():
     assert 'class="up-next" hidden' in html
 
 
+def _function_body(js, name):
+    start = js.index(f"function {name}(")
+    brace = js.index("{", start)
+    depth = 0
+    for i in range(brace, len(js)):
+        if js[i] == "{":
+            depth += 1
+        elif js[i] == "}":
+            depth -= 1
+            if depth == 0:
+                return js[brace + 1:i]
+    raise AssertionError(f"{name} has no closing brace")
+
+
 def test_up_next_team_codes_go_through_one_helper():
     js = (PUBLIC / "assets" / "site.js").read_text()
     assert js.count("function upNextTeam(") == 1
-    body = js.split("function upNextMarkup(g) {", 1)[1].split("\n}", 1)[0]
+    body = _function_body(js, "upNextMarkup")
     assert body.count("upNextTeam(") == 3
     assert "g.away_team" not in body.replace("upNextTeam(g.away_team)", "")
     assert "g.home_team" not in body.replace("upNextTeam(g.home_team)", "")
@@ -221,6 +250,43 @@ def test_up_next_rolls_to_the_following_unplayed_game():
     assert "HOU at JAX, Sun 8:30 AM CT" in row["text"]
     assert "Vegas says JAX -3" in row["text"]
     assert "SEA at DEN" not in row["text"]
+
+
+def test_up_next_hides_when_a_pick_shares_the_kickoff_then_relabels():
+    card = _card([
+        _game("2026_06_CHI_GB", "CHI", "GB", "2026-10-16T00:15:00Z", True, "GB -6.5", 2.5),
+        _game("2026_06_SEA_DEN", "SEA", "DEN", "2026-10-16T00:15:00Z", False, "SEA -2.5", 0.4),
+        _game("2026_06_HOU_JAX", "HOU", "JAX", "2026-10-18T13:30:00Z", False, "JAX -3", 0.3),
+    ])
+    before = render_home(card, "2026-10-14T18:00:00Z")
+    assert before["hidden"] is True
+    assert before["html"] == ""
+    after = render_home(card, "2026-10-16T02:00:00Z")
+    assert after["hidden"] is False
+    assert after["text"] != before["text"]
+    assert "HOU at JAX, Sun 8:30 AM CT" in after["text"]
+    assert "Vegas says JAX -3" in after["text"]
+    assert "SEA at DEN" not in after["text"]
+    assert "CHI at GB" not in after["text"]
+
+
+def test_up_next_pickem_line():
+    card = _card([
+        _game("2026_06_SEA_DEN", "SEA", "DEN", "2026-10-16T00:15:00Z", False, "pick'em", 0.1),
+    ])
+    row = render_home(card, "2026-10-14T18:00:00Z")
+    assert row["hidden"] is False
+    assert "SEA at DEN, Thu 7:15 PM CT" in row["text"]
+    assert "Vegas says pick'em" in row["text"]
+
+
+def test_up_next_missing_line():
+    game = _game("2026_06_SEA_DEN", "SEA", "DEN", "2026-10-16T00:15:00Z", False, "SEA -2.5", 0.4)
+    game["pick_time"]["spread_display"] = None
+    row = render_home(_card([game]), "2026-10-14T18:00:00Z")
+    assert row["hidden"] is False
+    assert "SEA at DEN, Thu 7:15 PM CT" in row["text"]
+    assert "Vegas says" not in row["text"]
 
 
 def test_up_next_hidden_when_no_unplayed_games_remain():

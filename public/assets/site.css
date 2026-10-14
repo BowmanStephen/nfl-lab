@@ -1142,7 +1142,7 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
   font-size: var(--fs-small);
   line-height: 1.4;
 }
-.up-next-kicker { color: var(--accent); font-weight: 600; }
+.up-next-kicker { color: var(--muted); font-weight: 600; }
 .up-next-game, .up-next-vegas { white-space: nowrap; }
 .up-next-game { color: var(--ink); font-weight: 600; }
 .up-next-vegas { color: var(--vegas); }
