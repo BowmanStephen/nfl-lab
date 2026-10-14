@@ -1,4 +1,4 @@
-"""Home pick rows show a lean label, not a win percentage; totals are paused.
+"""Home pick rows show a lean label and the plain pick, not a win percentage.
 
 Live-data tests derive every expected value from public/api/picks.json, so they
 stay green whatever week it is (including weeks with no qualifying picks).
@@ -126,7 +126,6 @@ def _check_rows(card, rows):
         vegas = re.search(r"Vegas says ([^.]*(?:\.\d)?)\.", text).group(1)
         assert "-" not in vegas and vegas == g["pick_time"]["spread_display"].replace("-", "\u2212"), vegas
         assert "title=" not in html
-        assert "Over " not in html and "Under " not in html
     return by_id
 
 
@@ -144,10 +143,8 @@ def test_live_rows_match_picks_data():
         assert line.endswith(f"({label})")
 
 
-def test_totals_paused_note_and_single_cutoff():
+def test_single_lean_cutoff():
     js = SITE_JS.read_text()
-    assert "Over/under picks are paused while we fix that model." in js
-    assert 'id="totals-paused"' in js
     assert js.count("STRONG_LEAN_EDGE = ") == 1
 
 

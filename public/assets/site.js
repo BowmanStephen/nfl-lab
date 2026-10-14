@@ -393,8 +393,6 @@ function leanTag(g) {
   return `<span class="${label === "Strong lean" ? "lean strong" : "lean"}">${esc(label)}</span>`;
 }
 
-const TOTALS_PAUSED_NOTE = "Over/under picks are paused while we fix that model.";
-
 function gameRow(g, state, now) {
   if (state === "final" || isScored(g)) return finalRow(g);
   const started = statusTag(g, now) === timeTag(g.kickoff_utc) ? "" : ` ${statusTag(g, now)}`;
@@ -526,10 +524,7 @@ async function renderHome() {
     $("picks-h").hidden = true; $("close-h").hidden = true;
   } else {
     $("picks-h").textContent = `Our picks (${picks.length})`;
-    // Over/under picks stay in picks.json; on the home page their slot shows the paused note.
-    const totalsSlot = games.some((g) => totalIsActive(g.selection))
-      ? `<p class="note" id="totals-paused">${esc(TOTALS_PAUSED_NOTE)}</p>` : "";
-    $("games").innerHTML = picks.map((g) => gameRow(g, state, now)).join("") + totalsSlot;
+    $("games").innerHTML = picks.map((g) => gameRow(g, state, now)).join("");
     $("close-h").textContent = `Too close to call (${close.length})`;
     $("close-h").hidden = !close.length;
     $("close-games").innerHTML = close.map((g) => tooCloseRow(g, now)).join("") + agreeGroup(agree, now);
@@ -1093,7 +1088,7 @@ async function renderOfficialPicks() {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { takeText, leanLabel, gameRow, officialLine, TOTALS_PAUSED_NOTE, STRONG_LEAN_EDGE };
+  module.exports = { takeText, leanLabel, gameRow, officialLine, STRONG_LEAN_EDGE };
 }
 const page = typeof document !== "undefined" && document.body ? document.body.dataset.page : null;
 const run = {
