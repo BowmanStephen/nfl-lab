@@ -16,6 +16,7 @@ PUBLIC = ROOT / "public"
 RENDER = ROOT / "tests" / "render_display_team.js"
 FIXTURE = ROOT / "tests" / "fixtures" / "rams_card.json"
 PICKS = PUBLIC / "api" / "picks.json"
+SITE_JS = PUBLIC / "assets" / "site.js"
 
 # Same franchise, two spellings. A rendered page must not use both.
 ALIAS_GROUPS = (
@@ -41,8 +42,7 @@ def _rams_label(text: str) -> str | None:
 
 
 def _render() -> dict:
-    if shutil.which("node") is None:
-        pytest.fail("node is required to render the published pages")
+    _require_node()
     proc = subprocess.run(
         ["node", str(RENDER), str(FIXTURE)],
         capture_output=True,
@@ -57,19 +57,38 @@ def _rams_games(card: dict) -> list[dict]:
     return [g for g in card.get("games") or [] if "LA" in (g.get("home_team"), g.get("away_team"))]
 
 
+def _require_node() -> None:
+    if shutil.which("node") is None:
+        pytest.fail("node is required to render the published pages")
+
+
 def _shown_spread(game: dict) -> str:
-    """Vegas line as the page prints it: a leading LA becomes LAR."""
+    """Vegas line as the page prints it, via the exported displaySpread helper."""
     raw = str((game.get("pick_time") or {}).get("spread_display") or "")
-    team, sep, rest = raw.partition(" ")
-    shown = "LAR" if team == "LA" else team
-    return f"{shown}{sep}{rest}" if sep else shown
+    if not raw:
+        return ""
+    _require_node()
+    proc = subprocess.run(
+        [
+            "node",
+            "-e",
+            "process.stdout.write(String(require(process.argv[1]).displaySpread(process.argv[2])))",
+            str(SITE_JS),
+            raw,
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode != 0:
+        pytest.fail(f"displaySpread failed\n{proc.stderr}\n{proc.stdout}")
+    return proc.stdout
 
 
 def _game_html(source: str, game_id: str) -> str:
-    marker = f"b-{game_id}"
+    marker = f'id="b-{game_id}"'
     start = source.find(marker)
     assert start >= 0, f"rendered page is missing {game_id}"
-    nxt = source.find('class="game-row', start + len(marker))
+    nxt = source.find('id="b-', start + len(marker))
     return source[start:] if nxt < 0 else source[start:nxt]
 
 

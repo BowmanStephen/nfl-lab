@@ -8,9 +8,7 @@ function esc(value) {
 
 // One abbreviation on the page. Saved cards keep nflverse codes (the Rams are
 // "LA"); readers see LAR, and the Chargers stay LAC. Every visible team code
-// goes through displayTeam. pickLineDisplay already does, so a "Take LAR −1.5"
-// line (takeText) inherits it. Call displayTeam(code) directly if a label
-// prints a code itself.
+// goes through displayTeam.
 //
 // The model page's rating rows use the short names "LA Rams" and "LA Chargers".
 // displayTeam rewrites those labels too ("Los Angeles Rams" / "Los Angeles
@@ -1081,6 +1079,7 @@ async function renderOfficialPicks() {
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports.displayTeam = displayTeam;
+  module.exports.displaySpread = displaySpread;
 }
 
 const page = typeof document !== "undefined" && document.body ? document.body.dataset.page : null;
