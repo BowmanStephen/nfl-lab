@@ -42,6 +42,11 @@ def test_home_does_not_link_to_a_missing_preview_page():
     js = (PUBLIC / "assets" / "site.js").read_text()
     week = int(json.loads((PUBLIC / "api" / "picks.json").read_text())["week"])
     page = PUBLIC / "previews" / f"week{week}.html"
+    slot = re.search(r'<p class="next-link" id="previews-link">(.*?)</p>', index, re.S)
+    assert slot is not None and slot.group(1).strip() == "", (
+        "the home previews line must ship empty so a placeholder does not flash "
+        "before site.js writes the link or the coming-soon text"
+    )
     hrefs = _static_preview_hrefs(index)
 
     unconditional = 'prev.href = `previews/week${card.week}.html`'
