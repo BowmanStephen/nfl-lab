@@ -123,6 +123,8 @@ def _check_rows(card, rows):
         take = re.search(r'<span class="take num">.*?</span> <span class="lean', h).group(0)
         assert "aria-label" not in take
         assert not re.search(r"\d+(\.\d+)?\s*%", text), text
+        vegas = re.search(r"Vegas says ([^.]*(?:\.\d)?)\.", text).group(1)
+        assert "-" not in vegas and vegas == g["pick_time"]["spread_display"].replace("-", "\u2212"), vegas
         assert "title=" not in html
         assert "Over " not in html and "Under " not in html
     return by_id

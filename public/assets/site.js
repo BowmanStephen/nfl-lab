@@ -62,6 +62,11 @@ function sideLine(game, side) {
   return side === game.home_team ? -line : line;
 }
 
+// Swap ASCII hyphen-minus before a number for a real minus sign (−) in display text.
+function minusSign(text) {
+  return String(text).replace(/-(?=\d)/g, "\u2212");
+}
+
 function pickLineDisplay(game, side) {
   const signed = sideLine(game, side);
   return `${side} ${fmt(signed)}`;
@@ -267,7 +272,7 @@ function homeSentence(g) {
   } else {
     x = modelPlain(g);
   }
-  return `Our model says ${x}. Vegas says ${g.pick_time.spread_display}.`;
+  return `Our model says ${x}. Vegas says ${minusSign(g.pick_time.spread_display)}.`;
 }
 
 function pageState(card, fresh, now) {
