@@ -351,12 +351,25 @@ function statusTag(g, now) {
   return timeTag(g.kickoff_utc);
 }
 
+// Display-only confidence label. Rule: |spread gap| >= 3.5 points (about a 60%
+// modeled cover chance at the 13.38-point margin sigma) is a "strong lean";
+// any other locked pick is a "lean". Does not change the pick or the data.
+const STRONG_LEAN_EDGE = 3.5;
+function leanLabel(g) {
+  return Math.abs(Number(g.selection.spread_edge)) >= STRONG_LEAN_EDGE ? "strong lean" : "lean";
+}
+function leanTag(g) {
+  return `<span class="lean">${esc(leanLabel(g))}</span>`;
+}
+
+const TOTALS_PAUSED_NOTE = "Over/under picks are paused while we fix that model.";
+
 function gameRow(g, state, now) {
   if (state === "final" || isScored(g)) return finalRow(g);
   const started = statusTag(g, now) === timeTag(g.kickoff_utc) ? "" : ` ${statusTag(g, now)}`;
   const price = pickLineDisplay(g, g.selection.spread_pick);
   return expander(g, "pick-row", homeSentence(g),
-    started ? started.trim() : timeTag(g.kickoff_utc),
+    `${leanTag(g)} ${started ? started.trim() : timeTag(g.kickoff_utc)}`,
     `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`);
 }
 
@@ -468,6 +481,10 @@ async function renderHome() {
     notices.push(`<details class="notice"><summary>Over/under picks were pulled on Oct 8 after we found a bug. <span class="why">Why</span></summary><p class="small">${esc(card.totals_void_note || "")} <a href="report-card.html#totals">More on the 2026 replay</a></p></details>`);
   }
   $("notices").innerHTML = notices.slice(0, 2).join("");
+  // Week 6+ over/under picks stay in picks.json but are not shown on the home page.
+  if (games.some((g) => totalIsActive(g.selection))) {
+    $("notices").insertAdjacentHTML("beforeend", `<p class="note" id="totals-paused">${esc(TOTALS_PAUSED_NOTE)}</p>`);
+  }
 
   if (state === "final") {
     let w = 0, l = 0, p = 0;
@@ -1045,7 +1062,10 @@ async function renderOfficialPicks() {
   });
 }
 
-const page = document.body.dataset.page;
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { leanLabel, gameRow, TOTALS_PAUSED_NOTE, STRONG_LEAN_EDGE };
+}
+const page = typeof document !== "undefined" && document.body ? document.body.dataset.page : null;
 const run = {
   home: renderHome,
   ledger: renderLedger,
@@ -1054,7 +1074,7 @@ const run = {
   model: renderModel,
   "report-card": renderReportCard,
 }[page];
-if (document.querySelector(".official-pick")) {
+if (page !== null && document.querySelector(".official-pick")) {
   renderOfficialPicks().catch(() => {
     document.querySelectorAll(".official-line").forEach((slot) => {
       if (!slot.textContent) slot.textContent = "unavailable";
