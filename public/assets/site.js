@@ -321,13 +321,13 @@ function resultPill(g) {
 
 function expander(g, cls, sentence, extra, detail) {
   const id = String(g.game_id).replace(/[^\w-]/g, "");
-  return `<div class="game-row ${cls}">
-    <button class="row-toggle" id="b-${id}" aria-expanded="false" aria-controls="d-${id}">
+  return `<li class="game-row ${cls}" id="b-${id}">
+    <button class="row-toggle" id="toggle-${id}" aria-expanded="false" aria-controls="d-${id}">
       <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
       <span class="call">${esc(sentence)}</span>
     </button>
-    <div class="row-panel" id="d-${id}" role="region" aria-labelledby="b-${id}" hidden>${detail}</div>
-  </div>`;
+    <div class="row-panel" id="d-${id}" role="region" aria-labelledby="toggle-${id}" hidden>${detail}</div>
+  </li>`;
 }
 
 function isScored(g) {
@@ -382,17 +382,23 @@ function agreeGroup(games, now = Date.now()) {
     const id = String(g.game_id).replace(/[^\w-]/g, "");
     return `<li id="b-${id}">${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}</li>`;
   }).join("");
-  return `<div class="agree-group">
+  return `<li class="agree-group">
     <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span></button>
     <div class="row-panel" id="d-agree" role="region" aria-labelledby="b-agree" hidden><ul>${items}</ul></div>
-  </div>`;
+  </li>`;
 }
 
 function revealHash() {
   const id = (location.hash || "").slice(1);
   if (!id) return;
-  const el = document.getElementById(id);
+  let el = document.getElementById(id);
   if (!el) return;
+  // Rows are built after load, so :target stays blank until the hash is applied again.
+  if (!el.matches(":target")) {
+    location.replace(location.pathname + location.search + location.hash);
+    el = document.getElementById(id);
+    if (!el) return;
+  }
   const panel = el.closest("[hidden]");
   if (panel) {
     panel.hidden = false;
@@ -478,7 +484,7 @@ async function renderHome() {
   }
 
   if (state === "empty") {
-    $("games").innerHTML = `<p>No games on the card yet for week ${card.week}.</p>`;
+    $("games").innerHTML = `<li class="empty-row"><p>No games on the card yet for week ${card.week}.</p></li>`;
     $("picks-h").hidden = true; $("close-h").hidden = true;
   } else {
     $("picks-h").textContent = `Our picks (${picks.length})`;
