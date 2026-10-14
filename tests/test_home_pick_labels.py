@@ -23,6 +23,7 @@ console.log(JSON.stringify({
   rows,
   labels: picks.map((g) => [g.selection.spread_edge, site.leanLabel(g)]),
   note: site.TOTALS_PAUSED_NOTE,
+  official: picks.map((g) => site.officialLine(g, {})),
 }));
 """
 
@@ -39,9 +40,10 @@ def test_pick_rows_have_lean_label_and_no_percentage():
     for html in data["rows"]:
         text = re.sub(r"<[^>]+>", " ", html)
         assert not re.search(r"\d+(\.\d+)?\s*%", text), text
-        assert ("strong lean" in text) or (" lean" in text)
+        assert ("Strong lean" in text) or ("Lean" in text)
+        assert "title=" not in html
     for edge, label in data["labels"]:
-        assert label == ("strong lean" if abs(edge) >= 3.5 else "lean")
+        assert label == ("Strong lean" if abs(edge) >= 3.5 else "Lean")
 
 
 def test_totals_paused_note_present_and_totals_not_listed():
@@ -57,3 +59,11 @@ def test_spread_picks_still_listed():
     card = json.loads(PICKS.read_text())
     n = sum(1 for g in card["games"] if g["selection"]["spread_qualifies"])
     assert len(_run()["rows"]) == n > 0
+
+
+def test_previews_use_same_lean_label():
+    data = _run()
+    for line, (_, label) in zip(data["official"], data["labels"]):
+        assert line.endswith(f"({label})")
+    js = SITE_JS.read_text()
+    assert js.count("STRONG_LEAN_EDGE = ") == 1

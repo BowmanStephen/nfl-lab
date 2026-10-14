@@ -1174,4 +1174,4 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 }
 
 /* Lean label on pick rows (display only; see leanLabel in site.js) */
-.lean { font-family: var(--mono); font-size: max(0.84rem, 13.5px); text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-right: 0.5rem; }
+.lean { font-family: var(--mono); font-size: max(0.84rem, 13.5px); color: var(--muted); margin-right: 0.5rem; }
