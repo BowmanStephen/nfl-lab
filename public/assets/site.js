@@ -1042,15 +1042,16 @@ async function renderOfficialPicks() {
   const teams = teamsRes.ok ? await teamsRes.json() : { teams: [] };
   const names = Object.fromEntries((teams.teams || []).map((t) => [t.team, t.name]));
   const pageWeek = Number(document.body.dataset.week || 0);
-  if (pageWeek && Number(picks.week) !== pageWeek) {
+  const pageSeason = Number(document.body.dataset.season || 0);
+  if (pageWeek && (Number(picks.week) !== pageWeek || (pageSeason && Number(picks.season) !== pageSeason))) {
     // picks.json has moved on to a later week. Point at the saved card instead of saying "no pick".
     const nn = String(pageWeek).padStart(2, "0");
-    const cardUrl = `https://github.com/BowmanStephen/nfl-lab/blob/main/output/live/${picks.season}-week-${nn}.json`;
+    const cardUrl = `https://github.com/BowmanStephen/nfl-lab/blob/main/output/live/${pageSeason || picks.season}-week-${nn}.json`;
     nodes.forEach((node) => {
       const link = node.querySelector("a");
-      if (link) link.href = cardUrl;
+      if (link) { link.href = cardUrl; link.textContent = "Saved card"; }
       const slot = node.querySelector(".official-line");
-      if (slot) slot.textContent = `saved in the week ${pageWeek} card`;
+      if (slot) slot.textContent = `official picks for week ${pageWeek}`;
     });
     return;
   }
