@@ -3,7 +3,11 @@ const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
 
-const { buildTrackRecord } = require("../public/assets/site.js");
+const { buildTrackRecord, totalsArePaused } = require("../public/assets/site.js");
+
+const PAUSED_NOTE = "Over/under picks are paused while we fix that model.";
+const OPEN_SENTENCE = "Week 6: 14 games to go, with 4 locked spreads and 6 locked totals riding on them.";
+const PAUSED_SENTENCE = "Week 6: 14 games to go, with 4 locked spreads riding on them.";
 
 function played(partial) {
   return {
@@ -85,8 +89,8 @@ function bugFixture() {
 
 test("week 5 saved spreads count, and leftovers stay out of the current week", () => {
   const { rc, saved } = bugFixture();
-  const view = buildTrackRecord(rc, saved);
-  const still = "Week 6: 14 games have not been played yet, with 4 locked spreads and 6 locked totals still to play.";
+  const view = buildTrackRecord(rc, saved, { totalsPaused: false });
+  const still = OPEN_SENTENCE;
 
   assert.equal(view.spread.num, "2-4-1");
   assert.equal(view.remaining.week, 6);
@@ -106,6 +110,49 @@ test("week 5 saved spreads count, and leftovers stay out of the current week", (
   assert.equal(week6.live, true);
   assert.equal(week6.games.length, 14);
   assert.equal(week6.pending, 14);
+});
+
+test("paused totals leave locked spreads in the week sentence", () => {
+  const { rc, saved } = bugFixture();
+  assert.equal(totalsArePaused(saved, PAUSED_NOTE), true);
+  const view = buildTrackRecord(rc, saved, { totalsPaused: totalsArePaused(saved, PAUSED_NOTE) });
+  assert.equal(view.remaining.games, 14);
+  assert.equal(view.remaining.spreads, 4);
+  assert.equal(view.remaining.totals, 6);
+  assert.ok(view.scope.includes(PAUSED_SENTENCE));
+  assert.ok(view.spread.gloss.includes(PAUSED_SENTENCE));
+  assert.equal(view.scope.includes("locked totals"), false);
+  assert.equal(view.spread.gloss.includes("locked totals"), false);
+});
+
+test("active totals stay in the week sentence when over/unders are not paused", () => {
+  const { rc, saved } = bugFixture();
+  assert.equal(totalsArePaused(saved, ""), false);
+  const view = buildTrackRecord(rc, saved, { totalsPaused: totalsArePaused(saved, "") });
+  assert.ok(view.scope.includes(OPEN_SENTENCE));
+  assert.ok(view.spread.gloss.includes(OPEN_SENTENCE));
+});
+
+test("an earlier week does not pause the current week", () => {
+  const saved = {
+    current_week: 6,
+    weeks: [
+      { week: 5, games: [played({ total_active: true })] },
+      { week: 6, games: week6Slate().map((g) => ({ ...g, total_active: false })) },
+    ],
+  };
+  assert.equal(totalsArePaused(saved, PAUSED_NOTE), false);
+});
+
+test("the live pause signal is TOTALS_PAUSED_NOTE plus an active total", () => {
+  const src = fs.readFileSync(path.join(__dirname, "../public/assets/site.js"), "utf8");
+  const hasNote = /const TOTALS_PAUSED_NOTE\s*=\s*["'][^"']+["']/.test(src);
+  const { rc, saved } = bugFixture();
+  assert.equal(totalsArePaused(saved), hasNote);
+  const view = buildTrackRecord(rc, saved);
+  const sentence = hasNote ? PAUSED_SENTENCE : OPEN_SENTENCE;
+  assert.ok(view.scope.includes(sentence));
+  assert.ok(view.spread.gloss.includes(sentence));
 });
 
 test("a current week with nothing left omits the remaining sentence", () => {

@@ -529,15 +529,40 @@ function savedTrackGames(saved) {
   return games;
 }
 
-function remainingSentence(rem) {
-  if (rem.week == null || (!rem.games && !rem.spreads && !rem.totals)) return "";
-  const games = rem.games === 1 ? "1 game has" : `${rem.games} games have`;
-  const spreads = rem.spreads === 1 ? "1 locked spread" : `${rem.spreads} locked spreads`;
-  const totals = rem.totals === 1 ? "1 locked total" : `${rem.totals} locked totals`;
-  return `Week ${rem.week}: ${games} not been played yet, with ${spreads} and ${totals} still to play.`;
+// PR #33 pauses over/unders with TOTALS_PAUSED_NOTE, and only shows that note
+// when a game still has an active total (totalIsActive). The binding is absent
+// until that change lands, so this page keeps the totals clause until then.
+function totalsPauseNote() {
+  return typeof TOTALS_PAUSED_NOTE === "string" ? TOTALS_PAUSED_NOTE : "";
 }
 
-function buildTrackRecord(rc, saved) {
+function totalsArePaused(saved, note) {
+  const signal = note === undefined ? totalsPauseNote() : note;
+  if (!signal) return false;
+  const currentWeek = saved && saved.current_week;
+  const weeks = (saved && saved.weeks) || [];
+  const week = weeks.find((w) => w.week === currentWeek);
+  return ((week && week.games) || []).some((g) => g.total_active);
+}
+
+function piece(n, singular, plural) {
+  return `${n} ${n === 1 ? singular : plural}`;
+}
+
+function remainingSentence(rem, totalsPaused) {
+  const showTotals = !totalsPaused;
+  if (rem.week == null || (!rem.games && !rem.spreads && (totalsPaused || !rem.totals))) return "";
+  const games = piece(rem.games, "game", "games");
+  const spreads = piece(rem.spreads, "locked spread", "locked spreads");
+  const riding = rem.games === 1 ? "it" : "them";
+  if (!showTotals) {
+    return `Week ${rem.week}: ${games} to go, with ${spreads} riding on ${riding}.`;
+  }
+  const totals = piece(rem.totals, "locked total", "locked totals");
+  return `Week ${rem.week}: ${games} to go, with ${spreads} and ${totals} riding on ${riding}.`;
+}
+
+function buildTrackRecord(rc, saved, options) {
   const savedGames = savedTrackGames(saved);
   const savedWeeks = new Set(savedGames.map((g) => g.week));
   const look = [];
@@ -566,7 +591,10 @@ function buildTrackRecord(rc, saved) {
     spreads: current.filter((g) => g.spread_qualifies && !g.spread_outcome).length,
     totals: current.filter((g) => g.total_active && !g.total_outcome).length,
   };
-  const still = remainingSentence(remaining);
+  const totalsPaused = options && Object.prototype.hasOwnProperty.call(options, "totalsPaused")
+    ? Boolean(options.totalsPaused)
+    : totalsArePaused(saved);
+  const still = remainingSentence(remaining, totalsPaused);
   const weeks = new Map();
   for (const g of games) {
     if (!weeks.has(g.week)) weeks.set(g.week, { week: g.week, live: g.live, right: 0, wrong: 0, ties: 0, pending: 0, games: [] });
@@ -1090,7 +1118,7 @@ async function renderOfficialPicks() {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { buildTrackRecord };
+  module.exports = { buildTrackRecord, totalsArePaused };
 }
 
 if (typeof document !== "undefined" && document.body) {
