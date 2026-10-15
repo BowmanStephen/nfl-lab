@@ -65,6 +65,15 @@ LOCKED_SPREADS = {
 }
 
 
+
+@pytest.fixture
+def totals_unpaused(monkeypatch):
+    """Cards locked before the totals pause (e.g. week 5) carry qualifying totals.
+    These tests cover how those already-locked totals are graded and voided."""
+    from nfl_lab import picks
+    monkeypatch.setattr(picks, "TOTALS_PAUSED", False)
+
+
 def _proj(game_id, away, home, margin, total):
     return {
         "game_id": game_id,
@@ -229,7 +238,7 @@ def test_closes_from_schedule_keeps_the_home_margin_sign():
     assert closes[("PHI", "JAX")]["total"] == 41.5
 
 
-def test_kickoff_passed_stores_nflverse_and_does_not_call_it_clv():
+def test_kickoff_passed_stores_nflverse_and_does_not_call_it_clv(totals_unpaused):
     games = build_games(
         [_proj("g1", "TB", "DAL", 4, 50)],
         [_line("TB", "DAL", 10, 47)],
@@ -336,7 +345,7 @@ def test_window_captures_pre_kickoff():
     assert games[0]["pick_time"]["home_margin"] == 10
 
 
-def test_voided_total_is_not_scored_and_the_spread_still_is():
+def test_voided_total_is_not_scored_and_the_spread_still_is(totals_unpaused):
     game = build_games(
         [_proj("g1", "TB", "DAL", 4, 50)],
         [_line("TB", "DAL", 10, 47)],
@@ -371,7 +380,7 @@ def test_voided_total_is_not_scored_and_the_spread_still_is():
     assert total_is_active(sel) is False
 
 
-def test_merge_keeps_a_voided_total():
+def test_merge_keeps_a_voided_total(totals_unpaused):
     first = build_games(
         [_proj("g1", "TB", "DAL", 4, 50)],
         [_line("TB", "DAL", 10, 47)],
@@ -398,7 +407,7 @@ def test_merge_keeps_a_voided_total():
     assert merged["games"][0]["pick_time"]["total"] == 47
 
 
-def test_voided_total_drops_off_the_model_chart():
+def test_voided_total_drops_off_the_model_chart(totals_unpaused):
     both = build_games(
         [_proj("g1", "PHI", "JAX", 1, 46)],
         [_line("PHI", "JAX", 6.5, 42.5)],
