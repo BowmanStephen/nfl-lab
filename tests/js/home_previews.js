@@ -52,7 +52,10 @@ function element() {
 const els = {};
 const get = (id) => els[id] || null;
 element().innerHTML = fs.readFileSync(path.join(pub, "index.html"), "utf8");
-const card = JSON.parse(fs.readFileSync(path.join(pub, "api/picks.json"), "utf8"));
+// Pick selections on this committed card are immutable; grading may be filled later.
+// Keep the fixture before kickoff regardless of the current public weekly card.
+const card = JSON.parse(fs.readFileSync(path.join(pub, "../output/live/2026-week-06.json"), "utf8"));
+for (const game of card.games) game.grading = null;
 const game = card.games.find((g) => g.selection.spread_qualifies);
 const gameId = game ? String(game.game_id).replace(/[^\w-]/g, "") : null;
 let resolvePreview;
@@ -65,6 +68,7 @@ const context = vm.createContext({
   window: { addEventListener() {}, matchMedia: () => ({ matches: true }) },
   location: { hash: gameId ? `#d-${gameId}` : "", search: "" },
   fetch: async (url, options) => {
+    if (url === "api/picks.json") return { ok: true, json: async () => card };
     if (String(url).startsWith("previews/")) {
       assert.equal(options.method, "HEAD");
       if (response === "network") throw new Error("offline");
@@ -108,7 +112,7 @@ vm.runInContext('Date.now = () => Date.parse("2026-10-15T16:00:00Z")', context);
     resolvePreview({ ok: false, status: 404 });
     await new Promise(setImmediate);
   }
-  const week = JSON.parse(fs.readFileSync(path.join(pub, "api/picks.json"), "utf8")).week;
+  const week = card.week;
   const slot = get("previews-link");
   if (response === "200") {
     assert.equal(slot.children.length, 1);
