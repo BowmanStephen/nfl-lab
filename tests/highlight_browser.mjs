@@ -227,6 +227,7 @@ async function main() {
   ], { stdio: ["ignore", "ignore", "pipe"] });
 
   const pages = [];
+  let browser;
   try {
     const endpoint = await waitForDevTools(proc);
     const browserSocket = new WebSocket(endpoint);
@@ -234,7 +235,7 @@ async function main() {
       browserSocket.addEventListener("open", resolve, { once: true });
       browserSocket.addEventListener("error", reject, { once: true });
     });
-    const browser = new Cdp(browserSocket);
+    browser = new Cdp(browserSocket);
     browser.listUrl = `http://${new URL(endpoint).host}/json/list`;
 
     const rowPage = await blankPage(browser);
@@ -290,9 +291,13 @@ async function main() {
     }
     if (proc.exitCode === null && proc.signalCode === null) {
       const exited = once(proc, "exit");
-      proc.kill("SIGKILL");
-      await exited;
+      // Let Chrome stop its children and flush the profile before removing it.
+      if (browser) browser.send("Browser.close").catch(() => {});
+      else proc.kill("SIGTERM");
+      const deadline = setTimeout(() => proc.kill("SIGKILL"), 5000);
+      try { await exited; } finally { clearTimeout(deadline); }
     }
+    if (browser) browser.close();
     site.close();
     fs.rmSync(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
   }
