@@ -153,14 +153,14 @@ def write_saved_weeks(current: dict | None = None) -> dict:
 def publish_saved_weeks(generated_at: datetime) -> None:
     """Publish newly graded weeks even when the next card cannot be built."""
     write_saved_weeks()
-    _refresh_freshness(generated_at)
+    _refresh_freshness(generated_at, live_refresh=False)
 
 
 def publish_report_card(report: dict, generated_at: datetime) -> None:
     """Publish the weeks 1–4 report and refresh the complete API manifest."""
     _write(PUBLIC_API / "report_card.json", report)
     _write(OUTPUT_DIR / "report_card" / "2026_wk01_04.json", report)
-    _refresh_freshness(generated_at)
+    _refresh_freshness(generated_at, live_refresh=False)
 
 
 def publish_card(card: dict, generated_at: datetime) -> None:
@@ -184,21 +184,43 @@ def publish_card(card: dict, generated_at: datetime) -> None:
     _refresh_freshness(generated_at)
 
 
-def _refresh_freshness(generated_at: datetime) -> None:
+def _refresh_freshness(generated_at: datetime, *, live_refresh: bool = True) -> None:
+    """Rehash all APIs; only a live publication renews the live-data deadline."""
     now = generated_at.isoformat()
+    previous = {}
+    freshness_path = PUBLIC_API / "freshness.json"
+    if not live_refresh and freshness_path.exists():
+        previous = json.loads(freshness_path.read_text())
+    prior_files = {entry["path"]: entry for entry in previous.get("files", [])}
+    live_at = now
+    stale_after = (generated_at + timedelta(hours=36)).isoformat()
+    if not live_refresh:
+        live_at = previous.get("generated_at")
+        stale_after = previous.get("stale_after")
+        # A missing manifest is not proof that live data was refreshed now.
+        # Recover its last known publication from the live summary, if present.
+        summary_path = PUBLIC_API / "summary.json"
+        if not live_at and summary_path.exists():
+            live_at = json.loads(summary_path.read_text()).get("generated_at")
+        if live_at and not stale_after:
+            stale_after = (datetime.fromisoformat(live_at) + timedelta(hours=36)).isoformat()
     files = []
     for path in sorted(PUBLIC_API.glob("*.json")):
         if path.name == "freshness.json":
             continue
-        files.append({
+        entry = {
             "path": f"api/{path.name}",
             "bytes": path.stat().st_size,
             "sha256": _sha256(path),
             "updated_at": now,
-        })
+        }
+        prior = prior_files.get(entry["path"])
+        if prior and prior.get("sha256") == entry["sha256"]:
+            entry["updated_at"] = prior.get("updated_at")
+        files.append(entry)
     _write(PUBLIC_API / "freshness.json", {
-        "generated_at": now,
-        "stale_after": (generated_at + timedelta(hours=36)).isoformat(),
+        "generated_at": live_at,
+        "stale_after": stale_after,
         "files": files,
     })
 
