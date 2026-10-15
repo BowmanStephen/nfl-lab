@@ -1,6 +1,7 @@
 """Home and ledger say over/unders are paused, without a second note on a voided card.
 
-The week-6 card already carries totals_void_note. That sentence is the public note.
+The week-6 card's original totals_void_note is preserved in the saved card;
+the public note distinguishes the corrected-model replay from the frozen record.
 A card with no void note shows the pause line when totals are paused or a total
 would otherwise be an active pick.
 """
@@ -20,6 +21,12 @@ NOTE = "We're not picking total points (over/under) right now while we fix that 
 VOID_NOTE = (
     "The 6 week-6 over/under picks were voided Oct 15: "
     "the over/under model went 6-18 on weeks 1-4, so we've paused over/unders. "
+    "The spread picks stand."
+)
+CLARIFIED_VOID_NOTE = (
+    "The 6 week-6 over/under picks were voided Oct 15, and over/unders are paused. "
+    "A replay of weeks 1-4 with the corrected totals formula went 6-18. "
+    "The original frozen-model record remains 10-19; the replay does not replace it. "
     "The spread picks stand."
 )
 
@@ -50,7 +57,7 @@ def test_void_note_is_the_only_home_note(tmp_path):
     assert card["totals_void_note"] == VOID_NOTE
     out = _render("index.html", card, tmp_path)
     assert out["totals-void-note"]["hidden"] is False
-    assert out["totals-void-note"]["text"] == VOID_NOTE
+    assert out["totals-void-note"]["text"] == CLARIFIED_VOID_NOTE
     assert out["totals-paused"]["hidden"] is True
     assert NOTE not in out["games"]["html"]
     assert "over 40.5" not in out["games"]["html"].lower()
@@ -122,10 +129,17 @@ def test_ledger_says_over_under_paused_instead_of_a_live_total(tmp_path):
 def test_ledger_keeps_the_void_note_and_skips_the_pause_line(tmp_path):
     card = _live()
     out = _render("ledger.html", card, tmp_path)
-    assert out["totals-void-note"]["text"] == VOID_NOTE
+    assert out["totals-void-note"]["text"] == CLARIFIED_VOID_NOTE
     assert out["totals-paused"]["hidden"] is True
     assert "pts off the total" not in out["live"]["html"]
     assert "over/under paused" not in out["live"]["html"]
+
+
+def test_other_void_notices_are_preserved(tmp_path):
+    card = _live()
+    card["totals_void_note"] = "A later clarification of the saved card."
+    out = _render("index.html", card, tmp_path)
+    assert out["totals-void-note"]["text"] == card["totals_void_note"]
 
 
 def test_pause_note_is_grey():
