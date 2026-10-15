@@ -7,23 +7,52 @@ const [pub, response] = process.argv.slice(2);
 
 function element() {
   return {
-    innerHTML: "", textContent: "", hidden: true, children: [], attributes: {}, listeners: {},
-    appendChild(child) { this.children.push(child); },
+    html: "", text: "", hidden: false, children: [], attributes: {}, listeners: {},
+    get innerHTML() { return this.html; },
+    set innerHTML(value) {
+      this.html = value;
+      this.children = [];
+      const stack = [this];
+      for (const match of value.matchAll(/<(\/?)([a-z][a-z0-9]*)\b([^>]*)>/gi)) {
+        const [, closing, tag, attrs] = match;
+        if (closing) {
+          if (stack.length > 1) stack.pop();
+          continue;
+        }
+        const child = element();
+        for (const attr of attrs.matchAll(/([\w-]+)="([^"]*)"/g)) child.setAttribute(attr[1], attr[2]);
+        child.hidden = /\shidden\b/.test(attrs);
+        if (child.attributes.id) els[child.attributes.id] = child;
+        stack.at(-1).appendChild(child);
+        if (!["br", "hr", "img", "input", "link", "meta"].includes(tag)) stack.push(child);
+      }
+    },
+    get textContent() { return this.text + this.children.map((child) => child.textContent).join(""); },
+    set textContent(value) { this.text = value; this.children = []; },
+    appendChild(child) { child.parent = this; this.children.push(child); },
     setAttribute(name, value) { this.attributes[name] = value; },
     getAttribute(name) { return this.attributes[name]; },
     addEventListener(name, fn) { this.listeners[name] = fn; },
-    querySelectorAll() { return []; },
+    querySelectorAll(selector) {
+      assert.equal(selector, ".row-toggle");
+      return this.children.flatMap((child) => [
+        ...((child.getAttribute("class") || "").split(/\s+/).includes("row-toggle") ? [child] : []),
+        ...child.querySelectorAll(selector),
+      ]);
+    },
+    closest(selector) {
+      assert.equal(selector, "[hidden]");
+      return this.hidden ? this : this.parent?.closest(selector) || null;
+    },
+    scrollIntoView() { this.scrolled = true; },
   };
 }
 const els = {};
-const get = (id) => els[id] ||= element();
-const button = get("test-toggle");
-button.setAttribute("aria-controls", "test-panel");
-button.setAttribute("aria-expanded", "false");
-get("test-panel").setAttribute("aria-labelledby", "test-toggle");
-get("test-game").closest = () => get("test-panel");
-get("test-game").scrollIntoView = () => { get("test-game").scrolled = true; };
-get("main").querySelectorAll = () => [button];
+const get = (id) => els[id] || null;
+element().innerHTML = fs.readFileSync(path.join(pub, "index.html"), "utf8");
+const card = JSON.parse(fs.readFileSync(path.join(pub, "api/picks.json"), "utf8"));
+const game = card.games.find((g) => g.selection.spread_qualifies);
+const gameId = String(game.game_id).replace(/[^\w-]/g, "");
 let resolvePreview;
 const context = vm.createContext({
   URLSearchParams,
@@ -32,7 +61,7 @@ const context = vm.createContext({
     querySelector: () => null, querySelectorAll: () => [], addEventListener() {},
   },
   window: { addEventListener() {} },
-  location: { hash: "#test-game", search: "" },
+  location: { hash: `#d-${gameId}`, search: "" },
   fetch: async (url, options) => {
     if (String(url).startsWith("previews/")) {
       assert.equal(options.method, "HEAD");
@@ -57,11 +86,18 @@ vm.runInContext('Date.now = () => Date.parse("2026-10-15T16:00:00Z")', context);
   } finally { clearTimeout(timer); }
   await new Promise(setImmediate);
   assert.ok(get("games").innerHTML.includes("row-toggle"));
-  assert.equal(typeof button.listeners.click, "function", "game controls must be bound");
-  assert.equal(get("test-game").scrolled, true, "deep link must be restored");
-  assert.equal(get("test-panel").hidden, false);
+  const buttons = get("games").querySelectorAll(".row-toggle");
+  assert.ok(buttons.length > 0, "rendered picks must contain controls");
+  for (const button of get("main").querySelectorAll(".row-toggle")) {
+    assert.equal(typeof button.listeners.click, "function", "rendered controls must be bound");
+  }
+  const button = buttons.find((btn) => btn.getAttribute("id") === `b-${gameId}`);
+  assert.ok(button, "deep link must reference a rendered game control");
+  const panel = get(button.getAttribute("aria-controls"));
+  assert.equal(panel.scrolled, true, "deep link must be restored");
+  assert.equal(panel.hidden, false);
   button.listeners.click();
-  assert.equal(get("test-panel").hidden, true, "bound control must toggle its panel");
+  assert.equal(panel.hidden, true, "generated control must toggle its rendered panel");
   if (response === "pending") {
     assert.equal(get("previews-link").textContent, "");
     assert.equal(get("previews-link").children.length, 0);
