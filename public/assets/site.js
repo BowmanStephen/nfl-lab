@@ -453,9 +453,9 @@ async function recapExists(week) {
 async function previewExists(week) {
   try {
     const res = await fetch(`previews/week${week}.html`, { method: "HEAD" });
-    return res.ok;
+    return res.ok ? true : res.status === 404 ? false : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -463,7 +463,10 @@ function previewLinkFor(week, pageExists) {
   if (pageExists) {
     return { href: `previews/week${week}.html`, text: `Read the week ${week} game previews` };
   }
-  return { href: null, text: `Week ${week} previews are coming soon` };
+  if (pageExists === false) {
+    return { href: null, text: `Week ${week} previews are coming soon` };
+  }
+  return { href: null, text: `Week ${week} previews are temporarily unavailable. Try refreshing.` };
 }
 
 function renderPreviewLink(el, link) {
@@ -553,7 +556,9 @@ async function renderHome() {
   showTotalsPause(card);
   const prev = $("previews-link");
   if (prev) {
-    renderPreviewLink(prev, previewLinkFor(card.week, await previewExists(card.week)));
+    previewExists(card.week).then((exists) => {
+      renderPreviewLink(prev, previewLinkFor(card.week, exists));
+    });
   }
   bindToggles($("main"));
   revealHash();
