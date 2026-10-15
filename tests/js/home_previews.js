@@ -45,6 +45,11 @@ function element() {
       return this.hidden ? this : this.parent?.closest(selector) || null;
     },
     scrollIntoView() { this.scrolled = true; },
+    focus() { this.focused = true; },
+    matches(selector) {
+      assert.equal(selector, ":target");
+      return this.getAttribute("id") === context.location.hash.slice(1);
+    },
   };
 }
 const els = {};
@@ -63,7 +68,7 @@ const context = vm.createContext({
     body: { dataset: {} }, getElementById: get, createElement: element,
     querySelector: () => null, querySelectorAll: () => [], addEventListener() {},
   },
-  window: { addEventListener() {} },
+  window: { addEventListener() {}, matchMedia: () => ({ matches: true }) },
   location: { hash: `#d-${gameId}`, search: "" },
   fetch: async (url, options) => {
     if (url === "api/picks.json") return { ok: true, json: async () => card };
@@ -95,10 +100,11 @@ vm.runInContext('Date.now = () => Date.parse("2026-10-15T16:00:00Z")', context);
   for (const button of get("main").querySelectorAll(".row-toggle")) {
     assert.equal(typeof button.listeners.click, "function", "rendered controls must be bound");
   }
-  const button = buttons.find((btn) => btn.getAttribute("id") === `b-${gameId}`);
+  const button = buttons.find((btn) => btn.getAttribute("aria-controls") === `d-${gameId}`);
   assert.ok(button, "deep link must reference a rendered game control");
   const panel = get(button.getAttribute("aria-controls"));
   assert.equal(panel.scrolled, true, "deep link must be restored");
+  assert.equal(panel.focused, true);
   assert.equal(panel.hidden, false);
   button.listeners.click();
   assert.equal(panel.hidden, true, "generated control must toggle its rendered panel");

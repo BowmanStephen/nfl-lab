@@ -23,25 +23,33 @@ import pandas as pd
 from .config import OUTPUT_DIR, TEAM_NAMES
 from .data_loader import load_pbp, load_schedules
 from .ratings import shrink_to_prior
-from .walkforward import BREAKEVEN, _record, apply_coefs, features, grade, precompute, with_signfix_totals
+from .publish import publish_report_card
+from .walkforward import BREAKEVEN, _record, apply_coefs, features, grade, precompute
 
 SEASON = 2026
 WEEKS = [1, 2, 3, 4]
 CT = ZoneInfo("America/Chicago")
-SITE_JSON = OUTPUT_DIR.parent / "public" / "api" / "report_card.json"
+MODEL_NOTE = (
+    "This report preserves the original model and coefficients frozen on 2016-2021, "
+    "as used in the 2022-2025 holdout. Its totals formula subtracts defensive EPA allowed. "
+    "That sign was wrong: a stingier defense should lower projected totals. "
+    "Corrected models belong to a separately labeled prospective round, not a rewrite of this record. "
+    "The live card adds a starting-QB term; this backtest does not."
+)
 
 
 def _locked() -> tuple[dict, dict]:
     bt = OUTPUT_DIR / "backtest"
-    # Totals coefficients refit for the defense-sign fix (margin coefficients unchanged).
-    locked = with_signfix_totals(json.loads((bt / "locked_model.json").read_text())["locked_model"])
+    locked = json.loads((bt / "locked_model.json").read_text())["locked_model"]
     prereg = json.loads((bt / "preregistration.json").read_text())
     return locked, prereg
 
 
 def project(pbp: pd.DataFrame, schedules: pd.DataFrame, locked: dict) -> tuple[pd.DataFrame, dict]:
     pre = precompute(pbp, schedules, [SEASON])
-    f = apply_coefs(features(pre, locked["prior_regress"], locked["prior_plays_equiv"]), locked)
+    # Preserve both the original coefficients and the feature they were fit on.
+    # Applying the corrected feature alone would also rewrite the frozen record.
+    f = apply_coefs(features(pre, locked["prior_regress"], locked["prior_plays_equiv"], defense_sign=-1), locked)
     return f[f["week"].isin(WEEKS)].copy(), pre
 
 
@@ -189,7 +197,7 @@ def build() -> dict:
         "rule": {"spread_edge_min": smin, "total_edge_min": tmin},
         "model": {"fit_on_seasons": locked["fit_on_seasons"], "prior_seasons": [SEASON - 3, SEASON - 2, SEASON - 1],
                   "qb_adjustment": False,
-                  "note": "Same frozen model and path as the 2022-2025 holdout. The live card adds a starting-QB term; this backtest does not."},
+                  "note": MODEL_NOTE},
         "lines": "nflverse closing spread_line / total_line (home margin, positive = home favored)",
         "games_graded": int(len(g)),
         "pending": [{"game_id": r.game_id, "matchup": f"{_name(r.away_team)} at {_name(r.home_team)}"} for r in pending.itertuples()],
@@ -217,9 +225,7 @@ def build() -> dict:
                                "spread_outcome", "total_line", "proj_total", "total_edge", "total_pick",
                                "total_bet_locked_rule", "total_outcome"]].sort_values(["week", "game_id"]).to_json(orient="records")),
     }
-    SITE_JSON.write_text(json.dumps(out, indent=2, default=str))
-    (OUTPUT_DIR / "report_card").mkdir(exist_ok=True)
-    (OUTPUT_DIR / "report_card" / "2026_wk01_04.json").write_text(json.dumps(out, indent=2, default=str))
+    publish_report_card(out, datetime.fromisoformat(out["generated_at"]))
     return out
 
 

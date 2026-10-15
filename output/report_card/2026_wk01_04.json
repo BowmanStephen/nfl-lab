@@ -29,7 +29,7 @@
       2025
     ],
     "qb_adjustment": false,
-    "note": "Same frozen model and path as the 2022-2025 holdout. The live card adds a starting-QB term; this backtest does not."
+    "note": "This report preserves the original model and coefficients frozen on 2016-2021, as used in the 2022-2025 holdout. Its totals formula subtracts defensive EPA allowed. That sign was wrong: a stingier defense should lower projected totals. Corrected models belong to a separately labeled prospective round, not a rewrite of this record. The live card adds a starting-QB term; this backtest does not."
   },
   "lines": "nflverse closing spread_line / total_line (home margin, positive = home favored)",
   "games_graded": 64,
