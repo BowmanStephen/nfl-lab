@@ -26,7 +26,8 @@ def test_saved_weeks_keep_week5_record_and_week6_slate():
     assert all(game["total_active"] is False for game in by_week[5])
     assert len(by_week[6]) == 14
     assert sum(game["spread_qualifies"] for game in by_week[6]) == 4
-    assert sum(game["total_active"] for game in by_week[6]) == 6
+    # Main voided the six week-6 totals; saved weeks must reflect that card.
+    assert sum(game["total_active"] for game in by_week[6]) == 0
 
 
 def test_published_card_replaces_only_its_week(monkeypatch, tmp_path):

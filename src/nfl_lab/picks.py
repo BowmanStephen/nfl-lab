@@ -32,6 +32,13 @@ HOLDOUT_NOTE = (
 )
 
 
+# Over/under picks are paused while the totals model is fixed. New cards still
+# record the total edge and side, but no total is locked as a pick. Cards that
+# are already locked keep what they wrote (merge_card never touches selection),
+# and grading is unchanged.
+TOTALS_PAUSED = True
+
+
 def locked_rule() -> tuple[float, float]:
     path = OUTPUT_DIR / "backtest" / "preregistration.json"
     prereg = json.loads(path.read_text())
@@ -290,7 +297,9 @@ def selection_from_projection(game: dict, pick_time: dict, spread_min: float, to
         "spread_qualifies": abs(spread_edge) >= spread_min,
         "total_edge": total_edge,
         "total_pick": total_pick,
-        "total_qualifies": abs(total_edge) >= total_min,
+        "total_qualifies": (not TOTALS_PAUSED) and abs(total_edge) >= total_min,
+        "total_paused": TOTALS_PAUSED,
+        "total_rule_would_qualify": abs(total_edge) >= total_min,
         "away_qb": game.get("away_qb_name"),
         "home_qb": game.get("home_qb_name"),
         "away_qb_schedule": game.get("away_qb_schedule_name"),
@@ -546,6 +555,7 @@ def new_card(season: int, week: int, games: list[dict], captured_at: str) -> dic
         "line_source": "espn_draftkings",
         "same_book_clv": "ESPN DraftKings at pick time vs ESPN DraftKings pre-kickoff. Not nflverse.",
         "rule": {"spread_edge_min": spread_min, "total_edge_min": total_min},
+        "totals_paused": TOTALS_PAUSED,
         "model_note": (
             "Margin is the frozen 2016–2021 model plus the starting-QB adjustment "
             "checked on 2016–2021 only. That adjustment is not in the 2022–2025 ledger."
