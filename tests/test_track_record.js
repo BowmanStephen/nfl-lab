@@ -175,6 +175,39 @@ test("a current week with nothing left omits the remaining sentence", () => {
   assert.equal(view.scope.includes("not been played yet"), false);
 });
 
+test("winner record combines saved weeks and excludes ties, no calls, and unfinished games", () => {
+  const view = buildTrackRecord({
+    games: [
+      { week: 4, proj_margin: 3, home_score: 21, away_score: 14 },
+      { week: 5, proj_margin: -3, home_score: 21, away_score: 14 },
+    ],
+  }, {
+    current_week: 6,
+    weeks: [
+      { week: 5, games: [
+        played({ model_margin: 3 }),
+        played({ model_margin: -3 }),
+        played({ home_score: 17, away_score: 17 }),
+        played({ model_margin: 0 }),
+        played({ home_score: null }),
+      ] },
+      { week: 6, games: [
+        played({ week: 6, model_margin: -3, home_score: 10, away_score: 20 }),
+        played({ week: 6, model_margin: 3, home_score: 10, away_score: 20 }),
+        played({ week: 6, home_score: null, away_score: null }),
+        played({ week: 6, away_score: null }),
+      ] },
+    ],
+  });
+
+  // Winner calls count even when they do not qualify as spread picks.
+  // Look-back games and duplicate report-card weeks must not enter the tile.
+  assert.equal(view.winner.num, "2 of 4");
+  assert.equal(view.winner.gloss, "50% right. Did the team the model had ahead win?");
+  assert.match(view.scope, /1 tie is left out because nobody won\./);
+  assert.equal(view.remaining.games, 2);
+});
+
 test("published saved weeks include the week 5 record and current-week leftovers only", () => {
   const saved = JSON.parse(fs.readFileSync(path.join(__dirname, "../public/api/saved_weeks.json"), "utf8"));
   const view = buildTrackRecord({ games: [], names: {} }, saved);
@@ -192,6 +225,15 @@ test("published saved weeks include the week 5 record and current-week leftovers
   }
   assert.equal(view.spread.num, `${tally.win}-${tally.loss}-${tally.push}`);
   assert.notEqual(view.spread.num, "0-0-0");
+
+  const winnerCalls = saved.weeks.flatMap((week) => week.games).filter((game) =>
+    game.home_score != null && game.away_score != null
+    && game.home_score !== game.away_score && game.model_margin);
+  const correctCalls = winnerCalls.filter((game) => game.model_margin > 0
+    ? game.home_score > game.away_score
+    : game.away_score > game.home_score);
+  assert.ok(winnerCalls.some((game) => game.week < saved.current_week));
+  assert.equal(view.winner.num, `${correctCalls.length} of ${winnerCalls.length}`);
 
   const current = saved.weeks.find((w) => w.week === saved.current_week);
   const unplayed = (g) => g.home_score == null || g.away_score == null;

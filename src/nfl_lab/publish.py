@@ -141,6 +141,19 @@ def write_saved_weeks(current: dict | None = None) -> dict:
     return payload
 
 
+def publish_saved_weeks(generated_at: datetime) -> None:
+    """Publish newly graded weeks even when the next card cannot be built."""
+    write_saved_weeks()
+    _refresh_freshness(generated_at)
+
+
+def publish_report_card(report: dict, generated_at: datetime) -> None:
+    """Publish the weeks 1–4 report and refresh the complete API manifest."""
+    _write(PUBLIC_API / "report_card.json", report)
+    _write(OUTPUT_DIR / "report_card" / "2026_wk01_04.json", report)
+    _refresh_freshness(generated_at)
+
+
 def publish_card(card: dict, generated_at: datetime) -> None:
     """Update the pick card the site reads without rebuilding team pages."""
     PUBLIC_API.mkdir(parents=True, exist_ok=True)

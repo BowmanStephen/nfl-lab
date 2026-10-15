@@ -23,12 +23,18 @@ import pandas as pd
 from .config import OUTPUT_DIR, TEAM_NAMES
 from .data_loader import load_pbp, load_schedules
 from .ratings import shrink_to_prior
+from .publish import publish_report_card
 from .walkforward import BREAKEVEN, _record, apply_coefs, features, grade, precompute, with_signfix_totals
 
 SEASON = 2026
 WEEKS = [1, 2, 3, 4]
 CT = ZoneInfo("America/Chicago")
-SITE_JSON = OUTPUT_DIR.parent / "public" / "api" / "report_card.json"
+MODEL_NOTE = (
+    "Margins are the frozen 2016-2021 model, same path as the 2022-2025 holdout. "
+    "Defense is EPA allowed, so the corrected totals formula makes a stingier defense lower projected totals. "
+    "The two totals coefficients were refit on 2016-2021 only. The holdout was not regraded. "
+    "The live card adds a starting-QB term; this backtest does not."
+)
 
 
 def _locked() -> tuple[dict, dict]:
@@ -189,7 +195,7 @@ def build() -> dict:
         "rule": {"spread_edge_min": smin, "total_edge_min": tmin},
         "model": {"fit_on_seasons": locked["fit_on_seasons"], "prior_seasons": [SEASON - 3, SEASON - 2, SEASON - 1],
                   "qb_adjustment": False,
-                  "note": "Margins are the frozen 2016-2021 model, same path as the 2022-2025 holdout. Totals use the defense-sign fix, with those two coefficients refit on 2016-2021 only. The holdout was not regraded. The live card adds a starting-QB term; this backtest does not."},
+                  "note": MODEL_NOTE},
         "lines": "nflverse closing spread_line / total_line (home margin, positive = home favored)",
         "games_graded": int(len(g)),
         "pending": [{"game_id": r.game_id, "matchup": f"{_name(r.away_team)} at {_name(r.home_team)}"} for r in pending.itertuples()],
@@ -217,9 +223,7 @@ def build() -> dict:
                                "spread_outcome", "total_line", "proj_total", "total_edge", "total_pick",
                                "total_bet_locked_rule", "total_outcome"]].sort_values(["week", "game_id"]).to_json(orient="records")),
     }
-    SITE_JSON.write_text(json.dumps(out, indent=2, default=str))
-    (OUTPUT_DIR / "report_card").mkdir(exist_ok=True)
-    (OUTPUT_DIR / "report_card" / "2026_wk01_04.json").write_text(json.dumps(out, indent=2, default=str))
+    publish_report_card(out, datetime.fromisoformat(out["generated_at"]))
     return out
 
 

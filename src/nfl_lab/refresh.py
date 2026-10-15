@@ -32,7 +32,7 @@ from .picks import (
     new_card,
     save_card,
 )
-from .publish import publish_card, write_site
+from .publish import publish_card, publish_saved_weeks, write_site
 from . import calibration, qb_adjust
 from .ratings import build_current_ratings
 from .team_stats import compute_season_team_stats
@@ -328,6 +328,10 @@ def _grade_saved_card(card: dict, schedules: pd.DataFrame, now: datetime) -> dic
     annotate_close_fallback(graded)
     graded["health"] = health_summary(graded["games"])
     save_card(graded)
+    if graded != card:
+        # This save can be the only committed progress if a close is missing
+        # here or the next card fails. Publish its record before either exit.
+        publish_saved_weeks(now.astimezone(CT))
     if message:
         raise PartialSnapshot(message)
     return graded
