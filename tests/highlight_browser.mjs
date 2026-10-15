@@ -4,9 +4,9 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import http from "node:http";
-import net from "node:net";
 import os from "node:os";
 import path from "node:path";
+import { waitForDevTools } from "./chrome_startup.mjs";
 
 const publicDir = process.argv[2];
 if (!publicDir) {
@@ -17,6 +17,7 @@ if (!publicDir) {
 function chromeBin() {
   const candidates = [
     process.env.CHROME_PATH,
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "/usr/local/bin/google-chrome",
     "/usr/bin/google-chrome",
     "/usr/bin/google-chrome-stable",
@@ -31,17 +32,6 @@ function chromeBin() {
       return false;
     }
   }) || "";
-}
-
-function freePort() {
-  return new Promise((resolve, reject) => {
-    const server = net.createServer();
-    server.once("error", reject);
-    server.listen(0, "127.0.0.1", () => {
-      const { port } = server.address();
-      server.close(() => resolve(port));
-    });
-  });
 }
 
 function startSite(root) {
@@ -80,22 +70,6 @@ function startSite(root) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function waitForJson(url) {
-  const started = Date.now();
-  let last = "";
-  while (Date.now() - started < 8000) {
-    try {
-      const res = await fetch(url);
-      if (res.ok) return res.json();
-      last = `${res.status}`;
-    } catch (err) {
-      last = err.message;
-    }
-    await sleep(40);
-  }
-  throw new Error(`devtools did not come up (${last})`);
 }
 
 class Cdp {
@@ -166,11 +140,9 @@ async function show(cdp, url, { reduced = false, width = 390, height = 280 } = {
     deviceScaleFactor: 1,
     mobile: true,
   });
-  if (reduced) {
-    await cdp.send("Emulation.setEmulatedMedia", {
-      features: [{ name: "prefers-reduced-motion", value: "reduce" }],
-    });
-  }
+  await cdp.send("Emulation.setEmulatedMedia", {
+    features: [{ name: "prefers-reduced-motion", value: reduced ? "reduce" : "no-preference" }],
+  });
   await cdp.send("Page.navigate", { url });
 }
 
@@ -241,7 +213,6 @@ async function main() {
   const { pickId, pastId, week } = targets();
   const site = await startSite(publicDir);
   const origin = `http://127.0.0.1:${site.address().port}`;
-  const debugPort = await freePort();
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), "nfl-chrome-"));
   const proc = spawn(chrome, [
     "--headless=new",
@@ -249,21 +220,21 @@ async function main() {
     "--no-sandbox",
     "--disable-dev-shm-usage",
     "--no-first-run",
-    `--remote-debugging-port=${debugPort}`,
+    "--remote-debugging-port=0",
     `--user-data-dir=${profile}`,
     "about:blank",
-  ], { stdio: "ignore" });
+  ], { stdio: ["ignore", "ignore", "pipe"] });
 
   const pages = [];
   try {
-    const version = await waitForJson(`http://127.0.0.1:${debugPort}/json/version`);
-    const browserSocket = new WebSocket(version.webSocketDebuggerUrl);
+    const endpoint = await waitForDevTools(proc);
+    const browserSocket = new WebSocket(endpoint);
     await new Promise((resolve, reject) => {
       browserSocket.addEventListener("open", resolve, { once: true });
       browserSocket.addEventListener("error", reject, { once: true });
     });
     const browser = new Cdp(browserSocket);
-    browser.listUrl = `http://127.0.0.1:${debugPort}/json/list`;
+    browser.listUrl = `http://${new URL(endpoint).host}/json/list`;
 
     const rowPage = await blankPage(browser);
     pages.push(rowPage);
