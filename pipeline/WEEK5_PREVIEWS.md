@@ -148,7 +148,7 @@ Jayden Daniels is the depth-chart QB1 and he is not on the ESPN injury report fo
 
 Denver should win a close road game. The Broncos rate clearly better (**+0.040** vs LAC **-0.010**) and the market has them **-3.5**. Bo Nix against Justin Herbert is close to that price (model: Denver by **2.6**). The disagreement is the total: model **46.7** against **41.5**.
 
-**Newcomer tip — explosive play rate:** the share of plays that gain 20 or more passing or 10 or more rushing. Denver’s offense is explosive on about **5.3%** of snaps (24th of 32); the Chargers’ on about **6.1%** (15th of 32). Big plays swing weeks. EPA is the steadier measure.
+**Newcomer tip — explosive play rate:** the share of plays that gain 20 or more passing or 15 or more rushing. Denver’s offense is explosive on about **5.3%** of snaps (24th of 32); the Chargers’ on about **6.1%** (15th of 32). Big plays swing weeks. EPA is the steadier measure.
 
 **Preview lean (total):** OVER 41.5 — edge 5.2 pts
 

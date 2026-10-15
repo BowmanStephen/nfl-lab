@@ -108,3 +108,16 @@ def test_target_selection_allows_cards_without_spread_picks(tmp_path, qualifies,
         check=True, capture_output=True, text=True,
     )
     assert json.loads(proc.stdout)["pickId"] == f"b-{expected_id}"
+
+
+def test_missing_historical_recap_falls_back_to_saved_card(tmp_path):
+    public = tmp_path / "public"
+    shutil.copytree(PUBLIC, public)
+    (public / "recaps" / "week5.html").unlink()
+    proc = subprocess.run(
+        ["node", str(PROBE), str(public)],
+        check=True, capture_output=True, text=True, timeout=60,
+    )
+    official = json.loads(proc.stdout)["official"]
+    assert official
+    assert all(href.endswith("/output/live/2026-week-05.json") for href in official)
