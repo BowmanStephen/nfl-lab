@@ -14,11 +14,13 @@ for (const m of html.matchAll(/<([a-z0-9]+)([^>]*)\sid="([^"]+)"([^>]*)>/g)) {
     dataset: {}, classList: { add() {}, remove() {}, toggle() {} }, style: {},
     querySelectorAll: () => [], querySelector: () => null, addEventListener() {},
     setAttribute() {}, getAttribute: () => null,
+    appendChild(child) { this.textContent += child.textContent; },
   };
 }
 global.document = {
   body: { dataset: { page } },
   getElementById: (id) => els[id] || null,
+  createElement: () => ({ href: "", textContent: "" }),
   querySelector: () => null,
   querySelectorAll: () => [],
   addEventListener() {},

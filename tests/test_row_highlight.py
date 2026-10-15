@@ -116,8 +116,9 @@ def test_missing_historical_recap_falls_back_to_saved_card(tmp_path):
     (public / "recaps" / "week5.html").unlink()
     proc = subprocess.run(
         ["node", str(PROBE), str(public)],
-        check=True, capture_output=True, text=True, timeout=60,
+        capture_output=True, text=True, timeout=60,
     )
+    assert proc.returncode == 0, f"{proc.stderr}\n{proc.stdout}"
     official = json.loads(proc.stdout)["official"]
     assert official
     assert all(href.endswith("/output/live/2026-week-05.json") for href in official)

@@ -604,6 +604,38 @@ async function recapExists(week, prefix = "") {
   try { const r = await fetch(`${prefix}recaps/week${week}.html`, { method: "HEAD" }); return r.ok; } catch { return false; }
 }
 
+async function previewExists(week) {
+  try {
+    const res = await fetch(`previews/week${week}.html`, { method: "HEAD" });
+    return res.ok ? true : res.status === 404 ? false : null;
+  } catch {
+    return null;
+  }
+}
+
+function previewLinkFor(week, pageExists) {
+  if (pageExists) {
+    return { href: `previews/week${week}.html`, text: `Read the week ${week} game previews` };
+  }
+  if (pageExists === false) {
+    return { href: null, text: `Week ${week} previews are coming soon` };
+  }
+  return { href: null, text: `Week ${week} previews are temporarily unavailable. Try refreshing.` };
+}
+
+function renderPreviewLink(el, link) {
+  if (!el || !link) return;
+  if (link.href) {
+    el.textContent = "";
+    const a = document.createElement("a");
+    a.href = link.href;
+    a.textContent = link.text;
+    el.appendChild(a);
+    return;
+  }
+  el.textContent = link.text;
+}
+
 async function renderHome() {
   let card;
   let fresh = {};
@@ -678,7 +710,11 @@ async function renderHome() {
   }
   showTotalsPause(card);
   const prev = $("previews-link");
-  if (prev) { prev.textContent = `Read the week ${card.week} game previews`; prev.href = `previews/week${card.week}.html`; }
+  if (prev) {
+    previewExists(card.week).then((exists) => {
+      renderPreviewLink(prev, previewLinkFor(card.week, exists));
+    });
+  }
   bindToggles($("main"));
   revealHash();
 }

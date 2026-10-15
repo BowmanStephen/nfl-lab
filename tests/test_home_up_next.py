@@ -43,6 +43,7 @@ class El {
   }
   set innerHTML(value) { this._html = value == null ? "" : String(value); }
   get innerHTML() { return this._html; }
+  appendChild(child) { this._html += child.textContent; }
   setAttribute() {}
   getAttribute() { return ""; }
   addEventListener() {}
@@ -82,6 +83,7 @@ const document = {
   body: { dataset: { page: "home" } },
   title: "",
   getElementById,
+  createElement() { return new El(""); },
   querySelector(sel) { return sel === "main" ? getElementById("main") : null; },
   querySelectorAll() { return []; },
 };
