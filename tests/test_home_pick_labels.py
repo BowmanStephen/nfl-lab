@@ -109,7 +109,8 @@ def _expected(g):
     else:
         shown, spoken = "(pick'em)", "pick'em"
     label = "Strong lean" if abs(g["selection"]["spread_edge"]) >= STRONG else "Lean"
-    return f"Take {team} {shown}", f"Take {team} {spoken}", label
+    display_team = "LAR" if team == "LA" else team
+    return f"Take {display_team} {shown}", f"Take {display_team} {spoken}", label
 
 
 def _check_rows(card, rows):
@@ -136,7 +137,7 @@ def _check_rows(card, rows):
                          + re.escape(label) + r'</span></span>', h)
         assert not re.search(r"\d+(\.\d+)?\s*%", text), text
         vegas = re.search(r"Vegas says ([^.]*(?:\.\d)?)\.", text).group(1)
-        assert "-" not in vegas and vegas == g["pick_time"]["spread_display"].replace("-", "\u2212"), vegas
+        assert "-" not in vegas and vegas == re.sub(r"^LA\b", "LAR", g["pick_time"]["spread_display"]).replace("-", "\u2212"), vegas
         assert "title=" not in html
     return by_id
 
@@ -201,3 +202,16 @@ def test_rows_with_graded_picks(tmp_path, graded_count):
     data = _run(path)
     assert len(data["rows"]) == len(card["games"])
     _check_rows(card, data["rows"])
+
+
+@pytest.mark.parametrize("home_margin", [3.0, -3.0])
+def test_rams_pick_keeps_display_label_and_price(tmp_path, home_margin):
+    game = _game("FX_RAMS", "SEA", "LA", home_margin, "LA", STRONG + 0.5)
+    card = {"games": [game]}
+    path = tmp_path / "rams-pick.json"
+    path.write_text(json.dumps(card))
+    data = _run(path)
+    _check_rows(card, data["rows"])
+    sign = "-" if home_margin > 0 else "+"
+    assert data["official"] == [f"LAR {sign}3.0 (Strong lean)"]
+    assert "Take LA " not in _text(data["rows"][0])
