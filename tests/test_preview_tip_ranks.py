@@ -6,12 +6,14 @@ among all 32 teams in the week-4 snapshot the previews were written from.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
 from nfl_lab.config import ROOT
 
-STATS = ROOT / "pipeline" / "output" / "team_stats.json"
+# The pipeline output advances with available PBP. This preview stays at week 4.
+STATS = Path(__file__).parent / "fixtures" / "team_stats_2026_week4.json"
 PREVIEW = ROOT / "public" / "previews" / "week5.html"
 
 
@@ -36,6 +38,16 @@ def ranks(teams: list[dict], key: str, higher_better: bool) -> dict[str, int]:
             out[rows[tied][0]] = index + 1
         index = nxt
     return out
+
+
+def test_stats_fixture_is_the_original_week4_snapshot():
+    # Exact historical blob and source metadata are recorded beside the fixture.
+    assert hashlib.sha256(STATS.read_bytes()).hexdigest() == (
+        "92a786dff1a64170d55a811057176c7788b1730cb00ff300c358a719420518b8"
+    )
+    teams = json.loads(STATS.read_text())["teams"]
+    assert len({team["team"] for team in teams}) == 32
+    assert {(team["season"], team["through_week"]) for team in teams} == {(2026, 4)}
 
 
 def test_rank_direction_matches_existing_epa_sentences():
@@ -74,3 +86,18 @@ def test_newcomer_tips_publish_those_ranks():
     ]
     for phrase in expected:
         assert phrase in html
+
+
+def test_preview_rank_checks_do_not_read_current_pipeline_stats(monkeypatch):
+    current_stats = ROOT / "pipeline" / "output" / "team_stats.json"
+    read_text = Path.read_text
+
+    def read_without_current_stats(path, *args, **kwargs):
+        if path == current_stats:
+            raise AssertionError("Frozen previews must not read current pipeline stats")
+        return read_text(path, *args, **kwargs)
+
+    # Even a missing or newly refreshed current output cannot change these checks.
+    monkeypatch.setattr(Path, "read_text", read_without_current_stats)
+    test_rank_direction_matches_existing_epa_sentences()
+    test_newcomer_tips_publish_those_ranks()

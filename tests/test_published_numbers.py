@@ -13,6 +13,7 @@ import json
 import re
 import shutil
 import subprocess
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -151,19 +152,52 @@ def test_total_pick_count_matches_saved_card(published):
 def test_live_record_matches_saved_grades(published):
     games = _games(_cards())
     health = health_summary(games)
-    expected = (health["wins"], health["losses"], health["pushes"])
 
     ledger_line = _field(published["ledger"], "live-health")
     assert ledger_line == health["line"]
 
+
+def test_week5_recap_matches_saved_spread_grades():
+    # This historical page describes 2026 week 5, even after later cards settle.
+    card = json.loads((LIVE_DIR / "2026-week-05.json").read_text())
+    expected = _week_spread_record(card)
     recap = (PUBLIC / "recaps" / "week5.html").read_text()
     phrase = WITH_PUSH.search(recap)
-    assert phrase, "week 5 recap does not publish the live record"
+    assert phrase, "week 5 recap does not publish its spread record"
     pushes = 1 if phrase.group(3).lower() == "one" else int(phrase.group(3))
     assert (int(phrase.group(1)), int(phrase.group(2)), pushes) == expected
-    rate = health["cover_rate"]
-    assert rate is not None
+    wins, losses, _pushes = expected
+    assert wins + losses > 0
+    rate = wins / (wins + losses)
     assert f"{100 * rate:.1f}%" in recap
+
+
+def test_later_grades_do_not_change_week5_recap(monkeypatch, published):
+    cards = _cards() + [{
+        "season": 2026,
+        "week": 6,
+        "games": [{
+            "selection": {"spread_qualifies": True, "total_qualifies": False},
+            "grading": {"spread_outcome": "win"},
+        }],
+    }]
+    monkeypatch.setitem(globals(), "_cards", lambda: cards)
+    updated = deepcopy(published)
+    updated["ledger"]["live-health"]["text"] = health_summary(_games(cards))["line"]
+    test_live_record_matches_saved_grades(updated)
+    test_week5_recap_matches_saved_spread_grades()
+
+
+@pytest.mark.parametrize("recap", [
+    "Week 5: 3–4 with one push. That's 33.3%.",
+    "Week 5: 2–4 with one push. That's 42.9%.",
+])
+def test_week5_recap_rejects_wrong_record_or_rate(monkeypatch, tmp_path, recap):
+    (tmp_path / "recaps").mkdir()
+    (tmp_path / "recaps" / "week5.html").write_text(recap)
+    monkeypatch.setitem(globals(), "PUBLIC", tmp_path)
+    with pytest.raises(AssertionError):
+        test_week5_recap_matches_saved_spread_grades()
 
 
 def test_week_record_is_required_once_every_game_has_a_score():
