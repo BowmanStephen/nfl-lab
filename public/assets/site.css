@@ -1172,3 +1172,4 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
   color: var(--muted);
   margin: 0 0 0.35rem;
 }
+.totals-paused { color: var(--muted); font-size: var(--fs-small); margin: 0.75rem 0 0; }

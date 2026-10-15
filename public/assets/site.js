@@ -129,6 +129,28 @@ function totalIsActive(selection) {
   return Boolean(selection.total_qualifies) && !selection.total_voided;
 }
 
+const TOTALS_PAUSED_NOTE = "We're not picking total points (over/under) right now while we fix that part of the model.";
+
+// The week-6 void note already says over/unders are paused. A second sentence
+// would repeat it. Future cards set totals_paused and have no void note.
+function totalsPauseApplies(card) {
+  if (!card || card.totals_void_note) return false;
+  if (card.totals_paused) return true;
+  return (card.games || []).some((g) => g.selection && totalIsActive(g.selection));
+}
+
+function showTotalsPause(card) {
+  const paused = $("totals-paused");
+  if (!paused) return;
+  if (totalsPauseApplies(card)) {
+    paused.hidden = false;
+    paused.textContent = TOTALS_PAUSED_NOTE;
+  } else {
+    paused.hidden = true;
+    paused.textContent = "";
+  }
+}
+
 function totalCards(games) {
   return games
     .filter((g) => totalIsActive(g.selection))
@@ -499,6 +521,7 @@ async function renderHome() {
     $("close-h").hidden = !close.length;
     $("close-games").innerHTML = close.map((g) => tooCloseRow(g, now)).join("") + agreeGroup(agree, now);
   }
+  showTotalsPause(card);
   const prev = $("previews-link");
   if (prev) { prev.textContent = `Read the week ${card.week} game previews`; prev.href = `previews/week${card.week}.html`; }
   bindToggles($("main"));
@@ -640,9 +663,10 @@ async function renderLedger() {
     const s = g.selection;
     const bits = [];
     if (s.spread_qualifies) bits.push(`${s.spread_pick}, ${Math.abs(s.spread_edge).toFixed(1)} pts off the spread`);
-    if (totalIsActive(s)) bits.push(`${s.total_pick}, ${Math.abs(s.total_edge).toFixed(1)} pts off the total`);
+    if (totalIsActive(s)) bits.push("over/under paused");
     return `<tr><td>${esc(g.away_team)} at ${esc(g.home_team)}</td><td>${esc(bits.join("; "))}</td><td>${esc(whenCT(g.pick_time.captured_at))}</td></tr>`;
   }).join("");
+  showTotalsPause(card);
 }
 
 async function renderTeams() {
