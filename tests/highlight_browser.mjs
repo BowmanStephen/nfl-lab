@@ -276,6 +276,20 @@ async function main() {
       return hrefs;
     })()`);
 
+    const printPage = await blankPage(browser);
+    pages.push(printPage);
+    await show(printPage, `${origin}/index.html`, { height: 700 });
+    await waitFor(printPage, 'document.getElementById("updated")?.textContent.trim()');
+    await evaluate(printPage, 'document.querySelectorAll(".row-toggle").forEach((button) => button.click())');
+    const printContrast = {};
+    for (const scheme of ["light", "dark"]) {
+      await printPage.send("Emulation.setEmulatedMedia", {
+        media: "print",
+        features: [{ name: "prefers-color-scheme", value: scheme }],
+      });
+      printContrast[scheme] = await evaluate(printPage, `(${measurePrintContrast.toString()})()`);
+    }
+
     process.stdout.write(JSON.stringify({
       pickId,
       pastId,
@@ -284,6 +298,7 @@ async function main() {
       reduced: reducedSettled || reduced,
       missed,
       official,
+      printContrast,
     }));
   } finally {
     for (const page of pages) {
@@ -301,6 +316,47 @@ async function main() {
     site.close();
     fs.rmSync(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
   }
+}
+
+// Runs in Chrome so media queries, inherited colors and transparency are real.
+function measurePrintContrast() {
+  const rgba = (color) => {
+    if (!/^rgba?\(/.test(color)) throw new Error(`Unsupported contrast color: ${color}`);
+    const channels = color.match(/[\d.]+/g).map(Number);
+    return [...channels.slice(0, 3), channels[3] ?? 1];
+  };
+  const over = (fg, bg) => fg.slice(0, 3).map((value, i) => value * fg[3] + bg[i] * (1 - fg[3]));
+  const luminance = (color) => color.map((value) => {
+    const channel = value / 255;
+    return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  }).reduce((total, value, i) => total + value * [0.2126, 0.7152, 0.0722][i], 0);
+  const text = [...document.querySelectorAll("body *")].filter((el) =>
+    [...el.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim())
+    && el.getClientRects().length && getComputedStyle(el).visibility === "visible"
+    && getComputedStyle(el).clipPath === "none");
+  return {
+    print: matchMedia("print").matches,
+    dark: matchMedia("(prefers-color-scheme: dark)").matches,
+    paper: getComputedStyle(document.body).backgroundColor,
+    samples: text.map((el) => {
+      const ancestors = [];
+      for (let node = el; node; node = node.parentElement) ancestors.unshift(node);
+      let background = [255, 255, 255];
+      for (const node of ancestors) {
+        const style = getComputedStyle(node);
+        if (style.opacity !== "1") throw new Error("Contrast probe needs opacity compositing");
+        background = over(rgba(style.backgroundColor), background);
+      }
+      const foreground = over(rgba(getComputedStyle(el).color), background);
+      const a = luminance(foreground), b = luminance(background);
+      return {
+        tag: el.tagName.toLowerCase(),
+        id: el.id,
+        text: el.textContent.trim().slice(0, 80),
+        ratio: (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05),
+      };
+    }),
+  };
 }
 
 main().catch((err) => {
