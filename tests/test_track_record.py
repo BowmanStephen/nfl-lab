@@ -28,6 +28,7 @@ def test_saved_weeks_keep_week5_record_and_week6_slate():
     assert sum(game["spread_qualifies"] for game in by_week[6]) == 4
     # Main voided the six week-6 totals; saved weeks must reflect that card.
     assert sum(game["total_active"] for game in by_week[6]) == 0
+    assert next(week for week in payload["weeks"] if week["week"] == 6)["totals_paused"] is True
 
 
 def test_published_card_replaces_only_its_week(monkeypatch, tmp_path):
@@ -56,7 +57,19 @@ def test_published_card_replaces_only_its_week(monkeypatch, tmp_path):
     assert len(by_week[6]) == 1
     assert by_week[6][0]["spread_qualifies"] is True
     assert by_week[6][0]["total_active"] is False
+    assert next(week for week in saved["weeks"] if week["week"] == 6)["totals_paused"] is True
     assert _outcomes(by_week[5]).count("win") == 2
+
+
+def test_saved_weeks_preserve_future_pause_without_any_total_picks():
+    card = {"week": 7, "totals_paused": True, "games": []}
+    payload = saved_weeks_payload(card)
+    week = next(week for week in payload["weeks"] if week["week"] == 7)
+    assert week["totals_paused"] is True
+    assert week["games"] == []
+    card["totals_paused"] = False
+    unpaused = next(week for week in saved_weeks_payload(card)["weeks"] if week["week"] == 7)
+    assert unpaused["totals_paused"] is False
 
 
 def test_track_record_page_script():

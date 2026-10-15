@@ -127,6 +127,8 @@ test("paused totals leave locked spreads in the week sentence", () => {
 
 test("active totals stay in the week sentence when over/unders are not paused", () => {
   const { rc, saved } = bugFixture();
+  saved.weeks.find((w) => w.week === saved.current_week).totals_paused = false;
+  assert.equal(totalsArePaused(saved, PAUSED_NOTE), false);
   assert.equal(totalsArePaused(saved, ""), false);
   const view = buildTrackRecord(rc, saved, { totalsPaused: totalsArePaused(saved, "") });
   assert.ok(view.scope.includes(OPEN_SENTENCE));
@@ -137,11 +139,33 @@ test("an earlier week does not pause the current week", () => {
   const saved = {
     current_week: 6,
     weeks: [
-      { week: 5, games: [played({ total_active: true })] },
+      { week: 5, totals_paused: true, games: [played({ total_active: true })] },
       { week: 6, games: week6Slate().map((g) => ({ ...g, total_active: false })) },
     ],
   };
   assert.equal(totalsArePaused(saved, PAUSED_NOTE), false);
+});
+
+test("paused cards with no active totals omit totals from both remaining sentences", () => {
+  const { rc, saved } = bugFixture();
+  const current = saved.weeks.find((w) => w.week === saved.current_week);
+  current.totals_paused = true;
+  current.games = current.games.map((g) => ({ ...g, total_active: false }));
+  assert.equal(totalsArePaused(saved, ""), true);
+  const view = buildTrackRecord(rc, saved);
+  assert.equal(view.remaining.totals, 0);
+  assert.ok(view.scope.includes(PAUSED_SENTENCE));
+  assert.ok(view.spread.gloss.includes(PAUSED_SENTENCE));
+  assert.equal(view.scope.includes("locked totals"), false);
+});
+
+test("the committed voided week omits totals from both remaining sentences", () => {
+  const saved = JSON.parse(fs.readFileSync(path.join(__dirname, "../public/api/saved_weeks.json")));
+  assert.equal(totalsArePaused(saved), true);
+  const view = buildTrackRecord({ games: [] }, saved);
+  assert.equal(view.remaining.totals, 0);
+  assert.equal(view.scope.includes("locked totals"), false);
+  assert.equal(view.spread.gloss.includes("locked totals"), false);
 });
 
 test("the live pause signal is TOTALS_PAUSED_NOTE plus an active total", () => {

@@ -28,9 +28,9 @@
     },
     {
       "path": "api/saved_weeks.json",
-      "bytes": 10981,
-      "sha256": "6a4a3834b5134fc30084d8d2987a1903b13b5f2b023f7e185ea4b31e7cbf6285",
-      "updated_at": "2026-10-15T11:03:42.200338-05:00"
+      "bytes": 11039,
+      "sha256": "3f67e55d9478428208f65ac754f458408d500f031d2b58ed7ac77d9adf50711c",
+      "updated_at": "2026-10-15T14:34:02.363562-05:00"
     },
     {
       "path": "api/summary.json",

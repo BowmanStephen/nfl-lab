@@ -4,6 +4,7 @@
   "weeks": [
     {
       "week": 5,
+      "totals_paused": true,
       "games": [
         {
           "week": 5,
@@ -204,6 +205,7 @@
     },
     {
       "week": 6,
+      "totals_paused": true,
       "games": [
         {
           "week": 6,

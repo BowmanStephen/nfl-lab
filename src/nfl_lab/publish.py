@@ -122,7 +122,16 @@ def saved_weeks_payload(current: dict | None = None) -> dict:
     """Official saved weeks for the track record. The current week is the card being published."""
     cards = saved_cards(current)
     weeks = [
-        {"week": int(card["week"]), "games": [_track_game(game) for game in card["games"]]}
+        {
+            "week": int(card["week"]),
+            "totals_paused": bool(
+                card.get("totals_paused") or card.get("totals_void_note")
+                or any((game.get("selection") or {}).get("total_voided")
+                       or (game.get("selection") or {}).get("total_paused")
+                       for game in card["games"])
+            ),
+            "games": [_track_game(game) for game in card["games"]],
+        }
         for card in cards
     ]
     if current is not None:
