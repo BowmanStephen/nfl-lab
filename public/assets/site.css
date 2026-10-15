@@ -128,6 +128,10 @@ main > h2, .model-sec > h2 {
   line-height: 1.4;
 }
 .mark {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: var(--tap, 44px);
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 0.14em;
@@ -326,7 +330,7 @@ nav a[aria-current="page"] {
 
 /* ---------- Home Thursday hero ---------- */
 body[data-page="home"] h1 {
-  font-size: clamp(2rem, 5.5vw, 3.6rem);
+  font-size: var(--fs-home-title);
   max-width: 14ch;
   margin: 0 0 0.65rem;
   line-height: 0.98;
@@ -1038,6 +1042,7 @@ footer p { max-width: 52rem; }
   --serif: var(--sans);
   --mono: var(--sans);
   --fs-h1: 28px; --fs-call: 17px; --fs-body: 16px; --fs-small: max(0.84rem, 13.5px); --lh: 1.5;
+  --fs-home-title: clamp(2rem, 5.5vw, 3.6rem);
   --accent: var(--hit);      /* our model / our pick */
   --vegas: var(--muted);     /* Vegas, neutral */
   --tap: 44px; --row-pad: 12px 16px; --radius: 8px;
@@ -1120,6 +1125,12 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 }
 .row-toggle:hover { background: var(--track); }
 .row-toggle:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.disclosure-cue { display: flex; align-items: center; gap: 0.35rem; margin-top: 0.35rem; font-size: var(--fs-small); line-height: 1.4; color: var(--muted); }
+.disclosure-cue svg { flex: none; }
+.hide-details { display: none; }
+.row-toggle[aria-expanded="true"] .show-details { display: none; }
+.row-toggle[aria-expanded="true"] .hide-details { display: inline; }
+.row-toggle[aria-expanded="true"] .disclosure-cue svg { transform: rotate(180deg); }
 .row-top { display: flex; justify-content: space-between; gap: 1rem; align-items: center; font-size: var(--fs-small); color: var(--muted); }
 .teams { display: inline-flex; gap: 0.35rem; align-items: center; }
 .chip { font-weight: 700; color: var(--ink); border: 1px solid var(--hair-strong); border-radius: 4px; padding: 0 6px; font-size: var(--fs-small); }
@@ -1128,6 +1139,7 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 .call { display: block; font-size: var(--fs-call); font-weight: 500; line-height: 1.35; margin-top: 4px; }
 .quiet .call { font-weight: 500; font-size: var(--fs-body); }
 .row-panel { padding: 0 16px 12px; }
+.picks-help { margin: 0.35rem 0 0.75rem; font-size: var(--fs-small); line-height: var(--lh); color: var(--muted); }
 .pick { color: var(--accent); font-weight: 600; margin: 0 0 0.5rem; font-size: var(--fs-body); font-family: var(--sans); letter-spacing: 0; line-height: var(--lh); }
 .row-detail { margin: 0; display: grid; gap: 0.35rem; }
 .row-detail div { display: grid; grid-template-columns: 11rem 1fr; gap: 0.75rem; }
@@ -1164,7 +1176,7 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
   line-height: 1.4;
 }
 .up-next-kicker { color: var(--muted); font-weight: 600; }
-.up-next-game, .up-next-vegas { white-space: nowrap; }
+.up-next-game, .up-next-vegas { min-width: 0; white-space: normal; }
 .up-next-game { color: var(--ink); font-weight: 600; }
 .up-next-vegas { color: var(--vegas); }
 

@@ -215,3 +215,62 @@ def test_rams_pick_keeps_display_label_and_price(tmp_path, home_margin):
     sign = "-" if home_margin > 0 else "+"
     assert data["official"] == [f"LAR {sign}3.0 (Strong lean)"]
     assert "Take LA " not in _text(data["rows"][0])
+
+
+@pytest.mark.parametrize("home_margin, pick, expected", [
+    (1.5, "BBB", "BBB must win by 2 or more points."),
+    (13.5, "AAA", "AAA can win, tie, or lose by up to 13 points."),
+    (-3.5, "AAA", "AAA must win by 4 or more points."),
+    (-2.5, "BBB", "BBB can win, tie, or lose by up to 2 points."),
+    (3, "BBB", "BBB must win by 4 or more points. A 3-point win is a push, counted as neither a win nor a loss."),
+    (3, "AAA", "AAA can win, tie, or lose by up to 2 points. A 3-point loss is a push, counted as neither a win nor a loss."),
+    (0, "BBB", "BBB must win. A tied game is a push, counted as neither a win nor a loss."),
+    (0.5, "AAA", "AAA can win or tie."),
+])
+def test_row_explains_the_saved_spread_result(tmp_path, home_margin, pick, expected):
+    game = _game("FX_RESULT", "AAA", "BBB", home_margin, pick, 2.5)
+    path = tmp_path / "card.json"
+    path.write_text(json.dumps({"games": [game]}))
+    row = _text(_run(path)["rows"][0])
+    assert expected in row
+
+
+@pytest.mark.parametrize("edge, expected", [
+    (3.49, "Lean means a model-versus-line gap below 3.5 points."),
+    (3.5, "Strong lean means a model-versus-line gap of 3.5 points or more."),
+    (-3.5, "Strong lean means a model-versus-line gap of 3.5 points or more."),
+])
+def test_row_defines_lean_using_the_existing_cutoff(tmp_path, edge, expected):
+    game = _game("FX_LEAN", "AAA", "BBB", 3, "BBB", edge)
+    path = tmp_path / "card.json"
+    path.write_text(json.dumps({"games": [game]}))
+    assert expected in _text(_run(path)["rows"][0])
+
+
+def test_missing_saved_line_does_not_invent_a_pickem_explanation(tmp_path):
+    game = _game("FX_MISSING", "AAA", "BBB", 0, "BBB", 2.5)
+    game["pick_time"]["home_margin"] = None
+    path = tmp_path / "card.json"
+    path.write_text(json.dumps({"games": [game]}))
+    assert "The saved spread is unavailable." in _text(_run(path)["rows"][0])
+
+
+@pytest.mark.parametrize("state, hidden", [("pre", False), ("no-picks", True), ("final", True)])
+def test_pick_helper_only_shows_with_relevant_picks(tmp_path, state, hidden):
+    public = tmp_path / "public"
+    shutil.copytree(ROOT / "public", public)
+    card = deepcopy(FIXTURE)
+    for game in card["games"]:
+        if state == "no-picks":
+            game["selection"]["spread_qualifies"] = False
+        if state == "final":
+            game["grading"] = {"home_score": 24, "away_score": 17,
+                               "actual_margin": 7, "spread_outcome": "win"}
+    (public / "api" / "picks.json").write_text(json.dumps(card))
+    out = subprocess.run(
+        [_node(), str(ROOT / "tests" / "render_site.mjs"), str(public), NOW, "home"],
+        capture_output=True, text=True, check=True,
+    )
+    help_text = json.loads(out.stdout)["home"]["picks-help"]
+    assert help_text["hidden"] is hidden
+    assert "spread" in help_text["text"] and "Lean" in help_text["text"]
