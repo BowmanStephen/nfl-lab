@@ -1123,7 +1123,7 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 .chip { font-weight: 700; color: var(--ink); border: 1px solid var(--hair-strong); border-radius: 4px; padding: 0 6px; font-size: var(--fs-small); }
 .when { display: inline-flex; gap: 0.5rem; align-items: center; white-space: nowrap; }
 .tag { color: var(--caution); }
-.call { display: block; font-size: var(--fs-call); font-weight: 600; line-height: 1.35; margin-top: 4px; }
+.call { display: block; font-size: var(--fs-call); font-weight: 500; line-height: 1.35; margin-top: 4px; }
 .quiet .call { font-weight: 500; font-size: var(--fs-body); }
 .row-panel { padding: 0 16px 12px; }
 .pick { color: var(--accent); font-weight: 600; margin: 0 0 0.5rem; font-size: var(--fs-body); font-family: var(--sans); letter-spacing: 0; line-height: var(--lh); }
@@ -1191,4 +1191,10 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
   color: var(--muted);
   margin: 0 0 0.35rem;
 }
+
+/* Lean label on pick rows (display only; see leanLabel in site.js) */
+.lean { font-family: var(--sans); font-size: max(0.84rem, 13.5px); color: var(--muted); margin-right: 0.5rem; }
+.lean.strong { color: var(--ink); font-weight: 600; }
+.take { display: block; font-size: var(--fs-call); font-weight: 600; color: var(--ink); line-height: 1.35; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
 .totals-paused { color: var(--muted); font-size: var(--fs-small); margin: 0.75rem 0 0; }

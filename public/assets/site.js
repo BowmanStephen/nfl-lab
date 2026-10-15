@@ -85,9 +85,19 @@ function marginPlain(homeMargin, home, away) {
   return `${awayLabel} by ${Math.abs(m).toFixed(1)}`;
 }
 
-function pickLineDisplay(game, side) {
+// Spread from the given side's point of view (negative = that side gives points).
+function sideLine(game, side) {
   const line = Number(game.pick_time.home_margin);
-  const signed = side === game.home_team ? -line : line;
+  return side === game.home_team ? -line : line;
+}
+
+// Swap ASCII hyphen-minus before a number for a real minus sign (−) in display text.
+function minusSign(text) {
+  return String(text).replace(/-(?=\d)/g, "\u2212");
+}
+
+function pickLineDisplay(game, side) {
+  const signed = sideLine(game, side);
   return `${displayTeam(side)} ${fmt(signed)}`;
 }
 
@@ -313,7 +323,7 @@ function homeSentence(g) {
   } else {
     x = modelPlain(g);
   }
-  return `Our model says ${x}. Vegas says ${displaySpread(g.pick_time.spread_display)}.`;
+  return `Our model says ${x}. Vegas says ${minusSign(displaySpread(g.pick_time.spread_display))}.`;
 }
 
 function pageState(card, fresh, now) {
@@ -370,11 +380,31 @@ function resultPill(g) {
   return "";
 }
 
-function expander(g, cls, sentence, extra, detail) {
+// Plain-words pick for the collapsed row, e.g. "Take PHI −1.5" (real minus sign);
+// a zero line reads "Take PHI (pick'em)".
+function takeParts(g) {
+  const side = g.selection.spread_pick;
+  const shown = displayTeam(side);
+  const signed = sideLine(g, side);
+  if (!Number.isFinite(signed) || signed === 0) {
+    return { text: `Take ${shown} (pick'em)`, spoken: `Take ${shown} pick'em` };
+  }
+  const n = Math.abs(signed).toFixed(1);
+  return signed < 0
+    ? { text: `Take ${shown} \u2212${n}`, spoken: `Take ${shown} minus ${n}` }
+    : { text: `Take ${shown} +${n}`, spoken: `Take ${shown} plus ${n}` };
+}
+function takeText(g) { return takeParts(g).text; }
+function takeTag(g) {
+  const t = takeParts(g);
+  return `<span class="take num"><span class="take-pick" aria-hidden="true">${esc(t.text)}</span><span class="sr-only">${esc(t.spoken)}</span></span>`;
+}
+
+function expander(g, cls, sentence, extra, detail, lead = "") {
   const id = String(g.game_id).replace(/[^\w-]/g, "");
   return `<li class="game-row ${cls}" id="b-${id}" tabindex="-1">
     <button class="row-toggle" id="toggle-${id}" aria-expanded="false" aria-controls="d-${id}">
-      <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
+${lead ? `      ${lead}\n` : ""}      <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
       <span class="call">${esc(sentence)}</span>
     </button>
     <div class="row-panel" id="d-${id}" role="region" aria-labelledby="toggle-${id}" hidden>${detail}</div>
@@ -402,13 +432,26 @@ function statusTag(g, now) {
   return timeTag(g.kickoff_utc);
 }
 
+// Display-only confidence label. Rule: |spread gap| >= 3.5 points (about a 60%
+// modeled cover chance at the 13.38-point margin sigma) is a "strong lean";
+// any other locked pick is a "lean". Does not change the pick or the data.
+// Single source of truth for the cutoff; used by home, previews, and track record.
+const STRONG_LEAN_EDGE = 3.5;
+function leanLabel(g) {
+  return Math.abs(Number(g.selection.spread_edge)) >= STRONG_LEAN_EDGE ? "Strong lean" : "Lean";
+}
+function leanTag(g) {
+  const label = leanLabel(g);
+  return `<span class="${label === "Strong lean" ? "lean strong" : "lean"}">${esc(label)}</span>`;
+}
+
 function gameRow(g, state, now) {
   if (state === "final" || isScored(g)) return finalRow(g);
   const started = statusTag(g, now) === timeTag(g.kickoff_utc) ? "" : ` ${statusTag(g, now)}`;
   const price = pickLineDisplay(g, g.selection.spread_pick);
   return expander(g, "pick-row", homeSentence(g),
-    started ? started.trim() : timeTag(g.kickoff_utc),
-    `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`);
+    `${started ? started.trim() : timeTag(g.kickoff_utc)} ${leanTag(g)}`,
+    `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`, takeTag(g));
 }
 
 function finalRow(g) {
@@ -726,7 +769,7 @@ async function renderLedger() {
   $("live").innerHTML = picks.map((g) => {
     const s = g.selection;
     const bits = [];
-    if (s.spread_qualifies) bits.push(`${displayTeam(s.spread_pick)}, ${Math.abs(s.spread_edge).toFixed(1)} pts off the spread`);
+    if (s.spread_qualifies) bits.push(`${displayTeam(s.spread_pick)}, ${Math.abs(s.spread_edge).toFixed(1)} pts off the spread (${leanLabel(g)})`);
     if (totalIsActive(s)) bits.push("over/under paused");
     return `<tr><td>${esc(displayTeam(g.away_team))} at ${esc(displayTeam(g.home_team))}</td><td>${esc(bits.join("; "))}</td><td>${esc(whenCT(g.pick_time.captured_at))}</td></tr>`;
   }).join("");
@@ -1125,7 +1168,7 @@ function officialLine(game, names) {
     const shown = displayTeam(side);
     const price = pickLineDisplay(game, side);
     const number = price.slice(shown.length).trim();
-    parts.push(`${displayTeam((names && names[side]) || shown)} ${number}`);
+    parts.push(`${displayTeam((names && names[side]) || shown)} ${number} (${leanLabel(game)})`);
   }
   if (totalIsActive(selection)) {
     const word = selection.total_pick === "over" ? "Over" : "Under";
@@ -1179,10 +1222,8 @@ async function renderOfficialPicks() {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports.displayTeam = displayTeam;
-  module.exports.displaySpread = displaySpread;
+  module.exports = { takeText, leanLabel, gameRow, officialLine, STRONG_LEAN_EDGE, displayTeam, displaySpread };
 }
-
 const page = typeof document !== "undefined" && document.body ? document.body.dataset.page : null;
 const run = {
   home: renderHome,
