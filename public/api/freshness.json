@@ -1,48 +1,48 @@
 {
-  "generated_at": "2026-10-15T14:13:03.640158-05:00",
-  "stale_after": "2026-10-17T02:13:03.640158-05:00",
+  "generated_at": "2026-10-15T14:16:53.055118-05:00",
+  "stale_after": "2026-10-17T02:16:53.055118-05:00",
   "files": [
     {
       "path": "api/baseline.json",
       "bytes": 4704,
       "sha256": "99c3be16425e12796a9ad9e458a5c9a2f28a3466dc8ac87c8bf52277a0ec6344",
-      "updated_at": "2026-10-15T14:13:03.640158-05:00"
+      "updated_at": "2026-10-15T14:16:53.055118-05:00"
     },
     {
       "path": "api/model.json",
       "bytes": 14461,
       "sha256": "bd4e927f423bdfc09f79fced5acf30b4ceeb4eeea9d962b28173b6c4fe226710",
-      "updated_at": "2026-10-15T14:13:03.640158-05:00"
+      "updated_at": "2026-10-15T14:16:53.055118-05:00"
     },
     {
       "path": "api/picks.json",
       "bytes": 22207,
       "sha256": "61cd06902fd736bc724e60914740913aaa8f0ee5d7a7ecb2f49c7293fc878cc1",
-      "updated_at": "2026-10-15T14:13:03.640158-05:00"
+      "updated_at": "2026-10-15T14:16:53.055118-05:00"
     },
     {
       "path": "api/report_card.json",
-      "bytes": 48936,
-      "sha256": "5f8d5bf8da17f35d257dc57671c7d1bb596b1d775df067bb13e0c8bb3f4ee191",
-      "updated_at": "2026-10-15T14:13:03.640158-05:00"
+      "bytes": 49091,
+      "sha256": "f59870fd55bef75b896d750180d63e9df26003ebf35276903aeb3d41668f72bd",
+      "updated_at": "2026-10-15T14:16:53.055118-05:00"
     },
     {
       "path": "api/saved_weeks.json",
       "bytes": 10975,
       "sha256": "55d33bb10d97d791d49a6e57408e40122d5069eb972c67778c58a8afcdf5b471",
-      "updated_at": "2026-10-15T14:13:03.640158-05:00"
+      "updated_at": "2026-10-15T14:16:53.055118-05:00"
     },
     {
       "path": "api/summary.json",
       "bytes": 498,
       "sha256": "95f35aebbaf90dd3b6c03bd1086f0e65f48dc2d48aa0896166ada69c045df713",
-      "updated_at": "2026-10-15T14:13:03.640158-05:00"
+      "updated_at": "2026-10-15T14:16:53.055118-05:00"
     },
     {
       "path": "api/teams.json",
       "bytes": 34381,
       "sha256": "db599935af6b3f03a5651e17d36a47e927f3feb03488c6f6a7c700e9ded8f0d7",
-      "updated_at": "2026-10-15T14:13:03.640158-05:00"
+      "updated_at": "2026-10-15T14:16:53.055118-05:00"
     }
   ]
 }

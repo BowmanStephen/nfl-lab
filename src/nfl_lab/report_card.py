@@ -24,30 +24,32 @@ from .config import OUTPUT_DIR, TEAM_NAMES
 from .data_loader import load_pbp, load_schedules
 from .ratings import shrink_to_prior
 from .publish import publish_report_card
-from .walkforward import BREAKEVEN, _record, apply_coefs, features, grade, precompute, with_signfix_totals
+from .walkforward import BREAKEVEN, _record, apply_coefs, features, grade, precompute
 
 SEASON = 2026
 WEEKS = [1, 2, 3, 4]
 CT = ZoneInfo("America/Chicago")
 MODEL_NOTE = (
-    "Margins are the frozen 2016-2021 model, same path as the 2022-2025 holdout. "
-    "Defense is EPA allowed, so the corrected totals formula makes a stingier defense lower projected totals. "
-    "The two totals coefficients were refit on 2016-2021 only. The holdout was not regraded. "
+    "This report preserves the original model and coefficients frozen on 2016-2021, "
+    "as used in the 2022-2025 holdout. Its totals formula subtracts defensive EPA allowed. "
+    "That sign was wrong: a stingier defense should lower projected totals. "
+    "Corrected models belong to a separately labeled prospective round, not a rewrite of this record. "
     "The live card adds a starting-QB term; this backtest does not."
 )
 
 
 def _locked() -> tuple[dict, dict]:
     bt = OUTPUT_DIR / "backtest"
-    # Totals coefficients refit for the defense-sign fix (margin coefficients unchanged).
-    locked = with_signfix_totals(json.loads((bt / "locked_model.json").read_text())["locked_model"])
+    locked = json.loads((bt / "locked_model.json").read_text())["locked_model"]
     prereg = json.loads((bt / "preregistration.json").read_text())
     return locked, prereg
 
 
 def project(pbp: pd.DataFrame, schedules: pd.DataFrame, locked: dict) -> tuple[pd.DataFrame, dict]:
     pre = precompute(pbp, schedules, [SEASON])
-    f = apply_coefs(features(pre, locked["prior_regress"], locked["prior_plays_equiv"]), locked)
+    # Preserve both the original coefficients and the feature they were fit on.
+    # Applying the corrected feature alone would also rewrite the frozen record.
+    f = apply_coefs(features(pre, locked["prior_regress"], locked["prior_plays_equiv"], defense_sign=-1), locked)
     return f[f["week"].isin(WEEKS)].copy(), pre
 
 

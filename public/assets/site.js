@@ -1031,15 +1031,15 @@ function rcLesson(l, rc) {
     const [la, lb] = rc.line_total_range;
     const mu = l.model_used;
     const offPts = rc.points_per_combined_off * (mu[l.home].off_epa + mu[l.away].off_epa);
-    // Defense is EPA allowed, so it adds to the total. A stingy defense (lower EPA allowed) lowers the projection.
-    const defPts = rc.points_per_combined_off * (mu[l.home].def_epa + mu[l.away].def_epa);
+    // Reproduce the frozen report's original sign, including its known bug.
+    const defPts = -rc.points_per_combined_off * (mu[l.home].def_epa + mu[l.away].def_epa);
     const leader = defPts >= 0
-      ? (mu[l.home].def_epa >= mu[l.away].def_epa ? l.home : l.away)
-      : (mu[l.home].def_epa <= mu[l.away].def_epa ? l.home : l.away);
+      ? (mu[l.home].def_epa <= mu[l.away].def_epa ? l.home : l.away)
+      : (mu[l.home].def_epa >= mu[l.away].def_epa ? l.home : l.away);
     const moved = (pts) => pts < 0 ? `took ${rcNum(Math.abs(pts))} off` : `added ${rcNum(Math.abs(pts))}`;
     saw = `The Vegas total was ${rcNum(l.line_total)} points. The model expected ${rcNum(l.model_total)}, ${rcNum(Math.abs(l.edge))} points ${l.edge > 0 ? "higher" : "lower"}, so it would have taken the ${side}.`;
     happened = `${l.final}, ${l.actual_total} points in all. That is ${rcNum(l.line_miss_pts)} ${l.actual_total < l.line_total ? "under" : "over"} the Vegas total.`;
-    number = `Every model total in weeks 1 to 4 landed between ${rcNum(pa)} and ${rcNum(pb)}, while the Vegas totals ran from ${rcNum(la)} to ${rcNum(lb)}. So low lines drew ${side}s, and ${side}s went ${rcRec(sideRec)}. The total counts points a defense allows, so a stingy defense lowers the projection. Here the two offenses ${moved(offPts)}, and the defenses, led by ${N(leader)}, ${moved(defPts)}.`;
+    number = `Every model total in weeks 1 to 4 landed between ${rcNum(pa)} and ${rcNum(pb)}, while the Vegas totals ran from ${rcNum(la)} to ${rcNum(lb)}. So low lines drew ${side}s, and ${side}s went ${rcRec(sideRec)}. This preserves the original sign bug: defense is EPA allowed, so a stingier defense should lower projected totals, but this model subtracted it. Here the two offenses ${moved(offPts)}, and the defenses, led by ${N(leader)}, ${moved(defPts)}.`;
   }
   return `<article class="rc-lesson">
     <p class="rc-tag ${l.outcome === "win" ? "hit" : "miss"}">${esc(l.label)}</p>
@@ -1081,7 +1081,7 @@ async function renderReportCard() {
     <p>Each week, the model only saw games already played. Week 3 used weeks 1 and 2. Week 4 used weeks 1 through 3. The settings were tuned on ${rc.model.fit_on_seasons[0]} to ${rc.model.fit_on_seasons[rc.model.fit_on_seasons.length - 1]} and frozen before any of this.</p>
     <p>To check for leaks, we took each week and swapped every play from that week onward for random numbers (${lc.map((x) => x.plays_poisoned.toLocaleString("en-US")).join(", ")} plays for weeks ${lc.map((x) => x.week).join(", ")}) and ran it again. That week's numbers did not move at all. Scrambling earlier weeks did move weeks 3 and 4, so the test can catch a leak.</p>
     <p>Weeks 1 and 2 ran on ${rc.model.prior_seasons[0]} to ${rc.model.prior_seasons[2]} alone. With one game per team, the model's strength-of-schedule step cancels out, so 2026 games start counting in week 3.</p>
-    <p>Grading uses the final Vegas lines from nflverse. Margins are the same model as the 2022 to 2025 test (${fmtPct(h.spread_win_rate)} on spreads), without the starting-QB adjustment the live card uses. Totals on this page use the defense-sign fix, with those two numbers refit on 2016 to 2021 only. The 2022 to 2025 totals record (${fmtPct(h.total_win_rate)}) was graded once on the old formula and is not redone. Four weeks is a small sample in either direction.</p>
+    <p>Grading uses the final Vegas lines from nflverse. ${esc(rc.model.note)} The 2022 to 2025 test remains ${fmtPct(h.spread_win_rate)} on spreads and ${fmtPct(h.total_win_rate)} on totals. Four weeks is a small sample in either direction.</p>
     ${pending}`;
   const t = new Date(rc.generated_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/Chicago" });
   $("rc-foot").textContent = `Backtest generated ${t} CT. Final Vegas lines and scores from nflverse. This is a research record, not betting advice.`;
