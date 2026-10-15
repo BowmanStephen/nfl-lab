@@ -170,6 +170,18 @@ function totalIsActive(selection) {
 
 const TOTALS_PAUSED_NOTE = "We're not picking total points (over/under) right now while we fix that part of the model.";
 
+function totalsVoidNotice(card) {
+  const note = card.totals_void_note || "";
+  const originalWeek6Note = "The 6 week-6 over/under picks were voided Oct 15: the over/under model went 6-18 on weeks 1-4, so we've paused over/unders. The spread picks stand.";
+  if (card.season === 2026 && card.week === 6 && note === originalWeek6Note) {
+    return "The 6 week-6 over/under picks were voided Oct 15, and over/unders are paused. "
+      + "A replay of weeks 1-4 with the corrected totals formula went 6-18. "
+      + "The original frozen-model record remains 10-19; the replay does not replace it. "
+      + "The spread picks stand.";
+  }
+  return note;
+}
+
 // The week-6 void note already says over/unders are paused. A second sentence
 // would repeat it. Future cards set totals_paused and have no void note.
 function totalsPauseApplies(card) {
@@ -252,7 +264,7 @@ function showLock(card) {
   if (voidNote) {
     if (card.totals_void_note) {
       voidNote.hidden = false;
-      voidNote.textContent = card.totals_void_note;
+      voidNote.textContent = totalsVoidNotice(card);
     } else {
       voidNote.hidden = true;
     }
@@ -712,7 +724,7 @@ async function renderHome() {
   if (voidNote) {
     if (card.totals_void_note) {
       voidNote.hidden = false;
-      voidNote.textContent = card.totals_void_note;
+      voidNote.textContent = totalsVoidNotice(card);
     } else {
       voidNote.hidden = true;
     }
@@ -1172,7 +1184,7 @@ async function renderModel() {
   if (voidNote) {
     if (card.totals_void_note) {
       voidNote.hidden = false;
-      voidNote.textContent = card.totals_void_note;
+      voidNote.textContent = totalsVoidNotice(card);
     } else {
       voidNote.hidden = true;
     }
