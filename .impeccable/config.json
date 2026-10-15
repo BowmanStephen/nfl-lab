@@ -1,0 +1,20 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "public/index.html",
+          "public/ledger.html",
+          "public/model.html",
+          "public/previews/week6.html"
+        ],
+        "createdAt": "2026-10-15T20:03:48.844Z",
+        "reason": "Agent verified dark-theme CSS and rendered browser colors: detector assumes white background for dark ink #f2efe7, muted #a9aa9f and hit #7fd3a6; actual body background is #181917. Shared theme tokens pass AA."
+      }
+    ]
+  }
+}

@@ -142,8 +142,9 @@ def test_other_void_notices_are_preserved(tmp_path):
     assert out["totals-void-note"]["text"] == card["totals_void_note"]
 
 
-def test_static_week6_preview_explains_the_same_records():
-    for path in ("public/previews/week6.html", "pipeline/WEEK6_PREVIEWS.md"):
+def test_static_notices_explain_the_same_records():
+    for path in ("public/index.html", "public/ledger.html", "public/model.html",
+                 "public/previews/week6.html", "pipeline/WEEK6_PREVIEWS.md"):
         copy = (ROOT / path).read_text()
         assert CLARIFIED_VOID_NOTE in copy
         assert VOID_NOTE not in copy
