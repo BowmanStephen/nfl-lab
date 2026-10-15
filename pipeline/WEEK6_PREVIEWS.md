@@ -2,6 +2,8 @@
 
 Lines as of Wed Oct 14, 6:15 PM CT (DraftKings via ESPN). Cincinnati, Detroit, Miami and Minnesota are off. Times are Central. These are previews, not official picks. A game marked as a preview check meets the locked rule today: our model is 2 or more points from Vegas on the margin, or 3 or more on the total.
 
+The 6 week-6 over/under picks were voided Oct 15: the over/under model went 6-18 on weeks 1-4, so we've paused over/unders. The spread picks stand.
+
 The earlier version of the model did not beat the market in its 2022 to 2025 test: 48.8% on the margin and 51.0% on totals, short of the 52.4% break-even. The v2 model used here was not part of that test, so it has no proven record yet. Model numbers come from the NFL Lab code on main (model v2, nflverse through week 5, starting-QB adjustment), run Wednesday evening. Machine-readable lines: `pipeline/previews/2026-week-06-preview-lines.json`.
 
 ---
@@ -10,7 +12,7 @@ The earlier version of the model did not beat the market in its 2022 to 2025 tes
 
 **Thu Oct 15, 7:15 PM CT.** Vegas says Seattle by 2.5, 40.5 total points. Our model says Seattle by 3.3, 43.8 total points.
 
-**Preview check (not an official pick):** More than 40.5 points
+**Over/under voided Oct 15.** Too close to call.
 
 Seattle should win a low-scoring road game. Both teams are 3-2, but Seattle's defense has been one of the league's best (2nd of 32 in EPA allowed per play), and our model gives the Seahawks about a 60% chance. The model and Vegas agree on the winner and nearly on the margin. Where they split is the score: the model expects about 3 more points.
 
@@ -18,7 +20,7 @@ The schedule still lists Drew Lock. ESPN's depth chart has Sam Darnold at QB1 an
 
 **Newcomer tip: success rate allowed.** A play is a success when it gains enough yards to stay on schedule for that down. Seattle's defense lets opponents succeed on about 38.5% of plays, 2nd lowest in the league. For a defense, lower is better.
 
-*Pick under the rule: yes, on the total. Our model is 3.3 points above the 40.5 total, and the rule needs 3. On the margin the gap is 0.8 points, short of the 2 needed.*
+*The locked over/under (over 40.5) was voided Oct 15 and is not a pick. On the margin the gap is 0.8 points, short of the 2 needed.*
 
 ---
 
@@ -40,7 +42,7 @@ Jacksonville should win. The Jaguars are 4-1 and have allowed 70 points in five 
 
 **Sun Oct 18, 12:00 PM CT.** Vegas says Baltimore by 5.5, 42.5 total points. Our model says Baltimore by 9.7, 45.6 total points.
 
-**Preview check (not an official pick):** Baltimore wins by 6 or more, and more than 42.5 points
+**Over/under voided Oct 15.** Preview check (not an official pick): Baltimore wins by 6 or more
 
 Baltimore should win comfortably. Lamar Jackson is back at the top of the depth chart and off the injury report, and the Ravens' offense ranks 6th in EPA per play while Cleveland's ranks 25th. Our model gives Baltimore about a 77% chance and has them winning by more than Vegas does.
 
@@ -48,7 +50,7 @@ Tuesday's official card was built with Tyler Huntley, because Jackson was listed
 
 **Newcomer tip: early-down EPA.** First and second down set up everything else. Baltimore gains about +0.21 expected points per early-down play, 1st in the league. Cleveland's offense is at about −0.04, 20th.
 
-*Pick under the rule: yes, on both. The model has Baltimore 4.2 points better than Vegas does (2 needed) and the score 3.1 points higher (3 needed).*
+*The locked over/under (over 40.5) was voided Oct 15 and is not a pick. The margin check is a preview, not an official pick: the model has Baltimore 4.2 points better than Wednesday's Vegas line (2 needed). The official card has no spread pick.*
 
 ---
 
@@ -56,13 +58,13 @@ Tuesday's official card was built with Tyler Huntley, because Jackson was listed
 
 **Sun Oct 18, 12:00 PM CT.** Vegas says Carolina by 1.5, 39.5 total points. Our model says Philadelphia by 5.3, 46.6 total points.
 
-**Preview check (not an official pick):** Philadelphia wins, or loses by 1 at most, and more than 39.5 points
+**Over/under voided Oct 15.** Preview check (not an official pick): Philadelphia wins, or loses by 1 at most
 
 Our model says Philadelphia, about a 66% chance at home, with Jalen Hurts against Bryce Young. Vegas disagrees, and has moved toward Carolina since Tuesday morning, when it had the Eagles by 1.5. Five games of Eagles offense are the reason to doubt us: Philadelphia ranks 29th in EPA per play and last in success rate, while Carolina's offense ranks 8th.
 
 **Newcomer tip: success rate.** Philadelphia's offense stays on schedule on only about 36% of plays, 32nd of 32. A team that falls behind schedule that often ends up punting a lot.
 
-*Pick under the rule: yes, on both. The model is 6.8 points from Vegas on the margin and 7.1 on the total, the biggest gaps on the slate.*
+*The locked over/under (over 41.5) was voided Oct 15 and is not a pick. On the margin the model is 6.8 points from Vegas. The official spread pick stands.*
 
 ---
 
@@ -70,15 +72,15 @@ Our model says Philadelphia, about a 66% chance at home, with Jalen Hurts agains
 
 **Sun Oct 18, 12:00 PM CT.** Vegas says Chicago by 1.5, 51.5 total points. Our model says Chicago by 1.3, 45.6 total points.
 
-**Preview check (not an official pick):** Fewer than 51.5 points
+**Over/under voided Oct 15.** Too close to call.
 
 Who wins is close to a coin flip: our model gives Chicago about a 54% chance on the road, and Vegas has the Bears by 1.5. The disagreement is the score. Vegas moved the total up from 49.5 on Tuesday to 51.5, while our model expects about 46, helped by an Atlanta defense that ranks 3rd at keeping offenses off schedule.
 
 Caleb Williams is Questionable (hamstring) on ESPN's injury report. The schedule lists Tyson Bagent, and the depth chart has Williams at QB1. We use Williams. If Bagent starts, the quarterback part of this margin changes. Michael Penix Jr. starts for Atlanta.
 
-**Newcomer tip: the total.** The total is Vegas's guess at both teams' points added together. At 51.5, Vegas expects a shootout. Our model's 45.6 is about a touchdown lower, so it leans toward fewer points.
+**Newcomer tip: the total.** The total is Vegas's guess at both teams' points added together. At 51.5, Vegas expects a shootout. Our model's 45.6 is about a touchdown lower. That over/under was voided Oct 15 and is not a pick.
 
-*Pick under the rule: yes, on the total. The model is 5.9 points below the 51.5 total (3 needed). On the margin the gap is 0.2 points, so no.*
+*The locked over/under (under 49.5) was voided Oct 15 and is not a pick. On the margin the gap is 0.2 points, so there is no spread pick.*
 
 ---
 
@@ -114,7 +116,7 @@ New England should win at home, about a 73% chance on our model. Drake Maye's pa
 
 **Sun Oct 18, 12:00 PM CT.** Vegas says Pittsburgh by 2.5, 39.5 total points. Our model says Tampa Bay by 2.3 with Baker Mayfield, or Pittsburgh by 1.4 with Jalon Daniels, and 44.0 total points either way.
 
-**Preview check (not an official pick):** More than 39.5 points
+**Over/under voided Oct 15.** No official pick.
 
 Who wins depends on Tampa Bay's quarterback. With Mayfield, our model makes the Buccaneers slight favorites (about 57%); with Daniels, it has Pittsburgh by 1.4, close to Vegas. Tampa's offense ranks 27th in EPA per play, and Pittsburgh's defense has given up the most big plays in the league.
 
@@ -122,7 +124,7 @@ ESPN lists Mayfield Doubtful (thumb). The schedule lists Daniels. ESPN's depth c
 
 **Newcomer tip: explosive plays.** An explosive play is a pass of 20 or more yards or a run of 15 or more. Pittsburgh's defense allows one on about 8.6% of snaps, the most in the league.
 
-*Pick under the rule: yes on the total, and the margin depends on the quarterback. The model is 4.5 points above the 39.5 total (3 needed). With Mayfield the margin gap is 4.8 points, a pick on Tampa Bay. With Daniels it is 1.1, no pick.*
+*The locked over/under (over 40.5) was voided Oct 15 and is not a pick. The margin depends on the quarterback and is not an official pick: with Mayfield the gap is 4.8 points, with Daniels it is 1.1.*
 
 ---
 
@@ -144,13 +146,13 @@ Indianapolis should win at home, about a 76% chance on our model. Tennessee is 0
 
 **Sun Oct 18, 3:05 PM CT.** Vegas says the Rams by 12.5, 51.5 total points. Our model says the Rams by 10.6, 49.3 total points.
 
-**Too close to call.**
+**Over/under voided Oct 15.** Too close to call.
 
 The Rams should win easily, about a 79% chance on our model. They rate 2nd of 32, and Matthew Stafford faces an Arizona pass defense that has been one of the league's worst. Arizona is 1-4 with Jacoby Brissett and has allowed 162 points, the most of any team.
 
 **Newcomer tip: EPA per pass allowed.** Arizona gives up about +0.36 expected points every time the other team passes, 31st of 32. For a defense, a positive number is bad: the offense is usually moving toward points.
 
-*Pick under the rule: no, narrowly. The model is 1.9 points short of Vegas on the margin (2 needed) and 2.2 below on the total (3 needed). On Tuesday, with the line at 13.5, the margin gap was big enough.*
+*The locked over/under (under 52.5) was voided Oct 15 and is not a pick. On Wednesday's line the model is 1.9 points short of Vegas on the margin (2 needed). The official spread pick from Tuesday still stands.*
 
 ---
 
