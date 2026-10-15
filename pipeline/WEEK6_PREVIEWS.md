@@ -2,7 +2,7 @@
 
 Lines as of Wed Oct 14, 6:15 PM CT (DraftKings via ESPN). Cincinnati, Detroit, Miami and Minnesota are off. Times are Central. These are previews, not official picks. A game marked as a preview check meets the locked rule today: our model is 2 or more points from Vegas on the margin, or 3 or more on the total.
 
-The 6 week-6 over/under picks were voided Oct 15: the over/under model went 6-18 on weeks 1-4, so we've paused over/unders. The spread picks stand.
+The 6 week-6 over/under picks were voided Oct 15, and over/unders are paused. A replay of weeks 1-4 with the corrected totals formula went 6-18. The original frozen-model record remains 10-19; the replay does not replace it. The spread picks stand.
 
 The earlier version of the model did not beat the market in its 2022 to 2025 test: 48.8% on the margin and 51.0% on totals, short of the 52.4% break-even. The v2 model used here was not part of that test, so it has no proven record yet. Model numbers come from the NFL Lab code on main (model v2, nflverse through week 5, starting-QB adjustment), run Wednesday evening. Machine-readable lines: `pipeline/previews/2026-week-06-preview-lines.json`.
 

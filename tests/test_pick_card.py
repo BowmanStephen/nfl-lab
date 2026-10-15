@@ -638,9 +638,11 @@ def test_week6_voids_only_the_six_totals():
     assert by_game["ARI@LA"]["spread_pick"] == "ARI +13.5"
     assert by_game["WAS@SF"]["spread_pick"] == "SF -7.5"
     home = (PUBLIC_API.parent / "index.html").read_text()
-    assert WEEK6_VOID_NOTE in home
+    assert "The original frozen-model record remains 10-19" in home
+    assert WEEK6_VOID_NOTE not in home
     previews = (PUBLIC_API.parent / "previews" / "week6.html").read_text()
-    assert WEEK6_VOID_NOTE in previews
+    assert "The original frozen-model record remains 10-19" in previews
+    assert WEEK6_VOID_NOTE not in previews
     for phrase in (
         "More than 40.5 points",
         "more than 42.5 points",
