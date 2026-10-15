@@ -38,7 +38,20 @@
         "kickoff_utc": "2026-10-16T00:15Z",
         "espn_id": "401872995"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-15T22:27:12.000189+00:00",
+        "captured_at_ct": "2026-10-15T17:27:12.000189-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "line_source": "espn_draftkings",
+        "same_book": true,
+        "fallback": false,
+        "home_margin": -2.5,
+        "total": 40.5,
+        "spread_display": "SEA -2.5",
+        "kickoff_utc": "2026-10-16T00:15Z",
+        "espn_id": "401872995"
+      },
       "selection": {
         "model_margin": -3.3028418099,
         "base_margin": -2.2966324665,
@@ -63,8 +76,19 @@
           "SEA: using Sam Darnold from the depth chart and injury report (schedule listed Drew Lock)"
         ]
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "espn_draftkings"
     },
     {
       "game_id": "2026_06_HOU_JAX",
