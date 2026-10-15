@@ -1,4 +1,5 @@
 """Kickoff clock and week handoff. The data load must not outrun the slate."""
+import hashlib
 import json
 from datetime import datetime, timedelta, timezone
 
@@ -10,6 +11,17 @@ from nfl_lab.refresh import _capture_closes, run
 
 UTC = timezone.utc
 KICK = datetime(2026, 10, 13, 0, 15, tzinfo=UTC)
+
+
+@pytest.fixture(autouse=True)
+def isolated_api(monkeypatch, tmp_path):
+    """Publication during refresh tests must never touch the checked-in API."""
+    from nfl_lab import publish, refresh
+
+    api = tmp_path / "api"
+    monkeypatch.setattr(publish, "PUBLIC_API", api)
+    monkeypatch.setattr(publish, "load_card", lambda season, week: refresh.load_card(season, week))
+    return api
 
 
 def _schedule_row(week, game_id, away, home, spread, total, kick_score=None):
@@ -328,7 +340,7 @@ def test_espn_lines_stick_when_nflverse_reload_fails(monkeypatch):
     assert message is not None and "kickoff passed" in message
 
 
-def test_graded_week_is_kept_when_the_next_card_fails(monkeypatch, capsys):
+def test_graded_week_is_kept_when_the_next_card_fails(monkeypatch, capsys, isolated_api):
     """Week 5 grades, week 6 has no line: grades saved, exit 2 commits, job still fails."""
     from nfl_lab import cli
     from nfl_lab.odds_espn import PartialSnapshot
@@ -359,12 +371,29 @@ def test_graded_week_is_kept_when_the_next_card_fails(monkeypatch, capsys):
     monkeypatch.setattr("nfl_lab.refresh.write_site",
                         lambda *a, **k: pytest.fail("no site write without a next card"))
 
+    from nfl_lab.publish import write_saved_weeks
+
+    write_saved_weeks()
+    before = json.loads((isolated_api / "saved_weeks.json").read_text())
+    assert before["weeks"][0]["games"][0]["spread_outcome"] is None
+
     with pytest.raises(PartialSnapshot) as err:
         run("refresh")
     assert "week(s) [5] saved" in str(err.value)
     assert isinstance(err.value.__cause__, MissingLineError)
     assert store["5"]["games"][0]["grading"]["spread_outcome"] == "win"
+    for key, value in ungraded["games"][0]["pick_time"].items():
+        assert store["5"]["games"][0]["pick_time"][key] == value
+    assert store["5"]["games"][0]["selection"] == ungraded["games"][0]["selection"]
     assert "6" not in store  # no fabricated week 6 card or line
+    payload = json.loads((isolated_api / "saved_weeks.json").read_text())
+    assert payload["current_week"] == 5
+    assert payload["weeks"][0]["games"][0]["spread_outcome"] == "win"
+    freshness = json.loads((isolated_api / "freshness.json").read_text())
+    entry = next(row for row in freshness["files"] if row["path"] == "api/saved_weeks.json")
+    raw = (isolated_api / "saved_weeks.json").read_bytes()
+    assert entry["sha256"] == hashlib.sha256(raw).hexdigest()
+    assert entry["bytes"] == len(raw)
 
     # The CLI maps this to exit 2: nightly.yml commits, then fails the job.
     # Start from the ungraded card again; an unchanged re-grade is exit 1.
@@ -406,7 +435,7 @@ _PRE = {"home_margin": 2.5, "total": 47.5, "source": "espn_scoreboard",
         "same_book": True, "captured_at": "2026-10-12T23:45:00+00:00"}
 
 
-def test_unchanged_regrade_keeps_exit_1_when_the_next_card_fails(monkeypatch, capsys):
+def test_unchanged_regrade_keeps_exit_1_when_the_next_card_fails(monkeypatch, capsys, isolated_api):
     """Week 5 was already graded on a prior run: re-grading changes nothing, so exit 1."""
     from nfl_lab import cli
     from nfl_lab.odds_espn import PartialSnapshot
@@ -416,11 +445,40 @@ def test_unchanged_regrade_keeps_exit_1_when_the_next_card_fails(monkeypatch, ca
     with pytest.raises(PartialSnapshot):
         run("refresh")  # first run grades week 5 (exit-2 path)
     settled = json.loads(json.dumps(store))
+    published = {path.name: path.read_bytes() for path in isolated_api.iterdir()}
 
     monkeypatch.setattr("sys.argv", ["nfl-lab", "refresh"])
     assert cli.main() == 1
     assert store == settled  # nothing new to commit
+    assert {path.name: path.read_bytes() for path in isolated_api.iterdir()} == published
     assert "next pick card failed" not in capsys.readouterr().err
+
+
+def test_completed_week_partial_snapshot_publishes_grades_before_exit(monkeypatch, isolated_api):
+    """Missing completed-game closes still leave final scores visible on exit 2."""
+    from nfl_lab.odds_espn import PartialSnapshot
+    from nfl_lab.publish import write_saved_weeks
+
+    _week5_done_week6_open(monkeypatch)
+    schedules = pd.DataFrame([
+        _schedule_row(5, "2026_05_BUF_LA", "BUF", "LA", None, None, kick_score=(30, 20)),
+        _schedule_row(6, "2026_06_SEA_DEN", "SEA", "DEN", -3.0, 45.0),
+    ])
+    monkeypatch.setattr("nfl_lab.refresh.load_schedules", lambda *a, **k: schedules)
+    store = _week5_store(monkeypatch, None)
+    write_saved_weeks()
+
+    with pytest.raises(PartialSnapshot, match="kickoff passed"):
+        run("refresh")
+
+    assert store["5"]["games"][0]["pre_kickoff"] is None
+    assert "6" not in store
+    payload = json.loads((isolated_api / "saved_weeks.json").read_text())
+    assert payload["weeks"][0]["games"][0]["spread_outcome"] == "win"
+    assert payload["weeks"][0]["games"][0]["home_score"] == 30
+    freshness = json.loads((isolated_api / "freshness.json").read_text())
+    entry = next(row for row in freshness["files"] if row["path"] == "api/saved_weeks.json")
+    assert entry["sha256"] == hashlib.sha256((isolated_api / "saved_weeks.json").read_bytes()).hexdigest()
 
 
 def test_partial_snapshot_from_next_card_is_not_rewrapped(monkeypatch):

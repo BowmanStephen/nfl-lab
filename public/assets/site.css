@@ -1090,7 +1090,26 @@ details.notice .why { text-decoration: underline; }
 details.notice a { display: inline-flex; align-items: center; min-height: var(--tap); }
 .final-line { font-size: var(--fs-call); font-weight: 600; }
 #main h2 { margin: 1.5rem 0 0.25rem; border: 0; padding: 0; }
-.games { border-top: 1px solid var(--hair-strong); }
+.games { border-top: 1px solid var(--hair-strong); list-style: none; margin: 0; padding: 0; }
+/* Official pick links open index.html#b-<game>. Hold a light accent tint, then fade it out. */
+@keyframes target-row-fade {
+  0%, 80% { background-color: color-mix(in srgb, var(--accent) 18%, var(--paper)); }
+  100% { background-color: transparent; }
+}
+.games li:target {
+  background-color: color-mix(in srgb, var(--accent) 18%, var(--paper));
+  box-shadow: inset 3px 0 0 var(--accent);
+  animation: target-row-fade 2.5s ease forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .games li:target {
+    animation: none;
+    background-color: color-mix(in srgb, var(--accent) 18%, var(--paper));
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+}
+.missed-pick { font-size: var(--fs-small); margin: 0.35rem 0 0.5rem; }
+.missed-pick a { display: inline-flex; align-items: center; min-height: var(--tap); }
 .game-row, .agree-group { border-bottom: 1px solid var(--hair); }
 .game-row.placeholder { min-height: 72px; }
 .row-toggle {
@@ -1104,7 +1123,7 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 .chip { font-weight: 700; color: var(--ink); border: 1px solid var(--hair-strong); border-radius: 4px; padding: 0 6px; font-size: var(--fs-small); }
 .when { display: inline-flex; gap: 0.5rem; align-items: center; white-space: nowrap; }
 .tag { color: var(--caution); }
-.call { display: block; font-size: var(--fs-call); font-weight: 600; line-height: 1.35; margin-top: 4px; }
+.call { display: block; font-size: var(--fs-call); font-weight: 500; line-height: 1.35; margin-top: 4px; }
 .quiet .call { font-weight: 500; font-size: var(--fs-body); }
 .row-panel { padding: 0 16px 12px; }
 .pick { color: var(--accent); font-weight: 600; margin: 0 0 0.5rem; font-size: var(--fs-body); font-family: var(--sans); letter-spacing: 0; line-height: var(--lh); }
@@ -1124,6 +1143,28 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 .score { color: var(--ink); font-weight: 600; }
 .retry { min-height: var(--tap); padding: 0 16px; font: inherit; font-weight: 600; background: var(--ink); color: var(--paper); border: 0; border-radius: var(--radius); cursor: pointer; }
 .next-link a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 600; }
+
+/* One compact row above Our picks. No motion of its own. */
+.up-next[hidden] { display: none; }
+.up-next-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0.15rem;
+  box-sizing: border-box;
+  min-height: var(--tap);
+  margin: 0.75rem 0 0;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--hair);
+  font-family: var(--sans);
+  font-size: var(--fs-small);
+  line-height: 1.4;
+}
+.up-next-kicker { color: var(--muted); font-weight: 600; }
+.up-next-game, .up-next-vegas { white-space: nowrap; }
+.up-next-game { color: var(--ink); font-weight: 600; }
+.up-next-vegas { color: var(--vegas); }
 
 /* ---------- Track record ---------- */
 .tr-tiles { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--ink); margin: 1.5rem 0 0.75rem; max-width: 46rem; }
@@ -1172,4 +1213,10 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
   color: var(--muted);
   margin: 0 0 0.35rem;
 }
+
+/* Lean label on pick rows (display only; see leanLabel in site.js) */
+.lean { font-family: var(--sans); font-size: max(0.84rem, 13.5px); color: var(--muted); margin-right: 0.5rem; }
+.lean.strong { color: var(--ink); font-weight: 600; }
+.take { display: block; font-size: var(--fs-call); font-weight: 600; color: var(--ink); line-height: 1.35; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
 .totals-paused { color: var(--muted); font-size: var(--fs-small); margin: 0.75rem 0 0; }

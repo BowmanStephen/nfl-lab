@@ -58,8 +58,8 @@ def precompute(pbp: pd.DataFrame, schedules: pd.DataFrame, seasons: list[int]) -
     return {"priors": priors, "current": current, "games": pd.concat(games, ignore_index=True)}
 
 
-def features(pre: dict, regress: float, plays_equiv: float) -> pd.DataFrame:
-    """Per-game causal rating features for one hyperparameter setting."""
+def features(pre: dict, regress: float, plays_equiv: float, *, defense_sign: int = 1) -> pd.DataFrame:
+    """Causal features. Only the frozen historical report uses defense_sign=-1."""
     out = []
     for (s, w), cur in pre["current"].items():
         r = shrink_to_prior(cur, pre["priors"][s], prior_plays_equiv=plays_equiv,
@@ -68,9 +68,11 @@ def features(pre: dict, regress: float, plays_equiv: float) -> pd.DataFrame:
         g["home_rating"] = g["home_team"].map(r["rating"])
         g["away_rating"] = g["away_team"].map(r["rating"])
         g["rating_diff"] = g["home_rating"] - g["away_rating"]
-        # Defense = EPA allowed (higher = leakier), so it adds to the scoring environment.
+        # Defense = EPA allowed (higher = leakier). Keep the old sign available
+        # only to reproduce the model paired with the preregistered coefficients.
         g["off_env"] = (g["home_team"].map(r["shrunk_off_epa"]) + g["away_team"].map(r["shrunk_off_epa"])
-                        + g["home_team"].map(r["shrunk_def_epa"]) + g["away_team"].map(r["shrunk_def_epa"]))
+                        + defense_sign * g["home_team"].map(r["shrunk_def_epa"])
+                        + defense_sign * g["away_team"].map(r["shrunk_def_epa"]))
         out.append(g)
     f = pd.concat(out, ignore_index=True)
     f["margin"] = f["home_score"] - f["away_score"]

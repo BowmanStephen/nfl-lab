@@ -6,6 +6,33 @@ function esc(value) {
   }[ch]));
 }
 
+// One abbreviation on the page. Saved cards keep nflverse codes (the Rams are
+// "LA"); readers see LAR, and the Chargers stay LAC. Every visible team code
+// goes through displayTeam.
+//
+// The model page's rating rows use the short names "LA Rams" and "LA Chargers".
+// displayTeam rewrites those labels too ("Los Angeles Rams" / "Los Angeles
+// Chargers") so the chart does not print LA next to LAR. Display only: the
+// ratings JSON still stores team "LA", which grading and line matching need.
+const DISPLAY_TEAM = {
+  LA: "LAR",
+  "LA Rams": "Los Angeles Rams",
+  "LA Chargers": "Los Angeles Chargers",
+};
+
+function displayTeam(code) {
+  if (code == null) return "";
+  const text = String(code);
+  return Object.prototype.hasOwnProperty.call(DISPLAY_TEAM, text) ? DISPLAY_TEAM[text] : text;
+}
+
+function displaySpread(text) {
+  const raw = String(text ?? "");
+  const space = raw.indexOf(" ");
+  if (space === -1) return displayTeam(raw);
+  return displayTeam(raw.slice(0, space)) + raw.slice(space);
+}
+
 function fmt(n, digits = 1) {
   if (n == null || Number.isNaN(Number(n))) return "n/a";
   const v = Number(n);
@@ -50,16 +77,28 @@ function gapChart(model, line) {
 
 function marginPlain(homeMargin, home, away) {
   const m = Number(homeMargin);
+  const homeLabel = displayTeam(home);
+  const awayLabel = displayTeam(away);
   if (!Number.isFinite(m)) return "n/a";
   if (Math.abs(m) < 0.05) return "pick'em";
-  if (m > 0) return `${home} by ${Math.abs(m).toFixed(1)}`;
-  return `${away} by ${Math.abs(m).toFixed(1)}`;
+  if (m > 0) return `${homeLabel} by ${Math.abs(m).toFixed(1)}`;
+  return `${awayLabel} by ${Math.abs(m).toFixed(1)}`;
+}
+
+// Spread from the given side's point of view (negative = that side gives points).
+function sideLine(game, side) {
+  const line = Number(game.pick_time.home_margin);
+  return side === game.home_team ? -line : line;
+}
+
+// Swap ASCII hyphen-minus before a number for a real minus sign (−) in display text.
+function minusSign(text) {
+  return String(text).replace(/-(?=\d)/g, "\u2212");
 }
 
 function pickLineDisplay(game, side) {
-  const line = Number(game.pick_time.home_margin);
-  const signed = side === game.home_team ? -line : line;
-  return `${side} ${fmt(signed)}`;
+  const signed = sideLine(game, side);
+  return `${displayTeam(side)} ${fmt(signed)}`;
 }
 
 function compareBlock(lineLabel, lineValue, modelLabel, modelValue) {
@@ -109,17 +148,17 @@ function spreadCards(games) {
       const notes = (s.qb_notes || []).map((n) => `<p class="note">${esc(n)}</p>`).join("");
       const edge = Math.abs(s.spread_edge);
       return `<article class="card pick-card">
-        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
+        <header><strong>${esc(displayTeam(g.away_team))} at ${esc(displayTeam(g.home_team))}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
         <p class="side">${esc(pickPrice)}</p>
         ${compareBlock(
           `home margin ${fmt(line)}`,
-          g.pick_time.spread_display || fmt(line),
+          displaySpread(g.pick_time.spread_display || fmt(line)),
           `home margin ${fmt(s.model_margin)}`,
           marginPlain(s.model_margin, g.home_team, g.away_team),
         )}
-        <p class="edge-line"><span>Gap</span><b>${fmt(edge)}</b><em>pts toward ${esc(side)}</em></p>
+        <p class="edge-line"><span>Gap</span><b>${fmt(edge)}</b><em>pts toward ${esc(displayTeam(side))}</em></p>
         <p class="meta">Line saved ${esc(whenCT(g.pick_time.captured_at))}, ${esc(g.pick_time.provider)}</p>
-        <p class="meta">Starting QBs: ${esc(g.away_team)} ${esc(s.away_qb)}, ${esc(g.home_team)} ${esc(s.home_qb)}</p>
+        <p class="meta">Starting QBs: ${esc(displayTeam(g.away_team))} ${esc(s.away_qb)}, ${esc(displayTeam(g.home_team))} ${esc(s.home_qb)}</p>
         ${notes}
       </article>`;
     }).join("");
@@ -162,7 +201,7 @@ function totalCards(games) {
       const edge = Math.abs(s.total_edge);
       const sideLabel = `${s.total_pick} ${tot.toFixed(1)}`;
       return `<article class="card pick-card">
-        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
+        <header><strong>${esc(displayTeam(g.away_team))} at ${esc(displayTeam(g.home_team))}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
         <p class="side">${esc(sideLabel)}</p>
         ${compareBlock(
           `Vegas total ${tot.toFixed(1)}`,
@@ -192,7 +231,7 @@ function noPickCards(games) {
       const s = g.selection;
       const label = s.total_voided ? "Voided total" : "No pick";
       return `<article class="card quiet-card">
-        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(label)}</span></header>
+        <header><strong>${esc(displayTeam(g.away_team))} at ${esc(displayTeam(g.home_team))}</strong><span class="meta">${esc(label)}</span></header>
         <p>${esc(noPickReason(g))}</p>
         <div class="nums nums-compact">
           <div><span>Spread gap</span><b>${fmt(s.spread_edge)}</b></div>
@@ -249,7 +288,7 @@ function nowMs() {
   return Number.isFinite(t) ? t : Date.now();
 }
 
-function fullName(abbr) { return homeNames[abbr] || abbr; }
+function fullName(abbr) { return homeNames[abbr] || displayTeam(abbr); }
 
 function kickoffCT(iso) {
   if (!iso) return "";
@@ -284,7 +323,7 @@ function homeSentence(g) {
   } else {
     x = modelPlain(g);
   }
-  return `Our model says ${x}. Vegas says ${g.pick_time.spread_display}.`;
+  return `Our model says ${x}. Vegas says ${minusSign(displaySpread(g.pick_time.spread_display))}.`;
 }
 
 function pageState(card, fresh, now) {
@@ -298,7 +337,7 @@ function pageState(card, fresh, now) {
 }
 
 function teamsLabel(g) {
-  return `<span class="teams" aria-label="${esc(fullName(g.away_team))} at ${esc(fullName(g.home_team))}"><span class="chip">${esc(g.away_team)}</span> <span class="at" aria-hidden="true">@</span> <span class="chip">${esc(g.home_team)}</span></span>`;
+  return `<span class="teams" aria-label="${esc(fullName(g.away_team))} at ${esc(fullName(g.home_team))}"><span class="chip">${esc(displayTeam(g.away_team))}</span> <span class="at" aria-hidden="true">@</span> <span class="chip">${esc(displayTeam(g.home_team))}</span></span>`;
 }
 
 function savedCT(iso) {
@@ -311,12 +350,12 @@ function savedCT(iso) {
 function detailList(g, withGap) {
   const s = g.selection;
   const rows = [
-    ["Vegas says", `${g.pick_time.spread_display} (saved ${savedCT(g.pick_time.captured_at_ct || g.pick_time.captured_at)})`],
+    ["Vegas says", `${displaySpread(g.pick_time.spread_display)} (saved ${savedCT(g.pick_time.captured_at_ct || g.pick_time.captured_at)})`],
     ["Our model says", modelPlain(g)],
   ];
   if (withGap) rows.push(["Model's gap vs Vegas", `${Math.abs(Number(s.spread_edge)).toFixed(1)} points toward ${fullName(s.spread_pick)}`]);
-  if (g.pre_kickoff && g.pre_kickoff.spread_display) rows.push(["Line before kickoff", g.pre_kickoff.spread_display]);
-  if (s.away_qb || s.home_qb) rows.push(["Quarterbacks", `${g.away_team} ${s.away_qb || "not listed"} · ${g.home_team} ${s.home_qb || "not listed"}`]);
+  if (g.pre_kickoff && g.pre_kickoff.spread_display) rows.push(["Line before kickoff", displaySpread(g.pre_kickoff.spread_display)]);
+  if (s.away_qb || s.home_qb) rows.push(["Quarterbacks", `${displayTeam(g.away_team)} ${s.away_qb || "not listed"} · ${displayTeam(g.home_team)} ${s.home_qb || "not listed"}`]);
   if (s.total_voided) rows.push(["Over/under", `Over/under pick pulled (${s.total_pick} ${Number(g.pick_time.total).toFixed(1)})`]);
   const notes = s.qb_notes || [];
   const qb = notes.length
@@ -341,15 +380,35 @@ function resultPill(g) {
   return "";
 }
 
-function expander(g, cls, sentence, extra, detail) {
+// Plain-words pick for the collapsed row, e.g. "Take PHI −1.5" (real minus sign);
+// a zero line reads "Take PHI (pick'em)".
+function takeParts(g) {
+  const side = g.selection.spread_pick;
+  const shown = displayTeam(side);
+  const signed = sideLine(g, side);
+  if (!Number.isFinite(signed) || signed === 0) {
+    return { text: `Take ${shown} (pick'em)`, spoken: `Take ${shown} pick'em` };
+  }
+  const n = Math.abs(signed).toFixed(1);
+  return signed < 0
+    ? { text: `Take ${shown} \u2212${n}`, spoken: `Take ${shown} minus ${n}` }
+    : { text: `Take ${shown} +${n}`, spoken: `Take ${shown} plus ${n}` };
+}
+function takeText(g) { return takeParts(g).text; }
+function takeTag(g) {
+  const t = takeParts(g);
+  return `<span class="take num"><span class="take-pick" aria-hidden="true">${esc(t.text)}</span><span class="sr-only">${esc(t.spoken)}</span></span>`;
+}
+
+function expander(g, cls, sentence, extra, detail, lead = "") {
   const id = String(g.game_id).replace(/[^\w-]/g, "");
-  return `<div class="game-row ${cls}">
-    <button class="row-toggle" id="b-${id}" aria-expanded="false" aria-controls="d-${id}">
-      <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
+  return `<li class="game-row ${cls}" id="b-${id}" tabindex="-1">
+    <button class="row-toggle" id="toggle-${id}" aria-expanded="false" aria-controls="d-${id}">
+${lead ? `      ${lead}\n` : ""}      <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
       <span class="call">${esc(sentence)}</span>
     </button>
-    <div class="row-panel" id="d-${id}" role="region" aria-labelledby="b-${id}" hidden>${detail}</div>
-  </div>`;
+    <div class="row-panel" id="d-${id}" role="region" aria-labelledby="toggle-${id}" hidden>${detail}</div>
+  </li>`;
 }
 
 function isScored(g) {
@@ -358,7 +417,7 @@ function isScored(g) {
 
 function scoreTag(g) {
   const gr = g.grading;
-  return `<span class="final-score num">Final: ${esc(g.away_team)} ${esc(gr.away_score)} · ${esc(g.home_team)} ${esc(gr.home_score)}</span>`;
+  return `<span class="final-score num">Final: ${esc(displayTeam(g.away_team))} ${esc(gr.away_score)} · ${esc(displayTeam(g.home_team))} ${esc(gr.home_score)}</span>`;
 }
 
 // Final score, "In progress", or the kickoff time in CT, from the saved card.
@@ -373,13 +432,26 @@ function statusTag(g, now) {
   return timeTag(g.kickoff_utc);
 }
 
+// Display-only confidence label. Rule: |spread gap| >= 3.5 points (about a 60%
+// modeled cover chance at the 13.38-point margin sigma) is a "strong lean";
+// any other locked pick is a "lean". Does not change the pick or the data.
+// Single source of truth for the cutoff; used by home, previews, and track record.
+const STRONG_LEAN_EDGE = 3.5;
+function leanLabel(g) {
+  return Math.abs(Number(g.selection.spread_edge)) >= STRONG_LEAN_EDGE ? "Strong lean" : "Lean";
+}
+function leanTag(g) {
+  const label = leanLabel(g);
+  return `<span class="${label === "Strong lean" ? "lean strong" : "lean"}">${esc(label)}</span>`;
+}
+
 function gameRow(g, state, now) {
   if (state === "final" || isScored(g)) return finalRow(g);
   const started = statusTag(g, now) === timeTag(g.kickoff_utc) ? "" : ` ${statusTag(g, now)}`;
   const price = pickLineDisplay(g, g.selection.spread_pick);
   return expander(g, "pick-row", homeSentence(g),
-    started ? started.trim() : timeTag(g.kickoff_utc),
-    `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`);
+    `${started ? started.trim() : timeTag(g.kickoff_utc)} ${leanTag(g)}`,
+    `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`, takeTag(g));
 }
 
 function finalRow(g) {
@@ -397,7 +469,7 @@ function tooCloseRow(g, now = Date.now()) {
   const pulled = g.selection.total_voided
     ? ` Over/under pick pulled (${g.selection.total_pick} ${Number(g.pick_time.total).toFixed(1)}).`
     : "";
-  return expander(g, "quiet", `Too close to call. Vegas says ${g.pick_time.spread_display}; our model says ${modelPlain(g)}.${pulled}`,
+  return expander(g, "quiet", `Too close to call. Vegas says ${displaySpread(g.pick_time.spread_display)}; our model says ${modelPlain(g)}.${pulled}`,
     statusTag(g, now), detailList(g, false));
 }
 
@@ -408,26 +480,108 @@ function agreeGroup(games, now = Date.now()) {
     const pulled = g.selection.total_voided
       ? ` · Over/under pick pulled (${g.selection.total_pick} ${Number(g.pick_time.total).toFixed(1)})`
       : "";
-    return `<li id="b-${id}">${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}${esc(pulled)}</li>`;
+    return `<li id="b-${id}" tabindex="-1">${esc(displayTeam(g.away_team))} @ ${esc(displayTeam(g.home_team))} · ${statusTag(g, now)} · Vegas ${esc(displaySpread(g.pick_time.spread_display))}, us ${esc(modelPlain(g))}${esc(pulled)}</li>`;
   }).join("");
-  return `<div class="agree-group">
+  return `<li class="agree-group">
     <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span></button>
     <div class="row-panel" id="d-agree" role="region" aria-labelledby="b-agree" hidden><ul>${items}</ul></div>
-  </div>`;
+  </li>`;
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function weekFromAnchor(id) {
+  const match = /^b-\d{4}_(\d{2})_/.exec(id);
+  return match ? Number(match[1]) : 0;
+}
+
+function showMissedPick(id) {
+  const week = weekFromAnchor(id);
+  const notices = $("notices");
+  if (!week || !notices || notices.querySelector(".missed-pick")) return;
+  const note = document.createElement("p");
+  note.className = "missed-pick";
+  note.setAttribute("role", "status");
+  note.innerHTML = `That pick was from week ${week}, <a href="recaps/week${week}.html">see the recap →</a>`;
+  notices.appendChild(note);
+}
+
+// Home "Our picks" are spread picks. A qualifying total is not one of them.
+function isSpreadPick(g) {
+  return Boolean(g.selection && g.selection.spread_qualifies);
+}
+
+function unplayedGame(g, now) {
+  if (isScored(g)) return false;
+  const kick = Date.parse(g.kickoff_utc);
+  return Number.isFinite(kick) && kick > now;
+}
+
+// Keep the Up next row consistent with the site's shared team labels.
+function upNextTeam(code) {
+  return displayTeam(code);
+}
+
+function upNextMarkup(g) {
+  const raw = String((g.pick_time && g.pick_time.spread_display) || "").trim();
+  let vegas = "";
+  if (raw) {
+    const space = raw.indexOf(" ");
+    const head = space === -1 ? raw : raw.slice(0, space);
+    const rest = space === -1 ? "" : raw.slice(space);
+    vegas = `Vegas says ${upNextTeam(head)}${rest}`;
+  }
+  const match = `${upNextTeam(g.away_team)} at ${upNextTeam(g.home_team)}`;
+  const line = vegas ? `<span class="up-next-vegas">${esc(vegas)}</span>` : "";
+  return `<p class="up-next-row"><span class="up-next-kicker">Up next</span><span class="up-next-game">${esc(match)}, ${timeTag(g.kickoff_utc)}</span>${line}</p>`;
+}
+
+function showUpNext(games, now) {
+  const slot = $("up-next");
+  if (!slot) return;
+  const upcoming = games.filter((g) => unplayedGame(g, now))
+    .sort((a, b) => Date.parse(a.kickoff_utc) - Date.parse(b.kickoff_utc));
+  const next = upcoming[0];
+  const kick = next ? Date.parse(next.kickoff_utc) : NaN;
+  const sameKick = upcoming.filter((g) => Date.parse(g.kickoff_utc) === kick);
+  if (!next || sameKick.some(isSpreadPick)) {
+    slot.hidden = true;
+    slot.innerHTML = "";
+    return;
+  }
+  slot.hidden = false;
+  slot.innerHTML = upNextMarkup(next);
 }
 
 function revealHash() {
   const id = (location.hash || "").slice(1);
   if (!id) return;
-  const el = document.getElementById(id);
-  if (!el) return;
+  let el = document.getElementById(id);
+  if (!el) {
+    showMissedPick(id);
+    return;
+  }
+  const reduced = prefersReducedMotion();
+  // Rows are built after load, so :target stays blank until the hash is applied again.
+  if (!el.matches(":target")) {
+    location.replace(location.pathname + location.search + location.hash);
+    el = document.getElementById(id);
+    if (!el) {
+      showMissedPick(id);
+      return;
+    }
+  }
   const panel = el.closest("[hidden]");
   if (panel) {
     panel.hidden = false;
     const btn = document.getElementById(panel.getAttribute("aria-labelledby") || "");
     if (btn) btn.setAttribute("aria-expanded", "true");
   }
-  el.scrollIntoView({ block: "center" });
+  el.tabIndex = -1;
+  el.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
+  el.focus({ preventScroll: true });
 }
 
 function bindToggles(root) {
@@ -446,8 +600,8 @@ function showHomeError() {
   $("retry").addEventListener("click", () => { location.reload(); });
 }
 
-async function recapExists(week) {
-  try { const r = await fetch(`recaps/week${week}.html`, { method: "HEAD" }); return r.ok; } catch { return false; }
+async function recapExists(week, prefix = "") {
+  try { const r = await fetch(`${prefix}recaps/week${week}.html`, { method: "HEAD" }); return r.ok; } catch { return false; }
 }
 
 async function previewExists(week) {
@@ -525,6 +679,7 @@ async function renderHome() {
   }
   if (state === "awaiting") notices.push('<p class="notice">Results are being graded. Check back soon.</p>');
   $("notices").innerHTML = notices.slice(0, 2).join("");
+  showUpNext(games, now);
   const voidNote = $("totals-void-note");
   if (voidNote) {
     if (card.totals_void_note) {
@@ -544,7 +699,7 @@ async function renderHome() {
   }
 
   if (state === "empty") {
-    $("games").innerHTML = `<p>No games on the card yet for week ${card.week}.</p>`;
+    $("games").innerHTML = `<li class="empty-row"><p>No games on the card yet for week ${card.week}.</p></li>`;
     $("picks-h").hidden = true; $("close-h").hidden = true;
   } else {
     $("picks-h").textContent = `Our picks (${picks.length})`;
@@ -570,82 +725,151 @@ function record(r) {
 }
 
 
-// Track record: did the team the model had ahead win? Derived from saved
-// projected margins and final scores already in report_card.json and picks.json.
-function trackRecordGames(rc, card) {
-  const out = [];
-  for (const g of (rc && rc.games) || []) {
-    out.push({ week: g.week, gameday: g.gameday || null, away: g.away_team, home: g.home_team,
-      margin: g.proj_margin, home_score: g.home_score, away_score: g.away_score, live: false });
+// Track record. Saved picks are every official card in saved_weeks.json, from
+// week 5 on. Unplayed games and open picks are the current week only, so a
+// finished week cannot change the "still to play" counts.
+function annotateTrackGame(g) {
+  const played = g.home_score != null && g.away_score != null;
+  let result = "pending";
+  if (played) {
+    const actual = g.home_score - g.away_score;
+    if (actual === 0) result = "tie";
+    else if (!g.margin) result = "nocall";
+    else result = (actual > 0) === (g.margin > 0) ? "right" : "wrong";
   }
-  for (const g of (card && card.games) || []) {
-    const gr = g.grading || {};
-    out.push({ week: g.week, gameday: g.gameday || null, away: g.away_team, home: g.home_team,
-      margin: g.selection.model_margin, home_score: gr.home_score, away_score: gr.away_score, live: true });
-  }
-  return out.map((g) => {
-    const played = g.home_score != null && g.away_score != null;
-    let result = "pending";
-    if (played) {
-      const actual = g.home_score - g.away_score;
-      if (actual === 0) result = "tie";
-      else if (!g.margin) result = "nocall";
-      else result = (actual > 0) === (g.margin > 0) ? "right" : "wrong";
-    }
-    return { ...g, said: g.margin > 0 ? g.home : g.away, result };
-  });
+  return { ...g, said: g.margin > 0 ? g.home : g.away, result };
 }
 
-function trackRecordWeeks(games) {
+function savedTrackGames(saved) {
+  const games = [];
+  for (const week of (saved && saved.weeks) || []) {
+    for (const g of week.games || []) {
+      games.push(annotateTrackGame({
+        week: g.week, gameday: g.gameday || null, away: g.away_team, home: g.home_team,
+        margin: g.model_margin, home_score: g.home_score, away_score: g.away_score, live: true,
+        spread_qualifies: Boolean(g.spread_qualifies), spread_outcome: g.spread_outcome ?? null,
+        total_active: Boolean(g.total_active), total_outcome: g.total_outcome ?? null,
+      }));
+    }
+  }
+  return games;
+}
+
+// Older saved-week payloads predate explicit pause metadata.
+function totalsPauseNote() {
+  return typeof TOTALS_PAUSED_NOTE === "string" ? TOTALS_PAUSED_NOTE : "";
+}
+
+function totalsArePaused(saved, note) {
+  const currentWeek = saved && saved.current_week;
+  const weeks = (saved && saved.weeks) || [];
+  const week = weeks.find((w) => w.week === currentWeek);
+  if (week && Object.prototype.hasOwnProperty.call(week, "totals_paused")) {
+    return Boolean(week.totals_paused);
+  }
+  const signal = note === undefined ? totalsPauseNote() : note;
+  if (!signal) return false;
+  return ((week && week.games) || []).some((g) => g.total_active);
+}
+
+function piece(n, singular, plural) {
+  return `${n} ${n === 1 ? singular : plural}`;
+}
+
+function remainingSentence(rem, totalsPaused) {
+  const showTotals = !totalsPaused;
+  if (rem.week == null || (!rem.games && !rem.spreads && (totalsPaused || !rem.totals))) return "";
+  const games = piece(rem.games, "game", "games");
+  const spreads = piece(rem.spreads, "locked spread", "locked spreads");
+  const riding = rem.games === 1 ? "it" : "them";
+  if (!showTotals) {
+    return `Week ${rem.week}: ${games} to go, with ${spreads} riding on ${riding}.`;
+  }
+  const totals = piece(rem.totals, "locked total", "locked totals");
+  return `Week ${rem.week}: ${games} to go, with ${spreads} and ${totals} riding on ${riding}.`;
+}
+
+function buildTrackRecord(rc, saved, options) {
+  const savedGames = savedTrackGames(saved);
+  const savedWeeks = new Set(savedGames.map((g) => g.week));
+  const look = [];
+  for (const g of (rc && rc.games) || []) {
+    if (savedWeeks.has(g.week)) continue;
+    look.push(annotateTrackGame({
+      week: g.week, gameday: g.gameday || null, away: g.away_team, home: g.home_team,
+      margin: g.proj_margin, home_score: g.home_score, away_score: g.away_score, live: false,
+      spread_qualifies: false, spread_outcome: null, total_active: false, total_outcome: null,
+    }));
+  }
+  const games = [...look, ...savedGames];
+  const count = (list, r) => list.filter((g) => g.result === r).length;
+  const right = count(savedGames, "right");
+  const wrong = count(savedGames, "wrong");
+  const decided = right + wrong;
+  const pct = decided ? `${Math.round((100 * right) / decided)}%` : "none yet";
+  const outcome = (r) => savedGames.filter((g) => g.spread_qualifies && g.spread_outcome === r).length;
+  const sw = outcome("win"), sl = outcome("loss"), sp = outcome("push");
+  const currentWeek = saved && saved.current_week != null ? saved.current_week : null;
+  const current = savedGames.filter((g) => g.week === currentWeek);
+  const unplayed = (g) => g.home_score == null || g.away_score == null;
+  const remaining = {
+    week: currentWeek,
+    games: current.filter(unplayed).length,
+    spreads: current.filter((g) => g.spread_qualifies && !g.spread_outcome).length,
+    totals: current.filter((g) => g.total_active && !g.total_outcome).length,
+  };
+  const totalsPaused = options && Object.prototype.hasOwnProperty.call(options, "totalsPaused")
+    ? Boolean(options.totalsPaused)
+    : totalsArePaused(saved);
+  const still = remainingSentence(remaining, totalsPaused);
   const weeks = new Map();
   for (const g of games) {
-    if (!weeks.has(g.week)) weeks.set(g.week, { week: g.week, live: g.live, right: 0, wrong: 0, ties: 0, pending: 0 });
+    if (!weeks.has(g.week)) weeks.set(g.week, { week: g.week, live: g.live, right: 0, wrong: 0, ties: 0, pending: 0, games: [] });
     const w = weeks.get(g.week);
+    w.games.push(g);
     if (g.result === "right") w.right += 1;
     else if (g.result === "wrong") w.wrong += 1;
     else if (g.result === "tie") w.ties += 1;
     else w.pending += 1;
   }
-  return [...weeks.values()].sort((a, b) => a.week - b.week);
-}
-
-async function renderTrackRecord() {
-  const [rc, card] = await Promise.all([load("report_card.json"), load("picks.json")]);
-  const nick = (t) => (rc.names && rc.names[t]) || t;
-  const games = trackRecordGames(rc, card);
-  const weeks = trackRecordWeeks(games);
-  const count = (list, r) => list.filter((g) => g.result === r).length;
-  const saved = games.filter((g) => g.live);
-  const look = games.filter((g) => !g.live);
-  const right = count(saved, "right");
-  const wrong = count(saved, "wrong");
-  const decided = right + wrong;
-  const pct = decided ? `${Math.round((100 * right) / decided)}%` : "none yet";
-  const spreads = ((card && card.games) || []).filter((g) => g.selection && g.selection.spread_qualifies);
-  const outcome = (r) => spreads.filter((g) => (g.grading || {}).spread_outcome === r).length;
-  const sw = outcome("win"), sl = outcome("loss"), sp = outcome("push");
-  const spPending = spreads.length - sw - sl - sp;
-  const tile = (label, num, gloss) =>
-    `<div class="tr-tile"><p class="label">${label}</p><p class="num">${num}</p><p class="tile-gloss">${gloss}</p></div>`;
-  const winnerGloss = decided ? `${pct} right. Did the team the model had ahead win?` : "Did the team the model had ahead win?";
-  const spreadGloss = `Did the pick beat the betting line?${spPending ? ` ${spPending} ${spPending > 1 ? "games are" : "game is"} left to play.` : ""}`;
-  $("tr-tiles").innerHTML =
-    tile("Picked the winner", `${right} of ${decided}`, winnerGloss) +
-    tile("Against the spread", `${sw}-${sl}-${sp}`, spreadGloss);
-  const ties = count(saved, "tie");
-  const pending = count(saved, "pending");
-  const liveWeeks = [...new Set(saved.map((g) => g.week))].sort((a, b) => a - b);
+  const liveWeeks = [...new Set(savedGames.map((g) => g.week))].sort((a, b) => a - b);
   const testWeeks = [...new Set(look.map((g) => g.week))].sort((a, b) => a - b);
   const bits = [];
   if (liveWeeks.length) bits.push(`Both tiles count only picks saved before kickoff. That starts in week ${liveWeeks[0]}.`);
+  const ties = count(savedGames, "tie");
   if (ties) bits.push(`${ties} tie${ties > 1 ? "s are" : " is"} left out because nobody won.`);
-  if (pending) bits.push(`${pending} game${pending > 1 ? "s have" : " has"} not been played yet.`);
+  if (still) bits.push(still);
   if (testWeeks.length) {
     const lr = count(look, "right");
     const ln = lr + count(look, "wrong");
     bits.push(`Weeks ${testWeeks[0]} to ${testWeeks[testWeeks.length - 1]} are a look back. Those picks were not posted ahead of time. The model got ${lr} of ${ln} right.`);
   }
-  $("tr-scope").textContent = bits.join(" ");
+  return {
+    winner: {
+      num: `${right} of ${decided}`,
+      gloss: decided ? `${pct} right. Did the team the model had ahead win?` : "Did the team the model had ahead win?",
+    },
+    spread: {
+      num: `${sw}-${sl}-${sp}`,
+      gloss: still ? `Did the pick beat the betting line? ${still}` : "Did the pick beat the betting line?",
+    },
+    scope: bits.join(" "),
+    remaining,
+    weeks: [...weeks.values()].sort((a, b) => a.week - b.week),
+  };
+}
+
+async function renderTrackRecord() {
+  const [rc, saved] = await Promise.all([load("report_card.json"), load("saved_weeks.json")]);
+  const nick = (t) => (rc.names && rc.names[t]) || t;
+  const view = buildTrackRecord(rc, saved);
+  const weeks = view.weeks;
+  const tile = (label, num, gloss) =>
+    `<div class="tr-tile"><p class="label">${label}</p><p class="num">${num}</p><p class="tile-gloss">${gloss}</p></div>`;
+  $("tr-tiles").innerHTML =
+    tile("Picked the winner", view.winner.num, view.winner.gloss) +
+    tile("Against the spread", view.spread.num, view.spread.gloss);
+  $("tr-scope").textContent = view.scope;
 
   $("tr-strip").innerHTML = weeks.slice(-5).map((w) => {
     const n = w.right + w.wrong;
@@ -659,7 +883,7 @@ async function renderTrackRecord() {
 
   const date = (d) => d ? new Date(`${d}T12:00:00`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) : "";
   $("tr-games").innerHTML = [...weeks].reverse().map((w) => {
-    const rows = games.filter((g) => g.week === w.week).map((g) => {
+    const rows = w.games.map((g) => {
       const hs = g.home_score, as = g.away_score;
       let line, pill;
       if (g.result === "pending") {
@@ -698,9 +922,9 @@ async function renderLedger() {
   $("live").innerHTML = picks.map((g) => {
     const s = g.selection;
     const bits = [];
-    if (s.spread_qualifies) bits.push(`${s.spread_pick}, ${Math.abs(s.spread_edge).toFixed(1)} pts off the spread`);
+    if (s.spread_qualifies) bits.push(`${displayTeam(s.spread_pick)}, ${Math.abs(s.spread_edge).toFixed(1)} pts off the spread (${leanLabel(g)})`);
     if (totalIsActive(s)) bits.push("over/under paused");
-    return `<tr><td>${esc(g.away_team)} at ${esc(g.home_team)}</td><td>${esc(bits.join("; "))}</td><td>${esc(whenCT(g.pick_time.captured_at))}</td></tr>`;
+    return `<tr><td>${esc(displayTeam(g.away_team))} at ${esc(displayTeam(g.home_team))}</td><td>${esc(bits.join("; "))}</td><td>${esc(whenCT(g.pick_time.captured_at))}</td></tr>`;
   }).join("");
   showTotalsPause(card);
 }
@@ -712,7 +936,7 @@ async function renderTeams() {
     <article class="team" id="${esc(t.team)}">
       <div>
         <strong>${i + 1}. ${esc(t.name)}</strong>
-        <div class="meta">${esc(t.team)}, rating ${fmt(t.rating, 3)}</div>
+        <div class="meta">${esc(displayTeam(t.team))}, rating ${fmt(t.rating, 3)}</div>
         ${spark(t.weekly)}
       </div>
       <div class="bars">
@@ -762,9 +986,9 @@ function powerChart(ratings) {
     const width = Math.max(0.4, Math.abs(pos(pts) - 50));
     const value = pointsLabel(pts);
     return `<li class="pw-row">
-      <span class="pw-team" aria-hidden="true">${esc(r.team)}</span>
+      <span class="pw-team" aria-hidden="true">${esc(displayTeam(r.team))}</span>
       <span class="pw-track" aria-hidden="true">${tickMarks}<i class="pw-bar ${pts >= 0 ? "up" : "down"}" style="left:${left.toFixed(2)}%;width:${width.toFixed(2)}%"></i></span>
-      <span class="pw-val"><span class="sr">${esc(r.name || r.team)} </span>${value}</span>
+      <span class="pw-val"><span class="sr">${esc(displayTeam(r.name || r.team))} </span>${value}</span>
     </li>`;
   }).join("");
   const scale = ticks.map((t) => `<span style="left:${pos(t).toFixed(2)}%">${t > 0 ? "+" : ""}${t}</span>`).join("");
@@ -784,8 +1008,10 @@ function gameScale(market, model) {
 
 function gamesChart(games) {
   return games.map((g) => {
+    const away = displayTeam(g.away);
+    const home = displayTeam(g.home);
     const pickBits = [];
-    if (g.spread_pick) pickBits.push(g.spread_pick);
+    if (g.spread_pick) pickBits.push(displaySpread(g.spread_pick));
     if (g.total_pick) pickBits.push(g.total_pick.replace("OVER", "Over").replace("UNDER", "Under"));
     const edgeBits = [];
     if (g.spread_pick) edgeBits.push(`${Math.abs(g.spread_edge).toFixed(1)} pts off the Vegas spread`);
@@ -795,10 +1021,10 @@ function gamesChart(games) {
     else if (g.total_voided) tag = "Voided total";
     // market_margin_home is the home spread (negative = home favored); flip it to a home margin for plotting
     const mktHome = -g.market_margin_home;
-    const byLine = (m) => Math.abs(m) < 0.05 ? "even" : `${m > 0 ? g.home : g.away} by ${Math.abs(m).toFixed(1).replace(/\.0$/, "")}`;
+    const byLine = (m) => Math.abs(m) < 0.05 ? "even" : `${displayTeam(m > 0 ? g.home : g.away)} by ${Math.abs(m).toFixed(1).replace(/\.0$/, "")}`;
     const sub = g.is_pick && edgeBits.length ? edgeBits.join(", ") : `Vegas says ${byLine(mktHome)}, our model says ${byLine(g.model_margin_home)}`;
     return `<div class="game-row${g.is_pick ? " is-pick" : ""}">
-      <div class="match">${esc(g.away)} at ${esc(g.home)}<small>${esc(tag)}</small></div>
+      <div class="match">${esc(away)} at ${esc(home)}<small>${esc(tag)}</small></div>
       ${gameScale(mktHome, g.model_margin_home)}
       <div class="edge-tag">${esc(sub)}</div>
     </div>`;
@@ -882,7 +1108,7 @@ function officialGames(card) {
     if (s.spread_qualifies) {
       const points = s.spread_pick === g.home_team ? -homeMargin : homeMargin;
       const text = `${points > 0 ? "+" : ""}${Math.abs(points % 1) < 0.05 ? Math.round(points) : points.toFixed(1)}`;
-      spreadPick = `${s.spread_pick} ${text}`;
+      spreadPick = `${displayTeam(s.spread_pick)} ${text}`;
     }
     let totalPick = null;
     if (totalIsActive(s)) {
@@ -995,7 +1221,7 @@ function rcDots(games, kind) {
     const o = g[outCol];
     const call = kind === "spread" ? g.spread_pick : g.total_pick;
     const word = o === "win" ? "covered" : o === "loss" ? "lost" : "pushed";
-    const tip = `${g.away_team} at ${g.home_team}: ${call} ${word}`;
+    const tip = `${displayTeam(g.away_team)} at ${displayTeam(g.home_team)}: ${displayTeam(call)} ${word}`;
     return `<i class="rc-dot ${esc(o)}" title="${esc(tip)}"><span class="sr">${esc(tip)}</span></i>`;
   }).join("");
 }
@@ -1013,7 +1239,7 @@ function rcWeeks(rc) {
 }
 
 function rcLesson(l, rc) {
-  const N = (t) => `the ${rc.names[t] || t}`;
+  const N = (t) => `the ${rc.names[t] || displayTeam(t)}`;
   const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
   const by = (m) => `${m > 0 ? N(l.home) : N(l.away)} by ${rcNum(Math.abs(m))}`;
   let saw = "", happened = "", number = "";
@@ -1035,11 +1261,15 @@ function rcLesson(l, rc) {
     const [la, lb] = rc.line_total_range;
     const mu = l.model_used;
     const offPts = rc.points_per_combined_off * (mu[l.home].off_epa + mu[l.away].off_epa);
+    // Reproduce the frozen report's original sign, including its known bug.
     const defPts = -rc.points_per_combined_off * (mu[l.home].def_epa + mu[l.away].def_epa);
-    const stingy = mu[l.home].def_epa < mu[l.away].def_epa ? l.home : l.away;
+    const leader = defPts >= 0
+      ? (mu[l.home].def_epa <= mu[l.away].def_epa ? l.home : l.away)
+      : (mu[l.home].def_epa >= mu[l.away].def_epa ? l.home : l.away);
+    const moved = (pts) => pts < 0 ? `took ${rcNum(Math.abs(pts))} off` : `added ${rcNum(Math.abs(pts))}`;
     saw = `The Vegas total was ${rcNum(l.line_total)} points. The model expected ${rcNum(l.model_total)}, ${rcNum(Math.abs(l.edge))} points ${l.edge > 0 ? "higher" : "lower"}, so it would have taken the ${side}.`;
     happened = `${l.final}, ${l.actual_total} points in all. That is ${rcNum(l.line_miss_pts)} ${l.actual_total < l.line_total ? "under" : "over"} the Vegas total.`;
-    number = `Every model total in weeks 1 to 4 landed between ${rcNum(pa)} and ${rcNum(pb)}, while the Vegas totals ran from ${rcNum(la)} to ${rcNum(lb)}. So low lines drew ${side}s, and ${side}s went ${rcRec(sideRec)}. Part of the reason is in the totals math itself. A defense that allows less adds projected points instead of taking them away. Here the two offenses ${offPts < 0 ? "took" : "added"} ${rcNum(Math.abs(offPts))} ${offPts < 0 ? "off" : ""}, and the defenses, led by ${N(stingy)}, ${defPts > 0 ? "added" : "took"} ${rcNum(Math.abs(defPts))} ${defPts > 0 ? "back" : "off"}.`;
+    number = `Every model total in weeks 1 to 4 landed between ${rcNum(pa)} and ${rcNum(pb)}, while the Vegas totals ran from ${rcNum(la)} to ${rcNum(lb)}. So low lines drew ${side}s, and ${side}s went ${rcRec(sideRec)}. This preserves the original sign bug: defense is EPA allowed, so a stingier defense should lower projected totals, but this model subtracted it. Here the two offenses ${moved(offPts)}, and the defenses, led by ${N(leader)}, ${moved(defPts)}.`;
   }
   return `<article class="rc-lesson">
     <p class="rc-tag ${l.outcome === "win" ? "hit" : "miss"}">${esc(l.label)}</p>
@@ -1081,7 +1311,7 @@ async function renderReportCard() {
     <p>Each week, the model only saw games already played. Week 3 used weeks 1 and 2. Week 4 used weeks 1 through 3. The settings were tuned on ${rc.model.fit_on_seasons[0]} to ${rc.model.fit_on_seasons[rc.model.fit_on_seasons.length - 1]} and frozen before any of this.</p>
     <p>To check for leaks, we took each week and swapped every play from that week onward for random numbers (${lc.map((x) => x.plays_poisoned.toLocaleString("en-US")).join(", ")} plays for weeks ${lc.map((x) => x.week).join(", ")}) and ran it again. That week's numbers did not move at all. Scrambling earlier weeks did move weeks 3 and 4, so the test can catch a leak.</p>
     <p>Weeks 1 and 2 ran on ${rc.model.prior_seasons[0]} to ${rc.model.prior_seasons[2]} alone. With one game per team, the model's strength-of-schedule step cancels out, so 2026 games start counting in week 3.</p>
-    <p>Grading uses the final Vegas lines from nflverse. This is the same model as the 2022 to 2025 test (${fmtPct(h.spread_win_rate)} on spreads, ${fmtPct(h.total_win_rate)} on totals), without the starting-QB adjustment the live card uses. Four weeks is a small sample in either direction.</p>
+    <p>Grading uses the final Vegas lines from nflverse. ${esc(rc.model.note)} The 2022 to 2025 test remains ${fmtPct(h.spread_win_rate)} on spreads and ${fmtPct(h.total_win_rate)} on totals. Four weeks is a small sample in either direction.</p>
     ${pending}`;
   const t = new Date(rc.generated_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/Chicago" });
   $("rc-foot").textContent = `Backtest generated ${t} CT. Final Vegas lines and scores from nflverse. This is a research record, not betting advice.`;
@@ -1092,9 +1322,10 @@ function officialLine(game, names) {
   const parts = [];
   if (selection.spread_qualifies) {
     const side = selection.spread_pick;
+    const shown = displayTeam(side);
     const price = pickLineDisplay(game, side);
-    const number = price.slice(String(side).length).trim();
-    parts.push(`${(names && names[side]) || side} ${number}`);
+    const number = price.slice(shown.length).trim();
+    parts.push(`${displayTeam((names && names[side]) || shown)} ${number} (${leanLabel(game)})`);
   }
   if (totalIsActive(selection)) {
     const word = selection.total_pick === "over" ? "Over" : "Under";
@@ -1116,12 +1347,16 @@ async function renderOfficialPicks() {
   const pageWeek = Number(document.body.dataset.week || 0);
   const pageSeason = Number(document.body.dataset.season || 0);
   if (pageWeek && (Number(picks.week) !== pageWeek || (pageSeason && Number(picks.season) !== pageSeason))) {
-    // picks.json has moved on to a later week. Point at the saved card instead of saying "no pick".
+    // Prefer the historical recap, with the saved card as a fallback when none exists.
     const nn = String(pageWeek).padStart(2, "0");
     const cardUrl = `https://github.com/BowmanStephen/nfl-lab/blob/main/output/live/${pageSeason || picks.season}-week-${nn}.json`;
+    const hasRecap = await recapExists(pageWeek, "../");
     nodes.forEach((node) => {
       const link = node.querySelector("a");
-      if (link) { link.href = cardUrl; link.textContent = "Saved card"; }
+      if (link) {
+        link.href = hasRecap ? `../recaps/week${pageWeek}.html` : cardUrl;
+        link.textContent = hasRecap ? `Week ${pageWeek} recap` : "Saved card";
+      }
       const slot = node.querySelector(".official-line");
       if (slot) slot.textContent = `official picks for week ${pageWeek}`;
     });
@@ -1132,34 +1367,45 @@ async function renderOfficialPicks() {
     const id = node.dataset.game;
     const game = byId[id];
     const link = node.querySelector("a");
-    if (link && id) link.href = `../index.html#b-${id}`;
+    if (link && id) {
+      const week = /^(\d{4})_(\d{2})_/.exec(id);
+      link.href = game || !week
+        ? `../index.html#b-${id}`
+        : `../recaps/week${Number(week[2])}.html`;
+    }
     const slot = node.querySelector(".official-line");
     if (slot) slot.textContent = game ? officialLine(game, names) : "no pick";
   });
 }
 
-const page = document.body.dataset.page;
-const run = {
-  home: renderHome,
-  ledger: renderLedger,
-  teams: renderTeams,
-  freshness: renderFreshness,
-  model: renderModel,
-  "report-card": renderReportCard,
-}[page];
-if (document.querySelector(".official-pick")) {
-  renderOfficialPicks().catch(() => {
-    document.querySelectorAll(".official-line").forEach((slot) => {
-      if (!slot.textContent) slot.textContent = "unavailable";
-    });
-  });
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { buildTrackRecord, totalsArePaused, displayTeam, displaySpread, takeText, leanLabel, gameRow, officialLine, STRONG_LEAN_EDGE };
 }
-if (run) {
-  run().catch((err) => {
-    const slot = $("health") || $("live-record") || $("when") || $("ratings-caption") || $("rec-caption") || document.querySelector("main");
-    if (slot) {
-      if (slot.hidden) slot.hidden = false;
-      slot.textContent = "We couldn't load the latest numbers. Try refreshing.";
-    }
-  });
+
+if (typeof document !== "undefined" && document.body) {
+  const page = document.body.dataset.page;
+  const run = {
+    home: renderHome,
+    ledger: renderLedger,
+    teams: renderTeams,
+    freshness: renderFreshness,
+    model: renderModel,
+    "report-card": renderReportCard,
+  }[page];
+  if (document.querySelector(".official-pick")) {
+    renderOfficialPicks().catch(() => {
+      document.querySelectorAll(".official-line").forEach((slot) => {
+        if (!slot.textContent) slot.textContent = "unavailable";
+      });
+    });
+  }
+  if (run) {
+    run().catch((err) => {
+      const slot = $("health") || $("live-record") || $("when") || $("ratings-caption") || $("rec-caption") || document.querySelector("main");
+      if (slot) {
+        if (slot.hidden) slot.hidden = false;
+        slot.textContent = "We couldn't load the latest numbers. Try refreshing.";
+      }
+    });
+  }
 }
