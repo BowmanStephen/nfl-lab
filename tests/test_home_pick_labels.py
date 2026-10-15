@@ -1,9 +1,11 @@
 """Home pick rows show a lean label and the plain pick, not a win percentage.
 
 Live-data tests derive every expected value from public/api/picks.json, so they
-stay green whatever week it is (including weeks with no qualifying picks).
+stay green whatever week it is, including graded picks and weeks with no
+qualifying picks.
 Underdog '+', strong lean, and pick'em are checked against a fixed fixture card.
 """
+from copy import deepcopy
 import html as htmllib
 import json
 import re
@@ -17,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SITE_JS = ROOT / "public" / "assets" / "site.js"
 PICKS = ROOT / "public" / "api" / "picks.json"
 STRONG = float(re.search(r"STRONG_LEAN_EDGE = ([\d.]+)", SITE_JS.read_text()).group(1))
-NOW = "2026-01-01T00:00:00Z"  # before any fixture kickoff, so rows render as upcoming
+NOW = "2026-01-01T00:00:00Z"  # before kickoff; scored games still render as final
 
 SCRIPT = r"""
 const site = require(process.argv[1]);
@@ -114,14 +116,24 @@ def _check_rows(card, rows):
     by_id = _rows_by_id(card, rows)
     assert len(by_id) == len(rows)
     for g, html in by_id.values():
-        shown, spoken, label = _expected(g)
         text = _text(html)
-        assert text.startswith(f"{shown} {label} "), text
+        grading = g.get("grading") or {}
+        if grading.get("home_score") is not None and grading.get("away_score") is not None:
+            assert 'class="game-row pick-row final"' in html
+            assert f"Final: {g['away_team']} {grading['away_score']} · {g['home_team']} {grading['home_score']}" in text
+            assert f"We had {g['selection']['spread_pick']} " in text
+            assert 'class="take num"' not in html
+            assert 'class="lean' not in html
+            continue
+        shown, spoken, label = _expected(g)
+        assert text.startswith(f"{shown} "), text
         h = html.replace("&#39;", "'")
         assert f'<span class="take-pick" aria-hidden="true">{shown}</span>' in h
         assert f'<span class="sr-only">{spoken}</span>' in h
-        take = re.search(r'<span class="take num">.*?</span> <span class="lean', h).group(0)
-        assert "aria-label" not in take
+        take = re.search(r'<span class="take num">(.*?)\n', h).group(1)
+        assert "aria-label" not in take and 'class="lean' not in take
+        assert re.search(r'<span class="when">.*?<span class="lean(?: strong)?">'
+                         + re.escape(label) + r'</span></span>', h)
         assert not re.search(r"\d+(\.\d+)?\s*%", text), text
         vegas = re.search(r"Vegas says ([^.]*(?:\.\d)?)\.", text).group(1)
         assert "-" not in vegas and vegas == g["pick_time"]["spread_display"].replace("-", "\u2212"), vegas
@@ -159,14 +171,14 @@ def test_fixture_rows(fixture_card):
 def test_fixture_underdog_shows_plus(fixture_card):
     by_id = _rows_by_id(FIXTURE, _run(fixture_card)["rows"])
     _, html = by_id["FX_DOG"]
-    assert _text(html).startswith("Take CCC +10.5 Lean "), _text(html)
+    assert _text(html).startswith("Take CCC +10.5 "), _text(html)
     assert '<span class="sr-only">Take CCC plus 10.5</span>' in html
 
 
 def test_fixture_favorite_strong_lean(fixture_card):
     by_id = _rows_by_id(FIXTURE, _run(fixture_card)["rows"])
     _, html = by_id["FX_FAV"]
-    assert _text(html).startswith("Take BBB \u22123.0 Strong lean "), _text(html)
+    assert _text(html).startswith("Take BBB \u22123.0 "), _text(html)
     assert 'class="lean strong"' in html
     assert '<span class="sr-only">Take BBB minus 3.0</span>' in html
 
@@ -174,5 +186,18 @@ def test_fixture_favorite_strong_lean(fixture_card):
 def test_fixture_pickem(fixture_card):
     by_id = _rows_by_id(FIXTURE, _run(fixture_card)["rows"])
     _, html = by_id["FX_PK"]
-    assert _text(html).startswith("Take FFF (pick'em) Lean "), _text(html)
+    assert _text(html).startswith("Take FFF (pick'em) "), _text(html)
     assert "Take FFF pick'em</span>" in html.replace("&#39;", "'")
+
+
+@pytest.mark.parametrize("graded_count", [1, len(FIXTURE["games"])])
+def test_rows_with_graded_picks(tmp_path, graded_count):
+    card = deepcopy(FIXTURE)
+    for g in card["games"][:graded_count]:
+        g["grading"] = {"home_score": 24, "away_score": 17, "actual_margin": 7,
+                        "spread_outcome": "win"}
+    path = tmp_path / "graded-card.json"
+    path.write_text(json.dumps(card))
+    data = _run(path)
+    assert len(data["rows"]) == len(card["games"])
+    _check_rows(card, data["rows"])

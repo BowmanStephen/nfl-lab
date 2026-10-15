@@ -345,7 +345,7 @@ function takeParts(g) {
 function takeText(g) { return takeParts(g).text; }
 function takeTag(g) {
   const t = takeParts(g);
-  return `<span class="take num"><span class="take-pick" aria-hidden="true">${esc(t.text)}</span><span class="sr-only">${esc(t.spoken)}</span> ${leanTag(g)}</span>`;
+  return `<span class="take num"><span class="take-pick" aria-hidden="true">${esc(t.text)}</span><span class="sr-only">${esc(t.spoken)}</span></span>`;
 }
 
 function expander(g, cls, sentence, extra, detail, lead = "") {
@@ -398,7 +398,7 @@ function gameRow(g, state, now) {
   const started = statusTag(g, now) === timeTag(g.kickoff_utc) ? "" : ` ${statusTag(g, now)}`;
   const price = pickLineDisplay(g, g.selection.spread_pick);
   return expander(g, "pick-row", homeSentence(g),
-    `${started ? started.trim() : timeTag(g.kickoff_utc)}`,
+    `${started ? started.trim() : timeTag(g.kickoff_utc)} ${leanTag(g)}`,
     `<p class="pick num">Pick: ${esc(price)}</p>${detailList(g, true)}`, takeTag(g));
 }
 
