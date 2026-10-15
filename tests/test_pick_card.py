@@ -65,6 +65,15 @@ LOCKED_SPREADS = {
 }
 
 
+
+@pytest.fixture
+def totals_unpaused(monkeypatch):
+    """Cards locked before the totals pause (e.g. week 5) carry qualifying totals.
+    These tests cover how those already-locked totals are graded and voided."""
+    from nfl_lab import picks
+    monkeypatch.setattr(picks, "TOTALS_PAUSED", False)
+
+
 def _proj(game_id, away, home, margin, total):
     return {
         "game_id": game_id,
@@ -229,7 +238,7 @@ def test_closes_from_schedule_keeps_the_home_margin_sign():
     assert closes[("PHI", "JAX")]["total"] == 41.5
 
 
-def test_kickoff_passed_stores_nflverse_and_does_not_call_it_clv():
+def test_kickoff_passed_stores_nflverse_and_does_not_call_it_clv(totals_unpaused):
     games = build_games(
         [_proj("g1", "TB", "DAL", 4, 50)],
         [_line("TB", "DAL", 10, 47)],
@@ -336,7 +345,7 @@ def test_window_captures_pre_kickoff():
     assert games[0]["pick_time"]["home_margin"] == 10
 
 
-def test_voided_total_is_not_scored_and_the_spread_still_is():
+def test_voided_total_is_not_scored_and_the_spread_still_is(totals_unpaused):
     game = build_games(
         [_proj("g1", "TB", "DAL", 4, 50)],
         [_line("TB", "DAL", 10, 47)],
@@ -371,7 +380,7 @@ def test_voided_total_is_not_scored_and_the_spread_still_is():
     assert total_is_active(sel) is False
 
 
-def test_merge_keeps_a_voided_total():
+def test_merge_keeps_a_voided_total(totals_unpaused):
     first = build_games(
         [_proj("g1", "TB", "DAL", 4, 50)],
         [_line("TB", "DAL", 10, 47)],
@@ -398,7 +407,7 @@ def test_merge_keeps_a_voided_total():
     assert merged["games"][0]["pick_time"]["total"] == 47
 
 
-def test_voided_total_drops_off_the_model_chart():
+def test_voided_total_drops_off_the_model_chart(totals_unpaused):
     both = build_games(
         [_proj("g1", "PHI", "JAX", 1, 46)],
         [_line("PHI", "JAX", 6.5, 42.5)],
@@ -537,6 +546,113 @@ def test_week5_voids_only_the_eight_totals():
         if game["game_id"] in VOIDED_TOTALS:
             assert row["total_pick"] is None
         assert row["is_pick"] is game["selection"]["spread_qualifies"]
+
+
+WEEK6_VOID_NOTE = (
+    "The 6 week-6 over/under picks were voided Oct 15: "
+    "the over/under model went 6-18 on weeks 1-4, so we've paused over/unders. "
+    "The spread picks stand."
+)
+WEEK6_VOID_REASON = (
+    "Voided Thu Oct 15 by Stephen's decision: the over/under model went 6-18 on weeks 1-4, "
+    "so over/unders are paused."
+)
+# game_id -> (total_pick, locked total). These six are the only voided week-6 markets.
+WEEK6_VOIDED_TOTALS = {
+    "2026_06_SEA_DEN": ("over", 40.5),
+    "2026_06_BAL_CLE": ("over", 40.5),
+    "2026_06_CAR_PHI": ("over", 41.5),
+    "2026_06_CHI_ATL": ("under", 49.5),
+    "2026_06_PIT_TB": ("over", 40.5),
+    "2026_06_ARI_LA": ("under", 52.5),
+}
+# game_id -> (spread_pick, pick-time home margin, spread display). The four that still stand.
+WEEK6_SPREADS = {
+    "2026_06_CAR_PHI": ("PHI", 1.5, "PHI -1.5"),
+    "2026_06_TEN_IND": ("IND", 7.0, "IND -7"),
+    "2026_06_ARI_LA": ("ARI", 13.5, "LAR -13.5"),
+    "2026_06_WAS_SF": ("SF", 7.5, "SF -7.5"),
+}
+
+
+def test_week6_voids_only_the_six_totals():
+    live = json.loads((LIVE_DIR / "2026-week-06.json").read_text())
+    published = json.loads((PUBLIC_API / "picks.json").read_text())
+    assert published == live
+    assert live["season"] == 2026
+    assert live["week"] == 6
+    assert live["official_lock"] is True
+    assert live["created_at"] == "2026-10-13T11:27:41.742842+00:00"
+    assert live["rule"] == {"spread_edge_min": 2.0, "total_edge_min": 3.0}
+    assert live["totals_void_note"] == WEEK6_VOID_NOTE
+    assert live["health"]["wins"] == 2
+    assert live["health"]["losses"] == 4
+    assert live["health"]["pushes"] == 1
+    assert live["health"]["settled_picks"] == 7
+    week5 = json.loads((LIVE_DIR / "2026-week-05.json").read_text())
+    assert week5["totals_void_note"] == VOID_NOTE
+    assert week5["health"]["wins"] == 2
+    voided = []
+    spreads = []
+    for game in live["games"]:
+        sel = game["selection"]
+        assert game.get("grading") is None
+        assert "voided" not in sel
+        if sel["spread_qualifies"]:
+            pick, margin, display = WEEK6_SPREADS[game["game_id"]]
+            assert sel["spread_pick"] == pick
+            assert game["pick_time"]["home_margin"] == margin
+            assert game["pick_time"]["spread_display"] == display
+            spreads.append(game["game_id"])
+        if game["game_id"] in WEEK6_VOIDED_TOTALS:
+            total_pick, total = WEEK6_VOIDED_TOTALS[game["game_id"]]
+            assert sel["total_qualifies"] is True
+            assert sel["total_pick"] == total_pick
+            assert game["pick_time"]["total"] == total
+            assert sel["total_voided"] is True
+            assert sel["total_void_reason"] == WEEK6_VOID_REASON
+            assert total_is_active(sel) is False
+            voided.append(game["game_id"])
+        else:
+            assert sel["total_qualifies"] is False
+            assert "total_voided" not in sel
+            assert total_is_active(sel) is False
+    assert voided == list(WEEK6_VOIDED_TOTALS)
+    assert spreads == list(WEEK6_SPREADS)
+    summary = json.loads((PUBLIC_API / "summary.json").read_text())
+    assert summary["week"] == 6
+    assert summary["n_spread_picks"] == 4
+    assert summary["n_total_picks"] == 0
+    assert summary["health"]["wins"] == 2
+    assert summary["health"]["losses"] == 4
+    assert summary["health"]["pushes"] == 1
+    model = json.loads((PUBLIC_API / "model.json").read_text())
+    by_game = {row["game"]: row for row in model["games"]}
+    for game in live["games"]:
+        row = by_game[f"{game['away_team']}@{game['home_team']}"]
+        if game["game_id"] in WEEK6_VOIDED_TOTALS:
+            assert row["total_pick"] is None
+        assert row["is_pick"] is game["selection"]["spread_qualifies"]
+    assert by_game["CAR@PHI"]["spread_pick"] == "PHI -1.5"
+    assert by_game["TEN@IND"]["spread_pick"] == "IND -7"
+    assert by_game["ARI@LA"]["spread_pick"] == "ARI +13.5"
+    assert by_game["WAS@SF"]["spread_pick"] == "SF -7.5"
+    home = (PUBLIC_API.parent / "index.html").read_text()
+    assert WEEK6_VOID_NOTE in home
+    previews = (PUBLIC_API.parent / "previews" / "week6.html").read_text()
+    assert WEEK6_VOID_NOTE in previews
+    for phrase in (
+        "More than 40.5 points",
+        "more than 42.5 points",
+        "more than 39.5 points",
+        "Fewer than 51.5 points",
+        "yes, on both",
+        "yes on the total",
+        "yes, on the total. Our model is 3.3",
+        "yes, on the total. The model is 5.9",
+    ):
+        assert phrase not in previews
+    assert previews.count("Over/under voided Oct 15") == 6
 
 
 def test_nflverse_sign_matches_tb_at_dal_draftkings_lock():
