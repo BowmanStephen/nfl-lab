@@ -71,7 +71,7 @@ def test_pause_note_shows_when_a_total_would_be_active(tmp_path):
     page = (ROOT / "public" / "index.html").read_text()
     assert page.index('id="totals-paused"') > page.index('id="games"')
     assert re.search(
-        r'id="games">.*?</div></div>\s*<p class="totals-paused" id="totals-paused" hidden>',
+        r'id="games">.*?</li></ul>\s*<p class="totals-paused" id="totals-paused" hidden>',
         page,
     )
 

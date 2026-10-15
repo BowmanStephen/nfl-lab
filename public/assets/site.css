@@ -1090,7 +1090,26 @@ details.notice .why { text-decoration: underline; }
 details.notice a { display: inline-flex; align-items: center; min-height: var(--tap); }
 .final-line { font-size: var(--fs-call); font-weight: 600; }
 #main h2 { margin: 1.5rem 0 0.25rem; border: 0; padding: 0; }
-.games { border-top: 1px solid var(--hair-strong); }
+.games { border-top: 1px solid var(--hair-strong); list-style: none; margin: 0; padding: 0; }
+/* Official pick links open index.html#b-<game>. Hold a light accent tint, then fade it out. */
+@keyframes target-row-fade {
+  0%, 80% { background-color: color-mix(in srgb, var(--accent) 18%, var(--paper)); }
+  100% { background-color: transparent; }
+}
+.games li:target {
+  background-color: color-mix(in srgb, var(--accent) 18%, var(--paper));
+  box-shadow: inset 3px 0 0 var(--accent);
+  animation: target-row-fade 2.5s ease forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .games li:target {
+    animation: none;
+    background-color: color-mix(in srgb, var(--accent) 18%, var(--paper));
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+}
+.missed-pick { font-size: var(--fs-small); margin: 0.35rem 0 0.5rem; }
+.missed-pick a { display: inline-flex; align-items: center; min-height: var(--tap); }
 .game-row, .agree-group { border-bottom: 1px solid var(--hair); }
 .game-row.placeholder { min-height: 72px; }
 .row-toggle {

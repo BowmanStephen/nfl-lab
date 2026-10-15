@@ -402,13 +402,13 @@ function takeTag(g) {
 
 function expander(g, cls, sentence, extra, detail, lead = "") {
   const id = String(g.game_id).replace(/[^\w-]/g, "");
-  return `<div class="game-row ${cls}">
-    <button class="row-toggle" id="b-${id}" aria-expanded="false" aria-controls="d-${id}">
+  return `<li class="game-row ${cls}" id="b-${id}" tabindex="-1">
+    <button class="row-toggle" id="toggle-${id}" aria-expanded="false" aria-controls="d-${id}">
 ${lead ? `      ${lead}\n` : ""}      <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
       <span class="call">${esc(sentence)}</span>
     </button>
-    <div class="row-panel" id="d-${id}" role="region" aria-labelledby="b-${id}" hidden>${detail}</div>
-  </div>`;
+    <div class="row-panel" id="d-${id}" role="region" aria-labelledby="toggle-${id}" hidden>${detail}</div>
+  </li>`;
 }
 
 function isScored(g) {
@@ -480,12 +480,32 @@ function agreeGroup(games, now = Date.now()) {
     const pulled = g.selection.total_voided
       ? ` · Over/under pick pulled (${g.selection.total_pick} ${Number(g.pick_time.total).toFixed(1)})`
       : "";
-    return `<li id="b-${id}">${esc(displayTeam(g.away_team))} @ ${esc(displayTeam(g.home_team))} · ${statusTag(g, now)} · Vegas ${esc(displaySpread(g.pick_time.spread_display))}, us ${esc(modelPlain(g))}${esc(pulled)}</li>`;
+    return `<li id="b-${id}" tabindex="-1">${esc(displayTeam(g.away_team))} @ ${esc(displayTeam(g.home_team))} · ${statusTag(g, now)} · Vegas ${esc(displaySpread(g.pick_time.spread_display))}, us ${esc(modelPlain(g))}${esc(pulled)}</li>`;
   }).join("");
-  return `<div class="agree-group">
+  return `<li class="agree-group">
     <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span></button>
     <div class="row-panel" id="d-agree" role="region" aria-labelledby="b-agree" hidden><ul>${items}</ul></div>
-  </div>`;
+  </li>`;
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function weekFromAnchor(id) {
+  const match = /^b-\d{4}_(\d{2})_/.exec(id);
+  return match ? Number(match[1]) : 0;
+}
+
+function showMissedPick(id) {
+  const week = weekFromAnchor(id);
+  const notices = $("notices");
+  if (!week || !notices || notices.querySelector(".missed-pick")) return;
+  const note = document.createElement("p");
+  note.className = "missed-pick";
+  note.setAttribute("role", "status");
+  note.innerHTML = `That pick was from week ${week}, <a href="recaps/week${week}.html">see the recap →</a>`;
+  notices.appendChild(note);
 }
 
 // Home "Our picks" are spread picks. A qualifying total is not one of them.
@@ -538,15 +558,30 @@ function showUpNext(games, now) {
 function revealHash() {
   const id = (location.hash || "").slice(1);
   if (!id) return;
-  const el = document.getElementById(id);
-  if (!el) return;
+  let el = document.getElementById(id);
+  if (!el) {
+    showMissedPick(id);
+    return;
+  }
+  const reduced = prefersReducedMotion();
+  // Rows are built after load, so :target stays blank until the hash is applied again.
+  if (!el.matches(":target")) {
+    location.replace(location.pathname + location.search + location.hash);
+    el = document.getElementById(id);
+    if (!el) {
+      showMissedPick(id);
+      return;
+    }
+  }
   const panel = el.closest("[hidden]");
   if (panel) {
     panel.hidden = false;
     const btn = document.getElementById(panel.getAttribute("aria-labelledby") || "");
     if (btn) btn.setAttribute("aria-expanded", "true");
   }
-  el.scrollIntoView({ block: "center" });
+  el.tabIndex = -1;
+  el.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
+  el.focus({ preventScroll: true });
 }
 
 function bindToggles(root) {
@@ -565,8 +600,8 @@ function showHomeError() {
   $("retry").addEventListener("click", () => { location.reload(); });
 }
 
-async function recapExists(week) {
-  try { const r = await fetch(`recaps/week${week}.html`, { method: "HEAD" }); return r.ok; } catch { return false; }
+async function recapExists(week, prefix = "") {
+  try { const r = await fetch(`${prefix}recaps/week${week}.html`, { method: "HEAD" }); return r.ok; } catch { return false; }
 }
 
 async function renderHome() {
@@ -632,7 +667,7 @@ async function renderHome() {
   }
 
   if (state === "empty") {
-    $("games").innerHTML = `<p>No games on the card yet for week ${card.week}.</p>`;
+    $("games").innerHTML = `<li class="empty-row"><p>No games on the card yet for week ${card.week}.</p></li>`;
     $("picks-h").hidden = true; $("close-h").hidden = true;
   } else {
     $("picks-h").textContent = `Our picks (${picks.length})`;
@@ -1276,12 +1311,16 @@ async function renderOfficialPicks() {
   const pageWeek = Number(document.body.dataset.week || 0);
   const pageSeason = Number(document.body.dataset.season || 0);
   if (pageWeek && (Number(picks.week) !== pageWeek || (pageSeason && Number(picks.season) !== pageSeason))) {
-    // picks.json has moved on to a later week. Point at the saved card instead of saying "no pick".
+    // Prefer the historical recap, with the saved card as a fallback when none exists.
     const nn = String(pageWeek).padStart(2, "0");
     const cardUrl = `https://github.com/BowmanStephen/nfl-lab/blob/main/output/live/${pageSeason || picks.season}-week-${nn}.json`;
+    const hasRecap = await recapExists(pageWeek, "../");
     nodes.forEach((node) => {
       const link = node.querySelector("a");
-      if (link) { link.href = cardUrl; link.textContent = "Saved card"; }
+      if (link) {
+        link.href = hasRecap ? `../recaps/week${pageWeek}.html` : cardUrl;
+        link.textContent = hasRecap ? `Week ${pageWeek} recap` : "Saved card";
+      }
       const slot = node.querySelector(".official-line");
       if (slot) slot.textContent = `official picks for week ${pageWeek}`;
     });
@@ -1292,7 +1331,12 @@ async function renderOfficialPicks() {
     const id = node.dataset.game;
     const game = byId[id];
     const link = node.querySelector("a");
-    if (link && id) link.href = `../index.html#b-${id}`;
+    if (link && id) {
+      const week = /^(\d{4})_(\d{2})_/.exec(id);
+      link.href = game || !week
+        ? `../index.html#b-${id}`
+        : `../recaps/week${Number(week[2])}.html`;
+    }
     const slot = node.querySelector(".official-line");
     if (slot) slot.textContent = game ? officialLine(game, names) : "no pick";
   });
