@@ -7,13 +7,10 @@
         "rule": "low-contrast",
         "value": "*",
         "files": [
-          "public/index.html",
-          "public/ledger.html",
-          "public/model.html",
-          "public/previews/week6.html"
+          "public/index.html"
         ],
-        "createdAt": "2026-10-15T20:03:48.844Z",
-        "reason": "Agent verified dark-theme CSS and rendered browser colors: detector assumes white background for dark ink #f2efe7, muted #a9aa9f and hit #7fd3a6; actual body background is #181917. Shared theme tokens pass AA."
+        "createdAt": "2026-10-15T19:57:59.908Z",
+        "reason": "Agent: static analyzer mixes screen dark colors with print white background. Chromium measured all expanded homepage text in screen/light >=6.02:1, screen/dark >=7.51:1, and print in both schemes >=6.92:1 after dark palette restricted to screen. Recheck rendered themes when changing colors."
       }
     ]
   }
