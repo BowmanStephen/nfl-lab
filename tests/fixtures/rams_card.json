@@ -1,0 +1,34 @@
+{
+  "season": 2026,
+  "week": 1,
+  "games": [
+    {
+      "game_id": "fixture_rams",
+      "season": 2026,
+      "week": 1,
+      "kickoff_utc": "2026-12-01T20:00:00Z",
+      "away_team": "ARI",
+      "home_team": "LA",
+      "pick_time": {
+        "home_margin": 7,
+        "total": 44,
+        "spread_display": "LA -7",
+        "captured_at": "2026-11-01T12:00:00Z",
+        "provider": "DraftKings"
+      },
+      "selection": {
+        "model_margin": 9,
+        "spread_edge": 2,
+        "spread_pick": "LA",
+        "spread_qualifies": true,
+        "total_edge": 0,
+        "total_pick": "over",
+        "total_qualifies": false,
+        "away_qb": "Jacoby Brissett",
+        "home_qb": "Matthew Stafford",
+        "qb_notes": []
+      },
+      "grading": null
+    }
+  ]
+}

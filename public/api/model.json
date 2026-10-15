@@ -308,8 +308,8 @@
       "spread_edge": -0.8028418098999999,
       "total_edge": 3.284667258699997,
       "spread_pick": null,
-      "total_pick": "OVER 40.5",
-      "is_pick": true,
+      "total_pick": null,
+      "is_pick": false,
       "away_qb": "Sam Darnold",
       "home_qb": "Bo Nix"
     },
@@ -342,8 +342,8 @@
       "spread_edge": 0.4216712066000001,
       "total_edge": 5.133111091899998,
       "spread_pick": null,
-      "total_pick": "OVER 40.5",
-      "is_pick": true,
+      "total_pick": null,
+      "is_pick": false,
       "away_qb": "Tyler Huntley",
       "home_qb": "Deshaun Watson"
     },
@@ -359,7 +359,7 @@
       "spread_edge": 3.8191722429999997,
       "total_edge": 5.082044086099998,
       "spread_pick": "PHI -1.5",
-      "total_pick": "OVER 41.5",
+      "total_pick": null,
       "is_pick": true,
       "away_qb": "Bryce Young",
       "home_qb": "Jalen Hurts"
@@ -376,8 +376,8 @@
       "spread_edge": 1.7155480503,
       "total_edge": -3.869844430199997,
       "spread_pick": null,
-      "total_pick": "UNDER 49.5",
-      "is_pick": true,
+      "total_pick": null,
+      "is_pick": false,
       "away_qb": "Caleb Williams",
       "home_qb": "Michael Penix Jr."
     },
@@ -427,8 +427,8 @@
       "spread_edge": 1.6060203263,
       "total_edge": 3.453588858099998,
       "spread_pick": null,
-      "total_pick": "OVER 40.5",
-      "is_pick": true,
+      "total_pick": null,
+      "is_pick": false,
       "away_qb": "Aaron Rodgers",
       "home_qb": "Jalon Daniels"
     },
@@ -461,7 +461,7 @@
       "spread_edge": -2.8607708920999997,
       "total_edge": -3.1775765443999973,
       "spread_pick": "ARI +13.5",
-      "total_pick": "UNDER 52.5",
+      "total_pick": null,
       "is_pick": true,
       "away_qb": "Jacoby Brissett",
       "home_qb": "Matthew Stafford"

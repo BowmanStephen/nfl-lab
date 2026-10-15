@@ -209,9 +209,9 @@ def test_up_next_team_codes_go_through_one_helper():
         _game("2026_06_LA_SEA", "LA", "SEA", "2026-10-16T00:15:00Z", False, "LA -3.5", 0.4),
     ])
     row = render_home(card, "2026-10-14T18:00:00Z")
-    shown = row["hook"]
-    assert f"{shown} at SEA, Thu 7:15 PM CT" in row["text"]
-    assert f"Vegas says {shown} -3.5" in row["text"]
+    assert row["hook"] == "LAR"
+    assert "LAR at SEA, Thu 7:15 PM CT" in row["text"]
+    assert "Vegas says LAR -3.5" in row["text"]
 
 
 def test_up_next_row_when_next_kickoff_is_not_a_pick():
