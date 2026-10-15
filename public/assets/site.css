@@ -1125,6 +1125,28 @@ details.notice a { display: inline-flex; align-items: center; min-height: var(--
 .retry { min-height: var(--tap); padding: 0 16px; font: inherit; font-weight: 600; background: var(--ink); color: var(--paper); border: 0; border-radius: var(--radius); cursor: pointer; }
 .next-link a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 600; }
 
+/* One compact row above Our picks. No motion of its own. */
+.up-next[hidden] { display: none; }
+.up-next-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0.15rem;
+  box-sizing: border-box;
+  min-height: var(--tap);
+  margin: 0.75rem 0 0;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--hair);
+  font-family: var(--sans);
+  font-size: var(--fs-small);
+  line-height: 1.4;
+}
+.up-next-kicker { color: var(--muted); font-weight: 600; }
+.up-next-game, .up-next-vegas { white-space: nowrap; }
+.up-next-game { color: var(--ink); font-weight: 600; }
+.up-next-vegas { color: var(--vegas); }
+
 /* ---------- Track record ---------- */
 .tr-tiles { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--ink); margin: 1.5rem 0 0.75rem; max-width: 46rem; }
 .tr-tile { padding: 0.9rem 1rem 1rem 0; border-bottom: 1px solid var(--hair); }

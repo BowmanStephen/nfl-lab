@@ -488,6 +488,53 @@ function agreeGroup(games, now = Date.now()) {
   </div>`;
 }
 
+// Home "Our picks" are spread picks. A qualifying total is not one of them.
+function isSpreadPick(g) {
+  return Boolean(g.selection && g.selection.spread_qualifies);
+}
+
+function unplayedGame(g, now) {
+  if (isScored(g)) return false;
+  const kick = Date.parse(g.kickoff_utc);
+  return Number.isFinite(kick) && kick > now;
+}
+
+// Keep the Up next row consistent with the site's shared team labels.
+function upNextTeam(code) {
+  return displayTeam(code);
+}
+
+function upNextMarkup(g) {
+  const raw = String((g.pick_time && g.pick_time.spread_display) || "").trim();
+  let vegas = "";
+  if (raw) {
+    const space = raw.indexOf(" ");
+    const head = space === -1 ? raw : raw.slice(0, space);
+    const rest = space === -1 ? "" : raw.slice(space);
+    vegas = `Vegas says ${upNextTeam(head)}${rest}`;
+  }
+  const match = `${upNextTeam(g.away_team)} at ${upNextTeam(g.home_team)}`;
+  const line = vegas ? `<span class="up-next-vegas">${esc(vegas)}</span>` : "";
+  return `<p class="up-next-row"><span class="up-next-kicker">Up next</span><span class="up-next-game">${esc(match)}, ${timeTag(g.kickoff_utc)}</span>${line}</p>`;
+}
+
+function showUpNext(games, now) {
+  const slot = $("up-next");
+  if (!slot) return;
+  const upcoming = games.filter((g) => unplayedGame(g, now))
+    .sort((a, b) => Date.parse(a.kickoff_utc) - Date.parse(b.kickoff_utc));
+  const next = upcoming[0];
+  const kick = next ? Date.parse(next.kickoff_utc) : NaN;
+  const sameKick = upcoming.filter((g) => Date.parse(g.kickoff_utc) === kick);
+  if (!next || sameKick.some(isSpreadPick)) {
+    slot.hidden = true;
+    slot.innerHTML = "";
+    return;
+  }
+  slot.hidden = false;
+  slot.innerHTML = upNextMarkup(next);
+}
+
 function revealHash() {
   const id = (location.hash || "").slice(1);
   if (!id) return;
@@ -565,6 +612,7 @@ async function renderHome() {
   }
   if (state === "awaiting") notices.push('<p class="notice">Results are being graded. Check back soon.</p>');
   $("notices").innerHTML = notices.slice(0, 2).join("");
+  showUpNext(games, now);
   const voidNote = $("totals-void-note");
   if (voidNote) {
     if (card.totals_void_note) {
