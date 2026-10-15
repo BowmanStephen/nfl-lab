@@ -10,7 +10,7 @@ Did the play keep the offense on schedule? Counts as a success if it gains 40% o
 **Why both:** EPA rewards big plays; success rate rewards consistency. A team with high EPA but low success rate is living on explosives.
 
 ## Explosive play rate
-Share of plays that gain 20+ yards passing or 10+ rushing. Explosives are swingy week to week, so the model leans on EPA and success rate more.
+Share of plays that gain 20+ yards passing or 15+ rushing. Explosives are swingy week to week, so the model leans on EPA and success rate more.
 
 ## Early-down EPA
 EPA on 1st and 2nd down only. Third downs are noisy; early downs predict future scoring better.

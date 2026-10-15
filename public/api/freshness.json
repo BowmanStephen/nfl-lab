@@ -1,42 +1,42 @@
 {
-  "generated_at": "2026-10-13T06:27:41.851423-05:00",
-  "stale_after": "2026-10-14T18:27:41.851423-05:00",
+  "generated_at": "2026-10-15T11:03:42.200338-05:00",
+  "stale_after": "2026-10-16T23:03:42.200338-05:00",
   "files": [
     {
       "path": "api/baseline.json",
       "bytes": 4704,
       "sha256": "99c3be16425e12796a9ad9e458a5c9a2f28a3466dc8ac87c8bf52277a0ec6344",
-      "updated_at": "2026-10-13T06:27:41.851423-05:00"
+      "updated_at": "2026-10-15T06:23:54.234888-05:00"
     },
     {
       "path": "api/model.json",
-      "bytes": 14461,
-      "sha256": "bd4e927f423bdfc09f79fced5acf30b4ceeb4eeea9d962b28173b6c4fe226710",
-      "updated_at": "2026-10-13T06:27:41.851423-05:00"
+      "bytes": 14421,
+      "sha256": "bc10fb6f44228f22cbcb1835c36d61e488c6480223ba5a983072f738e0509022",
+      "updated_at": "2026-10-15T11:03:42.200338-05:00"
     },
     {
       "path": "api/picks.json",
-      "bytes": 22207,
-      "sha256": "61cd06902fd736bc724e60914740913aaa8f0ee5d7a7ecb2f49c7293fc878cc1",
-      "updated_at": "2026-10-13T06:27:41.851423-05:00"
+      "bytes": 23430,
+      "sha256": "60e24ed0df513d0ff4818ed1ee206b2050704ea148f249e2bb3ebfa900875ca8",
+      "updated_at": "2026-10-15T11:03:42.200338-05:00"
     },
     {
       "path": "api/report_card.json",
       "bytes": 48810,
       "sha256": "40fb20883563347c351f6c0a62991bd5eb3cda915bd5decd3251a6e5e00c0b58",
-      "updated_at": "2026-10-13T06:27:41.851423-05:00"
+      "updated_at": "2026-10-15T06:23:54.234888-05:00"
     },
     {
       "path": "api/summary.json",
       "bytes": 498,
-      "sha256": "95f35aebbaf90dd3b6c03bd1086f0e65f48dc2d48aa0896166ada69c045df713",
-      "updated_at": "2026-10-13T06:27:41.851423-05:00"
+      "sha256": "f4c14cea2e4626d689316e116ea833ddc29f06fcce81a612639e8f093936fc73",
+      "updated_at": "2026-10-15T11:03:42.200338-05:00"
     },
     {
       "path": "api/teams.json",
       "bytes": 34381,
       "sha256": "db599935af6b3f03a5651e17d36a47e927f3feb03488c6f6a7c700e9ded8f0d7",
-      "updated_at": "2026-10-13T06:27:41.851423-05:00"
+      "updated_at": "2026-10-15T06:23:54.234888-05:00"
     }
   ]
 }

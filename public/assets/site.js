@@ -129,6 +129,28 @@ function totalIsActive(selection) {
   return Boolean(selection.total_qualifies) && !selection.total_voided;
 }
 
+const TOTALS_PAUSED_NOTE = "We're not picking total points (over/under) right now while we fix that part of the model.";
+
+// The week-6 void note already says over/unders are paused. A second sentence
+// would repeat it. Future cards set totals_paused and have no void note.
+function totalsPauseApplies(card) {
+  if (!card || card.totals_void_note) return false;
+  if (card.totals_paused) return true;
+  return (card.games || []).some((g) => g.selection && totalIsActive(g.selection));
+}
+
+function showTotalsPause(card) {
+  const paused = $("totals-paused");
+  if (!paused) return;
+  if (totalsPauseApplies(card)) {
+    paused.hidden = false;
+    paused.textContent = TOTALS_PAUSED_NOTE;
+  } else {
+    paused.hidden = true;
+    paused.textContent = "";
+  }
+}
+
 function totalCards(games) {
   return games
     .filter((g) => totalIsActive(g.selection))
@@ -295,7 +317,7 @@ function detailList(g, withGap) {
   if (withGap) rows.push(["Model's gap vs Vegas", `${Math.abs(Number(s.spread_edge)).toFixed(1)} points toward ${fullName(s.spread_pick)}`]);
   if (g.pre_kickoff && g.pre_kickoff.spread_display) rows.push(["Line before kickoff", g.pre_kickoff.spread_display]);
   if (s.away_qb || s.home_qb) rows.push(["Quarterbacks", `${g.away_team} ${s.away_qb || "not listed"} · ${g.home_team} ${s.home_qb || "not listed"}`]);
-  if (!withGap && s.total_voided) rows.push(["Over/under", `Over/under pick pulled (${s.total_pick} ${Number(g.pick_time.total).toFixed(1)})`]);
+  if (s.total_voided) rows.push(["Over/under", `Over/under pick pulled (${s.total_pick} ${Number(g.pick_time.total).toFixed(1)})`]);
   const notes = s.qb_notes || [];
   const qb = notes.length
     ? `<p class="small">QB note: ${esc(notes[0])}</p>${notes.length > 1 ? `<details class="more"><summary>More</summary>${notes.slice(1).map((n) => `<p class="small">${esc(n)}</p>`).join("")}</details>` : ""}`
@@ -372,7 +394,10 @@ function finalRow(g) {
 }
 
 function tooCloseRow(g, now = Date.now()) {
-  return expander(g, "quiet", `Too close to call. Vegas says ${g.pick_time.spread_display}; our model says ${modelPlain(g)}.`,
+  const pulled = g.selection.total_voided
+    ? ` Over/under pick pulled (${g.selection.total_pick} ${Number(g.pick_time.total).toFixed(1)}).`
+    : "";
+  return expander(g, "quiet", `Too close to call. Vegas says ${g.pick_time.spread_display}; our model says ${modelPlain(g)}.${pulled}`,
     statusTag(g, now), detailList(g, false));
 }
 
@@ -380,7 +405,10 @@ function agreeGroup(games, now = Date.now()) {
   if (!games.length) return "";
   const items = games.map((g) => {
     const id = String(g.game_id).replace(/[^\w-]/g, "");
-    return `<li id="b-${id}">${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}</li>`;
+    const pulled = g.selection.total_voided
+      ? ` · Over/under pick pulled (${g.selection.total_pick} ${Number(g.pick_time.total).toFixed(1)})`
+      : "";
+    return `<li id="b-${id}">${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}${esc(pulled)}</li>`;
   }).join("");
   return `<div class="agree-group">
     <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span></button>
@@ -493,10 +521,16 @@ async function renderHome() {
     notices.push(`<p class="notice">This page hasn't updated since ${esc(savedCT(fresh.generated_at))}.</p>`);
   }
   if (state === "awaiting") notices.push('<p class="notice">Results are being graded. Check back soon.</p>');
-  if (games.some((g) => g.selection.total_voided) && notices.length < 2) {
-    notices.push(`<details class="notice"><summary>Over/under picks were pulled on Oct 8 after we found a bug. <span class="why">Why</span></summary><p class="small">${esc(card.totals_void_note || "")} <a href="report-card.html#totals">More on the 2026 replay</a></p></details>`);
-  }
   $("notices").innerHTML = notices.slice(0, 2).join("");
+  const voidNote = $("totals-void-note");
+  if (voidNote) {
+    if (card.totals_void_note) {
+      voidNote.hidden = false;
+      voidNote.textContent = card.totals_void_note;
+    } else {
+      voidNote.hidden = true;
+    }
+  }
 
   if (state === "final") {
     let w = 0, l = 0, p = 0;
@@ -516,6 +550,7 @@ async function renderHome() {
     $("close-h").hidden = !close.length;
     $("close-games").innerHTML = close.map((g) => tooCloseRow(g, now)).join("") + agreeGroup(agree, now);
   }
+  showTotalsPause(card);
   const prev = $("previews-link");
   if (prev) {
     renderPreviewLink(prev, previewLinkFor(card.week, await previewExists(card.week)));
@@ -659,9 +694,10 @@ async function renderLedger() {
     const s = g.selection;
     const bits = [];
     if (s.spread_qualifies) bits.push(`${s.spread_pick}, ${Math.abs(s.spread_edge).toFixed(1)} pts off the spread`);
-    if (totalIsActive(s)) bits.push(`${s.total_pick}, ${Math.abs(s.total_edge).toFixed(1)} pts off the total`);
+    if (totalIsActive(s)) bits.push("over/under paused");
     return `<tr><td>${esc(g.away_team)} at ${esc(g.home_team)}</td><td>${esc(bits.join("; "))}</td><td>${esc(whenCT(g.pick_time.captured_at))}</td></tr>`;
   }).join("");
+  showTotalsPause(card);
 }
 
 async function renderTeams() {
@@ -1048,11 +1084,18 @@ async function renderReportCard() {
 
 function officialLine(game, names) {
   const selection = game.selection || {};
-  if (!selection.spread_qualifies) return "no pick";
-  const side = selection.spread_pick;
-  const price = pickLineDisplay(game, side);
-  const number = price.slice(String(side).length).trim();
-  return `${(names && names[side]) || side} ${number}`;
+  const parts = [];
+  if (selection.spread_qualifies) {
+    const side = selection.spread_pick;
+    const price = pickLineDisplay(game, side);
+    const number = price.slice(String(side).length).trim();
+    parts.push(`${(names && names[side]) || side} ${number}`);
+  }
+  if (totalIsActive(selection)) {
+    const word = selection.total_pick === "over" ? "Over" : "Under";
+    parts.push(`${word} ${Number(game.pick_time.total).toFixed(1)}`);
+  }
+  return parts.length ? parts.join(", ") : "no pick";
 }
 
 async function renderOfficialPicks() {
@@ -1065,6 +1108,20 @@ async function renderOfficialPicks() {
   const picks = await picksRes.json();
   const teams = teamsRes.ok ? await teamsRes.json() : { teams: [] };
   const names = Object.fromEntries((teams.teams || []).map((t) => [t.team, t.name]));
+  const pageWeek = Number(document.body.dataset.week || 0);
+  const pageSeason = Number(document.body.dataset.season || 0);
+  if (pageWeek && (Number(picks.week) !== pageWeek || (pageSeason && Number(picks.season) !== pageSeason))) {
+    // picks.json has moved on to a later week. Point at the saved card instead of saying "no pick".
+    const nn = String(pageWeek).padStart(2, "0");
+    const cardUrl = `https://github.com/BowmanStephen/nfl-lab/blob/main/output/live/${pageSeason || picks.season}-week-${nn}.json`;
+    nodes.forEach((node) => {
+      const link = node.querySelector("a");
+      if (link) { link.href = cardUrl; link.textContent = "Saved card"; }
+      const slot = node.querySelector(".official-line");
+      if (slot) slot.textContent = `official picks for week ${pageWeek}`;
+    });
+    return;
+  }
   const byId = Object.fromEntries((picks.games || []).map((g) => [g.game_id, g]));
   nodes.forEach((node) => {
     const id = node.dataset.game;
