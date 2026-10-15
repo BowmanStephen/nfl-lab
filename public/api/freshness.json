@@ -22,9 +22,15 @@
     },
     {
       "path": "api/report_card.json",
-      "bytes": 48810,
-      "sha256": "40fb20883563347c351f6c0a62991bd5eb3cda915bd5decd3251a6e5e00c0b58",
-      "updated_at": "2026-10-15T06:23:54.234888-05:00"
+      "bytes": 49091,
+      "sha256": "f59870fd55bef75b896d750180d63e9df26003ebf35276903aeb3d41668f72bd",
+      "updated_at": "2026-10-15T14:16:53.055118-05:00"
+    },
+    {
+      "path": "api/saved_weeks.json",
+      "bytes": 11039,
+      "sha256": "3f67e55d9478428208f65ac754f458408d500f031d2b58ed7ac77d9adf50711c",
+      "updated_at": "2026-10-15T14:34:02.363562-05:00"
     },
     {
       "path": "api/summary.json",
