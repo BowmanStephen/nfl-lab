@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "public/index.html"
+        ],
+        "createdAt": "2026-10-15T19:58:08.574Z",
+        "reason": "Agent verified the static detector pairs dark-theme foreground tokens with white incorrectly; browser checks measured 6.31:1 light muted text and 7.51:1 dark muted text on the actual backgrounds, with primary text 15.35:1."
+      }
+    ]
+  }
+}

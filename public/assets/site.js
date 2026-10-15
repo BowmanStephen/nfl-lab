@@ -353,7 +353,11 @@ function detailList(g, withGap) {
     ["Vegas says", `${displaySpread(g.pick_time.spread_display)} (saved ${savedCT(g.pick_time.captured_at_ct || g.pick_time.captured_at)})`],
     ["Our model says", modelPlain(g)],
   ];
-  if (withGap) rows.push(["Model's gap vs Vegas", `${Math.abs(Number(s.spread_edge)).toFixed(1)} points toward ${fullName(s.spread_pick)}`]);
+  if (withGap) {
+    rows.push(["How this pick wins", spreadResult(g)]);
+    rows.push(["Model's gap vs Vegas", `${Math.abs(Number(s.spread_edge)).toFixed(1)} points toward ${fullName(s.spread_pick)}`]);
+    rows.push(["Lean label", `${leanLabel(g)} means a model-versus-line gap ${Math.abs(Number(s.spread_edge)) >= STRONG_LEAN_EDGE ? `of ${STRONG_LEAN_EDGE} points or more` : `below ${STRONG_LEAN_EDGE} points`}.`]);
+  }
   if (g.pre_kickoff && g.pre_kickoff.spread_display) rows.push(["Line before kickoff", displaySpread(g.pre_kickoff.spread_display)]);
   if (s.away_qb || s.home_qb) rows.push(["Quarterbacks", `${displayTeam(g.away_team)} ${s.away_qb || "not listed"} · ${displayTeam(g.home_team)} ${s.home_qb || "not listed"}`]);
   if (s.total_voided) rows.push(["Over/under", `Over/under pick pulled (${s.total_pick} ${Number(g.pick_time.total).toFixed(1)})`]);
@@ -400,12 +404,34 @@ function takeTag(g) {
   return `<span class="take num"><span class="take-pick" aria-hidden="true">${esc(t.text)}</span><span class="sr-only">${esc(t.spoken)}</span></span>`;
 }
 
+function spreadResult(g) {
+  const raw = g.pick_time && g.pick_time.home_margin;
+  if (raw == null || String(raw).trim() === "" || !Number.isFinite(Number(raw))) {
+    return "The saved spread is unavailable.";
+  }
+  const team = displayTeam(g.selection.spread_pick);
+  const line = sideLine(g, g.selection.spread_pick);
+  const points = Math.abs(line);
+  if (line === 0) return `${team} must win. A tied game is a push, counted as neither a win nor a loss.`;
+  if (line < 0) {
+    const needed = Math.floor(points) + 1;
+    return `${team} must win by ${needed} or more points.${Number.isInteger(points) ? ` A ${points}-point win is a push, counted as neither a win nor a loss.` : ""}`;
+  }
+  const allowed = Math.ceil(points) - 1;
+  return `${team} can ${allowed > 0 ? `win, tie, or lose by up to ${allowed} ${allowed === 1 ? "point" : "points"}` : "win or tie"}.${Number.isInteger(points) ? ` A ${points}-point loss is a push, counted as neither a win nor a loss.` : ""}`;
+}
+
+function disclosureCue() {
+  return '<span class="disclosure-cue"><span class="show-details">Show details</span><span class="hide-details">Hide details</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false"><path d="m3 5 4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+}
+
 function expander(g, cls, sentence, extra, detail, lead = "") {
   const id = String(g.game_id).replace(/[^\w-]/g, "");
   return `<li class="game-row ${cls}" id="b-${id}" tabindex="-1">
     <button class="row-toggle" id="toggle-${id}" aria-expanded="false" aria-controls="d-${id}">
 ${lead ? `      ${lead}\n` : ""}      <span class="row-top">${teamsLabel(g)}<span class="when">${extra}</span></span>
       <span class="call">${esc(sentence)}</span>
+      ${disclosureCue()}
     </button>
     <div class="row-panel" id="d-${id}" role="region" aria-labelledby="toggle-${id}" hidden>${detail}</div>
   </li>`;
@@ -483,7 +509,7 @@ function agreeGroup(games, now = Date.now()) {
     return `<li id="b-${id}" tabindex="-1">${esc(displayTeam(g.away_team))} @ ${esc(displayTeam(g.home_team))} · ${statusTag(g, now)} · Vegas ${esc(displaySpread(g.pick_time.spread_display))}, us ${esc(modelPlain(g))}${esc(pulled)}</li>`;
   }).join("");
   return `<li class="agree-group">
-    <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span></button>
+    <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span>${disclosureCue()}</button>
     <div class="row-panel" id="d-agree" role="region" aria-labelledby="b-agree" hidden><ul>${items}</ul></div>
   </li>`;
 }
@@ -657,6 +683,8 @@ async function renderHome() {
   const picks = games.filter((g) => g.selection.spread_qualifies);
   const close = games.filter((g) => !g.selection.spread_qualifies && Math.abs(Number(g.selection.spread_edge)) >= AGREE_WITHIN);
   const agree = games.filter((g) => !g.selection.spread_qualifies && Math.abs(Number(g.selection.spread_edge)) < AGREE_WITHIN);
+  const help = $("picks-help");
+  if (help) help.hidden = !picks.length || state === "final";
 
   $("kicker").textContent = `Week ${card.week} · ${card.season}`;
   const h1 = {

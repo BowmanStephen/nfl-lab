@@ -51,7 +51,9 @@ per game). The palette above stays; the type is now one sans family.
 - One family site-wide: `system-ui, -apple-system, "Segoe UI", Roboto,
   "Helvetica Neue", Arial, sans-serif`. No Georgia, no monospace. The old
   `--serif` and `--mono` tokens point at the same stack.
-- Page titles (`h1`): 28px, bold. Section heads 20px.
+- Page titles (`h1`): 28px, bold. The home title retains its responsive
+  `--fs-home-title` scale, `clamp(2rem, 5.5vw, 3.6rem)`, and 14ch measure.
+  Section heads 20px.
 - Game rows: team names 17px semibold.
 - Body: 16px, line height 1.5.
 - Captions, labels and footer text: 13.5px, never smaller.
@@ -60,6 +62,11 @@ per game). The palette above stays; the type is now one sans family.
   wins", "Week 5 is final"). No uppercase labels.
 - Tokens: `--fs-h1` 28px, `--fs-call` 17px, `--fs-body` 16px, `--fs-small`
   13.5px, `--lh` 1.5, `--tap` 44px.
+- Home disclosure rows show a muted Show details/Hide details label with a
+  chevron. The short helper introduces spread picks and lean labels; row
+  details explain the saved line's required result and the 3.5-point strong
+  lean cutoff. These are display explanations; picks and rules stay locked.
+- Up next matchup and saved-line text may wrap for larger text settings.
 - Our model and our pick use one accent, `--accent` (= `--hit`). Vegas stays
   neutral grey (`--vegas` = `--muted` #55584f). `--line-mark` #7d7e74 (3.6:1)
   is for graphics only, never text. Right is green with "✓ Right", wrong is
