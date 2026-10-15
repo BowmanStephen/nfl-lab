@@ -2,6 +2,7 @@
 // following an official-pick anchor. No extra packages: Node's WebSocket plus
 // the DevTools protocol.
 import { spawn } from "node:child_process";
+import { once } from "node:events";
 import fs from "node:fs";
 import http from "node:http";
 import os from "node:os";
@@ -287,9 +288,13 @@ async function main() {
     for (const page of pages) {
       try { page.close(); } catch { /* already gone */ }
     }
-    proc.kill("SIGKILL");
+    if (proc.exitCode === null && proc.signalCode === null) {
+      const exited = once(proc, "exit");
+      proc.kill("SIGKILL");
+      await exited;
+    }
     site.close();
-    fs.rmSync(profile, { recursive: true, force: true });
+    fs.rmSync(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
   }
 }
 

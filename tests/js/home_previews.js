@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const [pub, response] = process.argv.slice(2);
+const [pub, response, cardMode] = process.argv.slice(2);
 
 function element() {
   return {
@@ -56,6 +56,9 @@ element().innerHTML = fs.readFileSync(path.join(pub, "index.html"), "utf8");
 // Keep the fixture before kickoff regardless of the current public weekly card.
 const card = JSON.parse(fs.readFileSync(path.join(pub, "../output/live/2026-week-06.json"), "utf8"));
 for (const game of card.games) game.grading = null;
+if (cardMode === "no-spreads") {
+  for (const game of card.games) game.selection.spread_qualifies = false;
+}
 const game = card.games.find((g) => g.selection.spread_qualifies);
 const gameId = game ? String(game.game_id).replace(/[^\w-]/g, "") : null;
 let resolvePreview;
