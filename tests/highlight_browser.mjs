@@ -217,8 +217,8 @@ function targets() {
   const picks = JSON.parse(fs.readFileSync(path.join(publicDir, "api", "picks.json"), "utf8"));
   const onCard = new Set((picks.games || []).map((game) => game.game_id));
   const picksOnCard = (picks.games || []).filter((game) => game.selection && game.selection.spread_qualifies);
-  const pick = picksOnCard[picksOnCard.length - 1];
-  if (!pick) throw new Error("current card has no spread pick");
+  const pick = picksOnCard[picksOnCard.length - 1] || (picks.games || []).at(-1);
+  if (!pick) throw new Error("current card has no games");
   const preview = fs.readFileSync(path.join(publicDir, "previews", "week5.html"), "utf8");
   const past = [...preview.matchAll(/data-game="([^"]+)"/g)]
     .map((match) => match[1])
@@ -229,6 +229,10 @@ function targets() {
 }
 
 async function main() {
+  if (process.argv.includes("--targets-only")) {
+    process.stdout.write(JSON.stringify(targets()));
+    return;
+  }
   if (typeof WebSocket !== "function") {
     throw new Error("node WebSocket is required (Node 22)");
   }

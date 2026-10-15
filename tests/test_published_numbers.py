@@ -36,7 +36,22 @@ def _cards() -> list[dict]:
     cards = [json.loads(path.read_text()) for path in sorted(LIVE_DIR.glob("*.json"))]
     if not cards:
         raise AssertionError(f"no saved cards in {LIVE_DIR}")
-    return cards
+    season = max(int(card["season"]) for card in cards)
+    return [card for card in cards if int(card["season"]) == season]
+
+
+def test_saved_cards_are_limited_to_latest_season(monkeypatch, tmp_path):
+    old_game = {"selection": {"spread_qualifies": True}, "grading": {"spread_outcome": "loss"}}
+    new_game = {"selection": {"spread_qualifies": True}, "grading": {"spread_outcome": "win"}}
+    for season, week, game in [(2026, 18, old_game), (2027, 1, new_game), (2027, 2, new_game)]:
+        (tmp_path / f"{season}-week-{week:02d}.json").write_text(json.dumps({
+            "season": season, "week": week, "games": [game],
+        }))
+    monkeypatch.setitem(globals(), "LIVE_DIR", tmp_path)
+    cards = _cards()
+    assert {(card["season"], card["week"]) for card in cards} == {(2027, 1), (2027, 2)}
+    assert _current(cards)["week"] == 2
+    assert _spread_record(_games(cards)) == (2, 0, 0)
 
 
 def _current(cards: list[dict]) -> dict:

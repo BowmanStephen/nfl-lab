@@ -88,3 +88,23 @@ def test_past_week_official_links_go_to_the_recap(highlight):
     assert highlight["official"]
     for href in highlight["official"]:
         assert href.endswith(f"../recaps/week{week}.html")
+
+
+@pytest.mark.parametrize("qualifies, expected_id", [
+    ([False, True, False], "2027_01_B_B"),
+    ([False, False, False], "2027_01_C_C"),
+])
+def test_target_selection_allows_cards_without_spread_picks(tmp_path, qualifies, expected_id):
+    (tmp_path / "api").mkdir()
+    (tmp_path / "previews").mkdir()
+    games = [
+        {"game_id": f"2027_01_{team}_{team}", "selection": {"spread_qualifies": active}}
+        for team, active in zip(["A", "B", "C"], qualifies)
+    ]
+    (tmp_path / "api" / "picks.json").write_text(json.dumps({"games": games}))
+    (tmp_path / "previews" / "week5.html").write_text('<p data-game="2026_05_TB_DAL"></p>')
+    proc = subprocess.run(
+        ["node", str(PROBE), str(tmp_path), "--targets-only"],
+        check=True, capture_output=True, text=True,
+    )
+    assert json.loads(proc.stdout)["pickId"] == f"b-{expected_id}"
