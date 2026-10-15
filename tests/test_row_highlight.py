@@ -1,4 +1,4 @@
-"""An official-pick anchor tints and focuses the row a visitor lands on."""
+"""Homepage anchor behavior and print contrast in the real browser."""
 from __future__ import annotations
 
 import json
@@ -88,6 +88,20 @@ def test_past_week_official_links_go_to_the_recap(highlight):
     assert highlight["official"]
     for href in highlight["official"]:
         assert href.endswith(f"../recaps/week{week}.html")
+
+
+@pytest.mark.parametrize("scheme", ["light", "dark"])
+def test_home_print_text_meets_wcag_aa(highlight, scheme):
+    result = highlight["printContrast"][scheme]
+    assert result["print"] is True
+    assert result["dark"] is (scheme == "dark")
+    assert result["paper"] == "rgb(255, 255, 255)"
+    samples = result["samples"]
+    assert any(sample["tag"] == "h1" for sample in samples), "heading must be measured"
+    assert any(sample["id"] == "updated" for sample in samples), "muted text must be measured"
+    assert len(samples) >= 10, "must measure actual homepage content"
+    failures = [sample for sample in samples if sample["ratio"] < 4.5]
+    assert failures == [], f"{scheme}-scheme print contrast below 4.5:1: {failures}"
 
 
 @pytest.mark.parametrize("qualifies, expected_id", [
