@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "public/index.html"
+        ],
+        "createdAt": "2026-10-15T19:57:59.908Z",
+        "reason": "Agent: static analyzer mixes screen dark colors with print white background. Chromium measured all expanded homepage text in screen/light >=6.02:1, screen/dark >=7.51:1, and print in both schemes >=6.92:1 after dark palette restricted to screen. Recheck rendered themes when changing colors."
+      }
+    ]
+  }
+}
