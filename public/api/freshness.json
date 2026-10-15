@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-15T06:23:54.234888-05:00",
-  "stale_after": "2026-10-16T18:23:54.234888-05:00",
+  "generated_at": "2026-10-15T11:03:42.200338-05:00",
+  "stale_after": "2026-10-16T23:03:42.200338-05:00",
   "files": [
     {
       "path": "api/baseline.json",
@@ -10,15 +10,15 @@
     },
     {
       "path": "api/model.json",
-      "bytes": 14461,
-      "sha256": "bd4e927f423bdfc09f79fced5acf30b4ceeb4eeea9d962b28173b6c4fe226710",
-      "updated_at": "2026-10-15T06:23:54.234888-05:00"
+      "bytes": 14421,
+      "sha256": "bc10fb6f44228f22cbcb1835c36d61e488c6480223ba5a983072f738e0509022",
+      "updated_at": "2026-10-15T11:03:42.200338-05:00"
     },
     {
       "path": "api/picks.json",
-      "bytes": 22207,
-      "sha256": "61cd06902fd736bc724e60914740913aaa8f0ee5d7a7ecb2f49c7293fc878cc1",
-      "updated_at": "2026-10-15T06:23:54.234888-05:00"
+      "bytes": 23430,
+      "sha256": "60e24ed0df513d0ff4818ed1ee206b2050704ea148f249e2bb3ebfa900875ca8",
+      "updated_at": "2026-10-15T11:03:42.200338-05:00"
     },
     {
       "path": "api/report_card.json",
@@ -29,8 +29,8 @@
     {
       "path": "api/summary.json",
       "bytes": 498,
-      "sha256": "60250381fdb77c32cd9a6da14116046c0c4628dbabef22e34326a114fafee194",
-      "updated_at": "2026-10-15T06:23:54.234888-05:00"
+      "sha256": "f4c14cea2e4626d689316e116ea833ddc29f06fcce81a612639e8f093936fc73",
+      "updated_at": "2026-10-15T11:03:42.200338-05:00"
     },
     {
       "path": "api/teams.json",

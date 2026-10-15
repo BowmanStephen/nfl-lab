@@ -295,7 +295,7 @@ function detailList(g, withGap) {
   if (withGap) rows.push(["Model's gap vs Vegas", `${Math.abs(Number(s.spread_edge)).toFixed(1)} points toward ${fullName(s.spread_pick)}`]);
   if (g.pre_kickoff && g.pre_kickoff.spread_display) rows.push(["Line before kickoff", g.pre_kickoff.spread_display]);
   if (s.away_qb || s.home_qb) rows.push(["Quarterbacks", `${g.away_team} ${s.away_qb || "not listed"} · ${g.home_team} ${s.home_qb || "not listed"}`]);
-  if (!withGap && s.total_voided) rows.push(["Over/under", `Over/under pick pulled (${s.total_pick} ${Number(g.pick_time.total).toFixed(1)})`]);
+  if (s.total_voided) rows.push(["Over/under", `Over/under pick pulled (${s.total_pick} ${Number(g.pick_time.total).toFixed(1)})`]);
   const notes = s.qb_notes || [];
   const qb = notes.length
     ? `<p class="small">QB note: ${esc(notes[0])}</p>${notes.length > 1 ? `<details class="more"><summary>More</summary>${notes.slice(1).map((n) => `<p class="small">${esc(n)}</p>`).join("")}</details>` : ""}`
@@ -372,7 +372,10 @@ function finalRow(g) {
 }
 
 function tooCloseRow(g, now = Date.now()) {
-  return expander(g, "quiet", `Too close to call. Vegas says ${g.pick_time.spread_display}; our model says ${modelPlain(g)}.`,
+  const pulled = g.selection.total_voided
+    ? ` Over/under pick pulled (${g.selection.total_pick} ${Number(g.pick_time.total).toFixed(1)}).`
+    : "";
+  return expander(g, "quiet", `Too close to call. Vegas says ${g.pick_time.spread_display}; our model says ${modelPlain(g)}.${pulled}`,
     statusTag(g, now), detailList(g, false));
 }
 
@@ -380,7 +383,10 @@ function agreeGroup(games, now = Date.now()) {
   if (!games.length) return "";
   const items = games.map((g) => {
     const id = String(g.game_id).replace(/[^\w-]/g, "");
-    return `<li id="b-${id}">${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}</li>`;
+    const pulled = g.selection.total_voided
+      ? ` · Over/under pick pulled (${g.selection.total_pick} ${Number(g.pick_time.total).toFixed(1)})`
+      : "";
+    return `<li id="b-${id}">${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}${esc(pulled)}</li>`;
   }).join("");
   return `<div class="agree-group">
     <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span></button>
@@ -464,10 +470,16 @@ async function renderHome() {
     notices.push(`<p class="notice">This page hasn't updated since ${esc(savedCT(fresh.generated_at))}.</p>`);
   }
   if (state === "awaiting") notices.push('<p class="notice">Results are being graded. Check back soon.</p>');
-  if (games.some((g) => g.selection.total_voided) && notices.length < 2) {
-    notices.push(`<details class="notice"><summary>Over/under picks were pulled on Oct 8 after we found a bug. <span class="why">Why</span></summary><p class="small">${esc(card.totals_void_note || "")} <a href="report-card.html#totals">More on the 2026 replay</a></p></details>`);
-  }
   $("notices").innerHTML = notices.slice(0, 2).join("");
+  const voidNote = $("totals-void-note");
+  if (voidNote) {
+    if (card.totals_void_note) {
+      voidNote.hidden = false;
+      voidNote.textContent = card.totals_void_note;
+    } else {
+      voidNote.hidden = true;
+    }
+  }
 
   if (state === "final") {
     let w = 0, l = 0, p = 0;
