@@ -45,7 +45,7 @@ function element() {
       return this.hidden ? this : this.parent?.closest(selector) || null;
     },
     scrollIntoView() { this.scrolled = true; },
-    matches(selector) { assert.equal(selector, ":target"); return true; },
+    matches(selector) { assert.equal(selector, ":target"); return this.getAttribute("id") === context.location.hash.slice(1); },
     focus() { this.focused = true; },
   };
 }
@@ -105,6 +105,7 @@ vm.runInContext('Date.now = () => Date.parse("2026-10-15T16:00:00Z")', context);
     assert.ok(button, "deep link must reference a rendered game control");
     const panel = get(button.getAttribute("aria-controls"));
     assert.equal(panel.scrolled, true, "deep link must be restored");
+    assert.equal(panel.focused, true);
     assert.equal(panel.hidden, false);
     button.listeners.click();
     assert.equal(panel.hidden, true, "generated control must toggle its rendered panel");

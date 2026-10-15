@@ -33,7 +33,6 @@ class El {
     const tag = html.match(new RegExp(`<[^>]*\\bid="${id}"[^>]*>`));
     this.hidden = Boolean(tag && /\shidden\b/.test(tag[0]));
     this._html = "";
-    this.children = [];
   }
   set textContent(value) { this._html = value == null ? "" : String(value); }
   get textContent() {
@@ -44,10 +43,10 @@ class El {
   }
   set innerHTML(value) { this._html = value == null ? "" : String(value); }
   get innerHTML() { return this._html; }
+  appendChild(child) { this._html += child.textContent; }
   setAttribute() {}
   getAttribute() { return ""; }
   addEventListener() {}
-  appendChild(child) { this.children.push(child); }
   querySelector() { return null; }
   querySelectorAll() { return []; }
   closest() { return null; }
@@ -84,7 +83,7 @@ const document = {
   body: { dataset: { page: "home" } },
   title: "",
   getElementById,
-  createElement(tag) { return new El(tag); },
+  createElement() { return new El(""); },
   querySelector(sel) { return sel === "main" ? getElementById("main") : null; },
   querySelectorAll() { return []; },
 };

@@ -43,8 +43,9 @@ def test_home_does_not_link_to_a_missing_preview_page():
 def test_home_preview_rendering_and_initialization(response, no_spreads):
     node = shutil.which("node")
     assert node, "node is required for site.js rendering tests"
-    subprocess.run(
+    result = subprocess.run(
         [node, str(ROOT / "tests/js/home_previews.js"), str(PUBLIC), response,
          "no-spreads" if no_spreads else "qualifying"],
-        capture_output=True, text=True, check=True, timeout=10,
+        capture_output=True, text=True, timeout=10,
     )
+    assert result.returncode == 0, result.stderr
