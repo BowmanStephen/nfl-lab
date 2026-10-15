@@ -45,6 +45,8 @@ function element() {
       return this.hidden ? this : this.parent?.closest(selector) || null;
     },
     scrollIntoView() { this.scrolled = true; },
+    matches(selector) { assert.equal(selector, ":target"); return true; },
+    focus() { this.focused = true; },
   };
 }
 const els = {};
@@ -52,7 +54,7 @@ const get = (id) => els[id] || null;
 element().innerHTML = fs.readFileSync(path.join(pub, "index.html"), "utf8");
 const card = JSON.parse(fs.readFileSync(path.join(pub, "api/picks.json"), "utf8"));
 const game = card.games.find((g) => g.selection.spread_qualifies);
-const gameId = String(game.game_id).replace(/[^\w-]/g, "");
+const gameId = game ? String(game.game_id).replace(/[^\w-]/g, "") : null;
 let resolvePreview;
 const context = vm.createContext({
   URLSearchParams,
@@ -60,8 +62,8 @@ const context = vm.createContext({
     body: { dataset: {} }, getElementById: get, createElement: element,
     querySelector: () => null, querySelectorAll: () => [], addEventListener() {},
   },
-  window: { addEventListener() {} },
-  location: { hash: `#d-${gameId}`, search: "" },
+  window: { addEventListener() {}, matchMedia: () => ({ matches: true }) },
+  location: { hash: gameId ? `#d-${gameId}` : "", search: "" },
   fetch: async (url, options) => {
     if (String(url).startsWith("previews/")) {
       assert.equal(options.method, "HEAD");
@@ -85,19 +87,21 @@ vm.runInContext('Date.now = () => Date.parse("2026-10-15T16:00:00Z")', context);
     ]);
   } finally { clearTimeout(timer); }
   await new Promise(setImmediate);
-  assert.ok(get("games").innerHTML.includes("row-toggle"));
   const buttons = get("games").querySelectorAll(".row-toggle");
-  assert.ok(buttons.length > 0, "rendered picks must contain controls");
+  assert.equal(buttons.length, card.games.filter((g) => g.selection.spread_qualifies).length,
+    "only qualifying picks should have controls in the picks section");
   for (const button of get("main").querySelectorAll(".row-toggle")) {
     assert.equal(typeof button.listeners.click, "function", "rendered controls must be bound");
   }
-  const button = buttons.find((btn) => btn.getAttribute("id") === `b-${gameId}`);
-  assert.ok(button, "deep link must reference a rendered game control");
-  const panel = get(button.getAttribute("aria-controls"));
-  assert.equal(panel.scrolled, true, "deep link must be restored");
-  assert.equal(panel.hidden, false);
-  button.listeners.click();
-  assert.equal(panel.hidden, true, "generated control must toggle its rendered panel");
+  if (gameId) {
+    const button = buttons.find((btn) => btn.getAttribute("aria-controls") === `d-${gameId}`);
+    assert.ok(button, "deep link must reference a rendered game control");
+    const panel = get(button.getAttribute("aria-controls"));
+    assert.equal(panel.scrolled, true, "deep link must be restored");
+    assert.equal(panel.hidden, false);
+    button.listeners.click();
+    assert.equal(panel.hidden, true, "generated control must toggle its rendered panel");
+  }
   if (response === "pending") {
     assert.equal(get("previews-link").textContent, "");
     assert.equal(get("previews-link").children.length, 0);

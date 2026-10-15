@@ -39,10 +39,20 @@ def test_home_does_not_link_to_a_missing_preview_page():
 
 
 @pytest.mark.parametrize("response", ["200", "404", "500", "403", "network", "pending"])
-def test_home_preview_rendering_and_initialization(response):
+@pytest.mark.parametrize("no_spreads", [False, True])
+def test_home_preview_rendering_and_initialization(response, no_spreads, tmp_path):
     node = shutil.which("node")
     assert node, "node is required for site.js rendering tests"
+    public = PUBLIC
+    if no_spreads:
+        public = tmp_path / "public"
+        shutil.copytree(PUBLIC, public)
+        picks = public / "api" / "picks.json"
+        card = json.loads(picks.read_text())
+        for game in card["games"]:
+            game["selection"]["spread_qualifies"] = False
+        picks.write_text(json.dumps(card))
     subprocess.run(
-        [node, str(ROOT / "tests/js/home_previews.js"), str(PUBLIC), response],
+        [node, str(ROOT / "tests/js/home_previews.js"), str(public), response],
         capture_output=True, text=True, check=True, timeout=10,
     )
