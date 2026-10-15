@@ -6,6 +6,33 @@ function esc(value) {
   }[ch]));
 }
 
+// One abbreviation on the page. Saved cards keep nflverse codes (the Rams are
+// "LA"); readers see LAR, and the Chargers stay LAC. Every visible team code
+// goes through displayTeam.
+//
+// The model page's rating rows use the short names "LA Rams" and "LA Chargers".
+// displayTeam rewrites those labels too ("Los Angeles Rams" / "Los Angeles
+// Chargers") so the chart does not print LA next to LAR. Display only: the
+// ratings JSON still stores team "LA", which grading and line matching need.
+const DISPLAY_TEAM = {
+  LA: "LAR",
+  "LA Rams": "Los Angeles Rams",
+  "LA Chargers": "Los Angeles Chargers",
+};
+
+function displayTeam(code) {
+  if (code == null) return "";
+  const text = String(code);
+  return Object.prototype.hasOwnProperty.call(DISPLAY_TEAM, text) ? DISPLAY_TEAM[text] : text;
+}
+
+function displaySpread(text) {
+  const raw = String(text ?? "");
+  const space = raw.indexOf(" ");
+  if (space === -1) return displayTeam(raw);
+  return displayTeam(raw.slice(0, space)) + raw.slice(space);
+}
+
 function fmt(n, digits = 1) {
   if (n == null || Number.isNaN(Number(n))) return "n/a";
   const v = Number(n);
@@ -50,16 +77,18 @@ function gapChart(model, line) {
 
 function marginPlain(homeMargin, home, away) {
   const m = Number(homeMargin);
+  const homeLabel = displayTeam(home);
+  const awayLabel = displayTeam(away);
   if (!Number.isFinite(m)) return "n/a";
   if (Math.abs(m) < 0.05) return "pick'em";
-  if (m > 0) return `${home} by ${Math.abs(m).toFixed(1)}`;
-  return `${away} by ${Math.abs(m).toFixed(1)}`;
+  if (m > 0) return `${homeLabel} by ${Math.abs(m).toFixed(1)}`;
+  return `${awayLabel} by ${Math.abs(m).toFixed(1)}`;
 }
 
 function pickLineDisplay(game, side) {
   const line = Number(game.pick_time.home_margin);
   const signed = side === game.home_team ? -line : line;
-  return `${side} ${fmt(signed)}`;
+  return `${displayTeam(side)} ${fmt(signed)}`;
 }
 
 function compareBlock(lineLabel, lineValue, modelLabel, modelValue) {
@@ -109,17 +138,17 @@ function spreadCards(games) {
       const notes = (s.qb_notes || []).map((n) => `<p class="note">${esc(n)}</p>`).join("");
       const edge = Math.abs(s.spread_edge);
       return `<article class="card pick-card">
-        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
+        <header><strong>${esc(displayTeam(g.away_team))} at ${esc(displayTeam(g.home_team))}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
         <p class="side">${esc(pickPrice)}</p>
         ${compareBlock(
           `home margin ${fmt(line)}`,
-          g.pick_time.spread_display || fmt(line),
+          displaySpread(g.pick_time.spread_display || fmt(line)),
           `home margin ${fmt(s.model_margin)}`,
           marginPlain(s.model_margin, g.home_team, g.away_team),
         )}
-        <p class="edge-line"><span>Gap</span><b>${fmt(edge)}</b><em>pts toward ${esc(side)}</em></p>
+        <p class="edge-line"><span>Gap</span><b>${fmt(edge)}</b><em>pts toward ${esc(displayTeam(side))}</em></p>
         <p class="meta">Line saved ${esc(whenCT(g.pick_time.captured_at))}, ${esc(g.pick_time.provider)}</p>
-        <p class="meta">Starting QBs: ${esc(g.away_team)} ${esc(s.away_qb)}, ${esc(g.home_team)} ${esc(s.home_qb)}</p>
+        <p class="meta">Starting QBs: ${esc(displayTeam(g.away_team))} ${esc(s.away_qb)}, ${esc(displayTeam(g.home_team))} ${esc(s.home_qb)}</p>
         ${notes}
       </article>`;
     }).join("");
@@ -162,7 +191,7 @@ function totalCards(games) {
       const edge = Math.abs(s.total_edge);
       const sideLabel = `${s.total_pick} ${tot.toFixed(1)}`;
       return `<article class="card pick-card">
-        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
+        <header><strong>${esc(displayTeam(g.away_team))} at ${esc(displayTeam(g.home_team))}</strong><span class="meta">${esc(when(g.kickoff_utc))}</span></header>
         <p class="side">${esc(sideLabel)}</p>
         ${compareBlock(
           `Vegas total ${tot.toFixed(1)}`,
@@ -192,7 +221,7 @@ function noPickCards(games) {
       const s = g.selection;
       const label = s.total_voided ? "Voided total" : "No pick";
       return `<article class="card quiet-card">
-        <header><strong>${esc(g.away_team)} at ${esc(g.home_team)}</strong><span class="meta">${esc(label)}</span></header>
+        <header><strong>${esc(displayTeam(g.away_team))} at ${esc(displayTeam(g.home_team))}</strong><span class="meta">${esc(label)}</span></header>
         <p>${esc(noPickReason(g))}</p>
         <div class="nums nums-compact">
           <div><span>Spread gap</span><b>${fmt(s.spread_edge)}</b></div>
@@ -249,7 +278,7 @@ function nowMs() {
   return Number.isFinite(t) ? t : Date.now();
 }
 
-function fullName(abbr) { return homeNames[abbr] || abbr; }
+function fullName(abbr) { return homeNames[abbr] || displayTeam(abbr); }
 
 function kickoffCT(iso) {
   if (!iso) return "";
@@ -284,7 +313,7 @@ function homeSentence(g) {
   } else {
     x = modelPlain(g);
   }
-  return `Our model says ${x}. Vegas says ${g.pick_time.spread_display}.`;
+  return `Our model says ${x}. Vegas says ${displaySpread(g.pick_time.spread_display)}.`;
 }
 
 function pageState(card, fresh, now) {
@@ -298,7 +327,7 @@ function pageState(card, fresh, now) {
 }
 
 function teamsLabel(g) {
-  return `<span class="teams" aria-label="${esc(fullName(g.away_team))} at ${esc(fullName(g.home_team))}"><span class="chip">${esc(g.away_team)}</span> <span class="at" aria-hidden="true">@</span> <span class="chip">${esc(g.home_team)}</span></span>`;
+  return `<span class="teams" aria-label="${esc(fullName(g.away_team))} at ${esc(fullName(g.home_team))}"><span class="chip">${esc(displayTeam(g.away_team))}</span> <span class="at" aria-hidden="true">@</span> <span class="chip">${esc(displayTeam(g.home_team))}</span></span>`;
 }
 
 function savedCT(iso) {
@@ -311,12 +340,12 @@ function savedCT(iso) {
 function detailList(g, withGap) {
   const s = g.selection;
   const rows = [
-    ["Vegas says", `${g.pick_time.spread_display} (saved ${savedCT(g.pick_time.captured_at_ct || g.pick_time.captured_at)})`],
+    ["Vegas says", `${displaySpread(g.pick_time.spread_display)} (saved ${savedCT(g.pick_time.captured_at_ct || g.pick_time.captured_at)})`],
     ["Our model says", modelPlain(g)],
   ];
   if (withGap) rows.push(["Model's gap vs Vegas", `${Math.abs(Number(s.spread_edge)).toFixed(1)} points toward ${fullName(s.spread_pick)}`]);
-  if (g.pre_kickoff && g.pre_kickoff.spread_display) rows.push(["Line before kickoff", g.pre_kickoff.spread_display]);
-  if (s.away_qb || s.home_qb) rows.push(["Quarterbacks", `${g.away_team} ${s.away_qb || "not listed"} · ${g.home_team} ${s.home_qb || "not listed"}`]);
+  if (g.pre_kickoff && g.pre_kickoff.spread_display) rows.push(["Line before kickoff", displaySpread(g.pre_kickoff.spread_display)]);
+  if (s.away_qb || s.home_qb) rows.push(["Quarterbacks", `${displayTeam(g.away_team)} ${s.away_qb || "not listed"} · ${displayTeam(g.home_team)} ${s.home_qb || "not listed"}`]);
   if (s.total_voided) rows.push(["Over/under", `Over/under pick pulled (${s.total_pick} ${Number(g.pick_time.total).toFixed(1)})`]);
   const notes = s.qb_notes || [];
   const qb = notes.length
@@ -358,7 +387,7 @@ function isScored(g) {
 
 function scoreTag(g) {
   const gr = g.grading;
-  return `<span class="final-score num">Final: ${esc(g.away_team)} ${esc(gr.away_score)} · ${esc(g.home_team)} ${esc(gr.home_score)}</span>`;
+  return `<span class="final-score num">Final: ${esc(displayTeam(g.away_team))} ${esc(gr.away_score)} · ${esc(displayTeam(g.home_team))} ${esc(gr.home_score)}</span>`;
 }
 
 // Final score, "In progress", or the kickoff time in CT, from the saved card.
@@ -397,7 +426,7 @@ function tooCloseRow(g, now = Date.now()) {
   const pulled = g.selection.total_voided
     ? ` Over/under pick pulled (${g.selection.total_pick} ${Number(g.pick_time.total).toFixed(1)}).`
     : "";
-  return expander(g, "quiet", `Too close to call. Vegas says ${g.pick_time.spread_display}; our model says ${modelPlain(g)}.${pulled}`,
+  return expander(g, "quiet", `Too close to call. Vegas says ${displaySpread(g.pick_time.spread_display)}; our model says ${modelPlain(g)}.${pulled}`,
     statusTag(g, now), detailList(g, false));
 }
 
@@ -408,7 +437,7 @@ function agreeGroup(games, now = Date.now()) {
     const pulled = g.selection.total_voided
       ? ` · Over/under pick pulled (${g.selection.total_pick} ${Number(g.pick_time.total).toFixed(1)})`
       : "";
-    return `<li id="b-${id}">${esc(g.away_team)} @ ${esc(g.home_team)} · ${statusTag(g, now)} · Vegas ${esc(g.pick_time.spread_display)}, us ${esc(modelPlain(g))}${esc(pulled)}</li>`;
+    return `<li id="b-${id}">${esc(displayTeam(g.away_team))} @ ${esc(displayTeam(g.home_team))} · ${statusTag(g, now)} · Vegas ${esc(displaySpread(g.pick_time.spread_display))}, us ${esc(modelPlain(g))}${esc(pulled)}</li>`;
   }).join("");
   return `<div class="agree-group">
     <button class="row-toggle" id="b-agree" aria-expanded="false" aria-controls="d-agree"><span class="call">${games.length} games where we agree with Vegas</span></button>
@@ -575,7 +604,7 @@ function trackRecordWeeks(games) {
 
 async function renderTrackRecord() {
   const [rc, card] = await Promise.all([load("report_card.json"), load("picks.json")]);
-  const nick = (t) => (rc.names && rc.names[t]) || t;
+  const nick = (t) => (rc.names && rc.names[t]) || displayTeam(t);
   const games = trackRecordGames(rc, card);
   const weeks = trackRecordWeeks(games);
   const count = (list, r) => list.filter((g) => g.result === r).length;
@@ -662,9 +691,9 @@ async function renderLedger() {
   $("live").innerHTML = picks.map((g) => {
     const s = g.selection;
     const bits = [];
-    if (s.spread_qualifies) bits.push(`${s.spread_pick}, ${Math.abs(s.spread_edge).toFixed(1)} pts off the spread`);
+    if (s.spread_qualifies) bits.push(`${displayTeam(s.spread_pick)}, ${Math.abs(s.spread_edge).toFixed(1)} pts off the spread`);
     if (totalIsActive(s)) bits.push("over/under paused");
-    return `<tr><td>${esc(g.away_team)} at ${esc(g.home_team)}</td><td>${esc(bits.join("; "))}</td><td>${esc(whenCT(g.pick_time.captured_at))}</td></tr>`;
+    return `<tr><td>${esc(displayTeam(g.away_team))} at ${esc(displayTeam(g.home_team))}</td><td>${esc(bits.join("; "))}</td><td>${esc(whenCT(g.pick_time.captured_at))}</td></tr>`;
   }).join("");
   showTotalsPause(card);
 }
@@ -676,7 +705,7 @@ async function renderTeams() {
     <article class="team" id="${esc(t.team)}">
       <div>
         <strong>${i + 1}. ${esc(t.name)}</strong>
-        <div class="meta">${esc(t.team)}, rating ${fmt(t.rating, 3)}</div>
+        <div class="meta">${esc(displayTeam(t.team))}, rating ${fmt(t.rating, 3)}</div>
         ${spark(t.weekly)}
       </div>
       <div class="bars">
@@ -726,9 +755,9 @@ function powerChart(ratings) {
     const width = Math.max(0.4, Math.abs(pos(pts) - 50));
     const value = pointsLabel(pts);
     return `<li class="pw-row">
-      <span class="pw-team" aria-hidden="true">${esc(r.team)}</span>
+      <span class="pw-team" aria-hidden="true">${esc(displayTeam(r.team))}</span>
       <span class="pw-track" aria-hidden="true">${tickMarks}<i class="pw-bar ${pts >= 0 ? "up" : "down"}" style="left:${left.toFixed(2)}%;width:${width.toFixed(2)}%"></i></span>
-      <span class="pw-val"><span class="sr">${esc(r.name || r.team)} </span>${value}</span>
+      <span class="pw-val"><span class="sr">${esc(displayTeam(r.name || r.team))} </span>${value}</span>
     </li>`;
   }).join("");
   const scale = ticks.map((t) => `<span style="left:${pos(t).toFixed(2)}%">${t > 0 ? "+" : ""}${t}</span>`).join("");
@@ -748,8 +777,10 @@ function gameScale(market, model) {
 
 function gamesChart(games) {
   return games.map((g) => {
+    const away = displayTeam(g.away);
+    const home = displayTeam(g.home);
     const pickBits = [];
-    if (g.spread_pick) pickBits.push(g.spread_pick);
+    if (g.spread_pick) pickBits.push(displaySpread(g.spread_pick));
     if (g.total_pick) pickBits.push(g.total_pick.replace("OVER", "Over").replace("UNDER", "Under"));
     const edgeBits = [];
     if (g.spread_pick) edgeBits.push(`${Math.abs(g.spread_edge).toFixed(1)} pts off the Vegas spread`);
@@ -759,10 +790,10 @@ function gamesChart(games) {
     else if (g.total_voided) tag = "Voided total";
     // market_margin_home is the home spread (negative = home favored); flip it to a home margin for plotting
     const mktHome = -g.market_margin_home;
-    const byLine = (m) => Math.abs(m) < 0.05 ? "even" : `${m > 0 ? g.home : g.away} by ${Math.abs(m).toFixed(1).replace(/\.0$/, "")}`;
+    const byLine = (m) => Math.abs(m) < 0.05 ? "even" : `${displayTeam(m > 0 ? g.home : g.away)} by ${Math.abs(m).toFixed(1).replace(/\.0$/, "")}`;
     const sub = g.is_pick && edgeBits.length ? edgeBits.join(", ") : `Vegas says ${byLine(mktHome)}, our model says ${byLine(g.model_margin_home)}`;
     return `<div class="game-row${g.is_pick ? " is-pick" : ""}">
-      <div class="match">${esc(g.away)} at ${esc(g.home)}<small>${esc(tag)}</small></div>
+      <div class="match">${esc(away)} at ${esc(home)}<small>${esc(tag)}</small></div>
       ${gameScale(mktHome, g.model_margin_home)}
       <div class="edge-tag">${esc(sub)}</div>
     </div>`;
@@ -846,7 +877,7 @@ function officialGames(card) {
     if (s.spread_qualifies) {
       const points = s.spread_pick === g.home_team ? -homeMargin : homeMargin;
       const text = `${points > 0 ? "+" : ""}${Math.abs(points % 1) < 0.05 ? Math.round(points) : points.toFixed(1)}`;
-      spreadPick = `${s.spread_pick} ${text}`;
+      spreadPick = `${displayTeam(s.spread_pick)} ${text}`;
     }
     let totalPick = null;
     if (totalIsActive(s)) {
@@ -959,7 +990,7 @@ function rcDots(games, kind) {
     const o = g[outCol];
     const call = kind === "spread" ? g.spread_pick : g.total_pick;
     const word = o === "win" ? "covered" : o === "loss" ? "lost" : "pushed";
-    const tip = `${g.away_team} at ${g.home_team}: ${call} ${word}`;
+    const tip = `${displayTeam(g.away_team)} at ${displayTeam(g.home_team)}: ${displayTeam(call)} ${word}`;
     return `<i class="rc-dot ${esc(o)}" title="${esc(tip)}"><span class="sr">${esc(tip)}</span></i>`;
   }).join("");
 }
@@ -977,7 +1008,7 @@ function rcWeeks(rc) {
 }
 
 function rcLesson(l, rc) {
-  const N = (t) => `the ${rc.names[t] || t}`;
+  const N = (t) => `the ${rc.names[t] || displayTeam(t)}`;
   const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
   const by = (m) => `${m > 0 ? N(l.home) : N(l.away)} by ${rcNum(Math.abs(m))}`;
   let saw = "", happened = "", number = "";
@@ -1056,9 +1087,10 @@ function officialLine(game, names) {
   const parts = [];
   if (selection.spread_qualifies) {
     const side = selection.spread_pick;
+    const shown = displayTeam(side);
     const price = pickLineDisplay(game, side);
-    const number = price.slice(String(side).length).trim();
-    parts.push(`${(names && names[side]) || side} ${number}`);
+    const number = price.slice(shown.length).trim();
+    parts.push(`${displayTeam((names && names[side]) || shown)} ${number}`);
   }
   if (totalIsActive(selection)) {
     const word = selection.total_pick === "over" ? "Over" : "Under";
@@ -1102,7 +1134,12 @@ async function renderOfficialPicks() {
   });
 }
 
-const page = document.body.dataset.page;
+if (typeof module !== "undefined" && module.exports) {
+  module.exports.displayTeam = displayTeam;
+  module.exports.displaySpread = displaySpread;
+}
+
+const page = typeof document !== "undefined" && document.body ? document.body.dataset.page : null;
 const run = {
   home: renderHome,
   ledger: renderLedger,
@@ -1111,7 +1148,7 @@ const run = {
   model: renderModel,
   "report-card": renderReportCard,
 }[page];
-if (document.querySelector(".official-pick")) {
+if (page !== null && document.querySelector(".official-pick")) {
   renderOfficialPicks().catch(() => {
     document.querySelectorAll(".official-line").forEach((slot) => {
       if (!slot.textContent) slot.textContent = "unavailable";
