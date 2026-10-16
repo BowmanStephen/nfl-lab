@@ -311,7 +311,8 @@ async function main() {
     const linkedContrast = {};
     // The missing-recap fixture deliberately removes the Last week destination.
     const linkedPages = process.argv.includes("--skip-linked-contrast") ? []
-      : [["last_week", "Last week"], ["teams", "Teams"], ["model", "How it works"], ["glossary", "Glossary"]];
+      : [["last_week", "Last week"], ["teams", "Teams"], ["model", "How it works"], ["glossary", "Glossary"],
+        ["ledger", "Track record"], ["freshness", "Data updates"]];
     const ready = {
       last_week: 'Boolean(document.querySelector("#what-mattered p:not(.kicker)"))',
       teams: 'document.querySelectorAll("#teams .team").length === 32',
@@ -320,9 +321,16 @@ async function main() {
         + ' && document.querySelectorAll("#winrate-chart svg, #mae-chart svg").length === 2',
       glossary: 'document.querySelectorAll("main article.game h2").length >= 12'
         + ' && Boolean(document.querySelector("main table tbody tr:last-child td:last-child"))',
+      ledger: 'document.querySelectorAll("#tr-tiles .tr-tile").length === 2'
+        + ' && document.querySelectorAll("#tr-games .tr-game").length > 0'
+        + ' && document.querySelectorAll("#seasons tr").length === 4'
+        + ' && document.querySelectorAll("#live tr").length > 0'
+        + ' && document.getElementById("live-health").textContent !== "…"',
+      freshness: 'document.getElementById("when").textContent.startsWith("Updated ")'
+        + ' && !document.getElementById("when").textContent.includes("…")',
     };
     for (const [name, label] of linkedPages) {
-      const href = await evaluate(rowPage, `Array.from(document.querySelectorAll(".nav a"))
+      const href = await evaluate(rowPage, `Array.from(document.querySelectorAll(".nav a, .foot-nav a"))
         .find((link) => link.textContent.trim() === ${JSON.stringify(label)})?.href`);
       if (!href) throw new Error(`Homepage navigation is missing ${label}`);
       linkedContrast[name] = {};
@@ -342,6 +350,17 @@ async function main() {
             ...await evaluate(page, `(${measureContrast.toString()})()`),
             interactions: await interactionContrast(page),
           };
+          if (name === "ledger") {
+            const closed = await evaluate(page, '!document.querySelector(".tr-bettors").open');
+            await toggleBettors(page);
+            linkedContrast[name][viewport][scheme].expanded = {
+              ...await evaluate(page, `(${measureContrast.toString()})()`),
+              interactions: await interactionContrast(page),
+              wasClosed: closed,
+              isOpen: await evaluate(page, 'document.querySelector(".tr-bettors").open'),
+            };
+            await toggleBettors(page);
+          }
           if (name === "model") {
             const selector = "#games-chart .game-row";
             const targets = await evaluate(page, `Array.from(document.querySelectorAll(${JSON.stringify(selector)}))
@@ -389,6 +408,16 @@ async function settleTransitions(page) {
     .map((animation) => animation.finished.catch(() => {})))`);
 }
 
+async function toggleBettors(page) {
+  const wasOpen = await evaluate(page, 'document.querySelector(".tr-bettors").open');
+  await evaluate(page, 'document.querySelector(".tr-bettors > summary").focus()');
+  await page.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter",
+    windowsVirtualKeyCode: 13, text: "\r", unmodifiedText: "\r" });
+  await page.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+  await waitFor(page, `document.querySelector(".tr-bettors").open === ${!wasOpen}`);
+  await settleTransitions(page);
+}
+
 async function hoverContrast(page, selector, targets) {
   const hover = [];
   await evaluate(page, "document.activeElement.blur()");
@@ -410,21 +439,26 @@ async function hoverContrast(page, selector, targets) {
 }
 
 async function interactionContrast(page) {
-  const targets = await evaluate(page, `Array.from(document.querySelectorAll("a[href],button,summary"))
+  const selector = 'a[href],button,summary,[tabindex="0"]';
+  // Hidden details content can retain layout boxes; scrolling it would open the section.
+  const targets = await evaluate(page, `Array.from(document.querySelectorAll(${JSON.stringify(selector)}))
     .map((el, index) => ({ el, index }))
     .filter(({ el }) => el.getClientRects().length && getComputedStyle(el).visibility === "visible"
-      && !el.disabled && el.tabIndex >= 0)
-    .map(({ el, index }) => ({ index, text: el.textContent.trim(), hoverable: !el.matches(".skip") }))`);
-  const hover = await hoverContrast(page, "a[href],button,summary", targets.filter((target) => target.hoverable));
+      && !el.disabled && el.tabIndex >= 0
+      && (!el.closest("details:not([open])")
+        || el.closest("summary")?.parentElement === el.closest("details:not([open])")))
+    .map(({ el, index }) => ({ index, text: el.textContent.trim(),
+      label: el.getAttribute("aria-label"), hoverable: !el.matches(".skip") }))`);
+  const hover = await hoverContrast(page, selector, targets.filter((target) => target.hoverable));
   const focus = [];
   const seen = new Set();
   for (let step = 0; step < targets.length * 2 + 4 && seen.size < targets.length; step++) {
     await page.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
     await page.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
-    const index = await evaluate(page, 'Array.from(document.querySelectorAll("a[href],button,summary")).indexOf(document.activeElement)');
+    const index = await evaluate(page, `Array.from(document.querySelectorAll(${JSON.stringify(selector)})).indexOf(document.activeElement)`);
     if (!targets.some((target) => target.index === index) || seen.has(index)) continue;
     await settleTransitions(page);
-    focus.push({ index, result: await evaluate(page, `(${measureContrast.toString()})(${index})`) });
+    focus.push({ index, result: await evaluate(page, `(${measureContrast.toString()})(${index}, ${JSON.stringify(selector)})`) });
     seen.add(index);
   }
   await evaluate(page, "document.activeElement.blur()");
@@ -469,6 +503,8 @@ function measureContrast(targetIndex = null, selector = "a[href],button,summary"
     el.namespaceURI === "http://www.w3.org/1999/xhtml"
     && [...el.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim())
     && el.getClientRects().length && getComputedStyle(el).visibility === "visible"
+    && (!el.closest("details:not([open])")
+      || el.closest("summary")?.parentElement === el.closest("details:not([open])"))
     && getComputedStyle(el).clipPath === "none");
   return {
     hovered: root.matches(":hover"),
