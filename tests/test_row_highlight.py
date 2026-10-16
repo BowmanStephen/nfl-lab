@@ -212,6 +212,8 @@ def test_svg_chart_text_contrast(highlight, viewport, scheme, page, charts):
     assert result["viewport"]["width"] == (390 if viewport == "mobile" else 1280)
     assert result["dark"] is (scheme == "dark")
     svg = result["svgContrast"]
+    assert result["svgOcclusionError"].startswith("Later SVG paint overlaps text:"), \
+        "a rectangle painted over the labels must fail the probe"
     assert svg["charts"] == len(charts)
     for chart, count in charts.items():
         labels = [sample for sample in svg["samples"] if sample["chart"] == chart]

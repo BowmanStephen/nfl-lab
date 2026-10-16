@@ -62,7 +62,7 @@ export function measureSvgContrast() {
     // SVG paints siblings in document order. Partition the text bounds wherever
     // an earlier bar covers them, preserving paper and any overlapping bars.
     for (const shape of svg.querySelectorAll("rect,line,path,circle,ellipse,polygon,polyline,use,image,foreignObject")) {
-      if (!(shape.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING)) continue;
+      const before = Boolean(shape.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING);
       const paint = plainStyle(shape);
       if (paint.display === "none" || paint.visibility !== "visible") continue;
       const area = box(shape);
@@ -72,12 +72,16 @@ export function measureSvgContrast() {
         area.left -= padding; area.right += padding; area.top -= padding; area.bottom += padding;
       }
       if (!intersection(bounds, area)) continue;
+      const fill = rgba(paint.fill);
+      fill[3] *= Number(paint.fillOpacity);
+      const visibleStroke = paint.stroke !== "none"
+        && rgba(paint.stroke)[3] * Number(paint.strokeOpacity) > 0;
+      if (fill[3] === 0 && !visibleStroke) continue;
+      if (!before) throw new Error(`Later SVG paint overlaps text: ${text.textContent}`);
       if (shape.tagName !== "rect" || paint.stroke !== "none"
           || parseFloat(paint.rx) || parseFloat(paint.ry)) {
         throw new Error(`Unsupported SVG paint beneath '${text.textContent}': ${shape.tagName}`);
       }
-      const fill = rgba(paint.fill);
-      fill[3] *= Number(paint.fillOpacity);
       if (fill[3] === 0) continue;
       regions = regions.flatMap((region) => {
         const overlap = intersection(region, area);

@@ -363,6 +363,17 @@ async function main() {
           if (name === "model" || name === "replay") {
             linkedContrast[name][viewport][scheme].svgContrast =
               await evaluate(page, `(${measureSvgContrast.toString()})()`);
+            linkedContrast[name][viewport][scheme].svgOcclusionError = await evaluate(page, `(() => {
+              const svg = document.querySelector("main svg");
+              const cover = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+              cover.setAttribute("width", svg.viewBox.baseVal.width);
+              cover.setAttribute("height", svg.viewBox.baseVal.height);
+              cover.setAttribute("fill", "black");
+              svg.append(cover);
+              try { (${measureSvgContrast.toString()})(); return null; }
+              catch (error) { return error.message; }
+              finally { cover.remove(); }
+            })()`);
           }
           if (name === "ledger") {
             const closed = await evaluate(page, '!document.querySelector(".tr-bettors").open');
