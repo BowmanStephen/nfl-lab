@@ -203,6 +203,31 @@ def test_linked_page_text_contrast(highlight, page, viewport, scheme):
 
 @pytest.mark.parametrize("viewport", ["mobile", "desktop"])
 @pytest.mark.parametrize("scheme", ["light", "dark"])
+@pytest.mark.parametrize("page,charts", [
+    ("model", {"winrate-chart": 7, "mae-chart": 5}),
+    ("replay", {"rc-winrate": 7, "rc-context": 5}),
+])
+def test_svg_chart_text_contrast(highlight, viewport, scheme, page, charts):
+    result = highlight["linkedContrast"][page][viewport][scheme]
+    assert result["viewport"]["width"] == (390 if viewport == "mobile" else 1280)
+    assert result["dark"] is (scheme == "dark")
+    svg = result["svgContrast"]
+    assert svg["charts"] == len(charts)
+    for chart, count in charts.items():
+        labels = [sample for sample in svg["samples"] if sample["chart"] == chart]
+        assert len(labels) == count, f"{chart}: every rendered label must be measured"
+        values = [sample for sample in labels if sample["className"] == "val"]
+        assert len(values) == 2
+        assert all(all(bg["source"] in {"bar-fill", "bar-miss"} for bg in sample["backgrounds"])
+                   for sample in values), "values must be measured against the bars"
+        axes = [sample for sample in labels if sample["className"] in {"axis", "label"}]
+        assert all(all(bg["source"] == "paper" for bg in sample["backgrounds"]) for sample in axes)
+    failures = [sample for sample in svg["samples"] if sample["ratio"] < 4.5]
+    assert not failures, f"{page} {viewport} {scheme} SVG text below 4.5:1: {failures}"
+
+
+@pytest.mark.parametrize("viewport", ["mobile", "desktop"])
+@pytest.mark.parametrize("scheme", ["light", "dark"])
 def test_model_game_row_hover_contrast(highlight, viewport, scheme):
     interactions = highlight["linkedContrast"]["model"][viewport][scheme]["rowInteractions"]
     assert len(interactions["targets"]) >= 10, "loaded game rows must be exercised"

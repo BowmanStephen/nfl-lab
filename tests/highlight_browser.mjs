@@ -8,6 +8,7 @@ import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { waitForDevTools } from "./chrome_startup.mjs";
+import { measureSvgContrast } from "./svg_contrast.mjs";
 
 const publicDir = process.argv[2];
 if (!publicDir) {
@@ -359,6 +360,10 @@ async function main() {
             ...await evaluate(page, `(${measureContrast.toString()})()`),
             interactions: await interactionContrast(page),
           };
+          if (name === "model" || name === "replay") {
+            linkedContrast[name][viewport][scheme].svgContrast =
+              await evaluate(page, `(${measureSvgContrast.toString()})()`);
+          }
           if (name === "ledger") {
             const closed = await evaluate(page, '!document.querySelector(".tr-bettors").open');
             await toggleBettors(page);
