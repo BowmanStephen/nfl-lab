@@ -106,6 +106,7 @@ async function evaluate(cdp, expression) {
   const result = await cdp.send("Runtime.evaluate", {
     expression,
     returnByValue: true,
+    awaitPromise: true,
   });
   if (result.exceptionDetails) {
     throw new Error(result.exceptionDetails.text || "evaluate failed");
@@ -289,6 +290,10 @@ async function main() {
           media,
           features: [{ name: "prefers-color-scheme", value: scheme }],
         });
+        // Theme changes animate link colors; measure the settled palette.
+        await evaluate(contrastPage, `Promise.all(document.getAnimations()
+          .filter((animation) => animation instanceof CSSTransition)
+          .map((animation) => animation.finished.catch(() => {})))`);
         contrast[media][scheme] = await evaluate(contrastPage, `(${measureContrast.toString()})()`);
       }
     }
