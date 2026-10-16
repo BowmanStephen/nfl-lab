@@ -386,7 +386,8 @@ async function interactionContrast(page) {
     const point = await evaluate(page, `(() => {
       const el = document.querySelectorAll("a[href],button,summary")[${target.index}];
       el.scrollIntoView({ block: "center", inline: "center", behavior: "instant" });
-      const r = el.getBoundingClientRect();
+      // A wrapped inline link's bounding-box center can fall between its fragments.
+      const r = Array.from(el.getClientRects()).find((rect) => rect.width > 0 && rect.height > 0);
       return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
     })()`);
     await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", ...point });

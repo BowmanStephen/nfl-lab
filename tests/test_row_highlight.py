@@ -131,7 +131,8 @@ def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
     assert {entry["index"] for entry in interactions[state]} == targets
     for entry in interactions[state]:
         result = entry["result"]
-        assert result["hovered"] if state == "hover" else result["focused"] and result["focusVisible"]
+        reached = result["hovered"] if state == "hover" else result["focused"] and result["focusVisible"]
+        assert reached, f"{page} {viewport} {scheme} {state} control {entry['index']}: {result['samples']}"
         assert result["samples"], f"control {entry['index']} had no visible text"
         failures = [sample for sample in result["samples"] if sample["ratio"] < 4.5]
         assert not failures, f"{page} {viewport} {scheme} {state} control {entry['index']}: {failures}"
