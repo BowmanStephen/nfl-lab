@@ -596,7 +596,6 @@ def test_week6_voids_only_the_six_totals():
     spreads = []
     for game in live["games"]:
         sel = game["selection"]
-        assert game.get("grading") is None
         assert "voided" not in sel
         if sel["spread_qualifies"]:
             pick, margin, display = WEEK6_SPREADS[game["game_id"]]
@@ -612,6 +611,10 @@ def test_week6_voids_only_the_six_totals():
             assert sel["total_voided"] is True
             assert sel["total_void_reason"] == WEEK6_VOID_REASON
             assert total_is_active(sel) is False
+            # Scores and spread grading may arrive after the totals were voided.
+            grading = game.get("grading") or {}
+            for field in ("total_outcome", "total_clv", "total_moved_toward"):
+                assert grading.get(field) is None
             voided.append(game["game_id"])
         else:
             assert sel["total_qualifies"] is False
