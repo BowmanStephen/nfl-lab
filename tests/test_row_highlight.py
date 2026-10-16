@@ -112,6 +112,27 @@ def test_home_text_meets_wcag_aa(highlight, scheme, media, viewport, width, heig
     assert failures == [], f"{viewport} {scheme}-scheme {media} contrast below 4.5:1: {failures}"
 
 
+@pytest.mark.parametrize("viewport", ["mobile", "desktop"])
+@pytest.mark.parametrize("scheme", ["light", "dark"])
+@pytest.mark.parametrize("state", ["hover", "focus"])
+def test_home_interaction_contrast(highlight, viewport, scheme, state):
+    interactions = highlight["contrast"][viewport]["screen"][scheme]["interactions"]
+    targets = {target["index"] for target in interactions["targets"]
+               if state == "focus" or target["hoverable"]}
+    assert len(targets) >= 10, "must exercise real homepage controls"
+    assert {entry["index"] for entry in interactions[state]} == targets
+    for entry in interactions[state]:
+        result = entry["result"]
+        assert result["hovered"] if state == "hover" else result["focused"] and result["focusVisible"]
+        assert result["samples"], f"control {entry['index']} had no visible text"
+        failures = [sample for sample in result["samples"] if sample["ratio"] < 4.5]
+        assert not failures, f"{viewport} {scheme} {state} control {entry['index']}: {failures}"
+        if state == "focus":
+            assert result["outline"]["style"] not in {"none", "hidden"}
+            assert result["outline"]["width"] > 0
+            assert result["outline"]["ratio"] >= 3, result["outline"]
+
+
 @pytest.mark.parametrize("qualifies, expected_id", [
     ([False, True, False], "2027_01_B_B"),
     ([False, False, False], "2027_01_C_C"),
