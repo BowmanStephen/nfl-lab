@@ -115,16 +115,24 @@ def test_home_text_meets_wcag_aa(highlight, scheme, media, viewport, width, heig
 @pytest.mark.parametrize("viewport", ["mobile", "desktop"])
 @pytest.mark.parametrize("scheme", ["light", "dark"])
 @pytest.mark.parametrize("state", ["hover", "focus"])
-@pytest.mark.parametrize("page", ["home", "last_week", "teams", "model", "glossary"])
+@pytest.mark.parametrize("page", ["home", "last_week", "teams", "model", "glossary", "ledger", "ledger_expanded", "freshness"])
 def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
     result = (highlight["contrast"][viewport]["screen"][scheme] if page == "home"
-              else highlight["linkedContrast"][page][viewport][scheme])
+              else highlight["linkedContrast"][page.removesuffix("_expanded")][viewport][scheme])
+    if page == "ledger_expanded":
+        result = result["expanded"]
+        assert result["wasClosed"] and result["isOpen"], "Enter must open the bettors section"
     assert result["viewport"] == {"width": 390 if viewport == "mobile" else 1280,
                                   "height": 844 if viewport == "mobile" else 900,
                                   "mobileLayout": viewport == "mobile"}
     assert result["screen"] and not result["print"]
     assert result["dark"] is (scheme == "dark")
     interactions = result["interactions"]
+    if page == "ledger_expanded":
+        labels = {target["label"] for target in interactions["targets"]}
+        assert {"Holdout record by season", "Live 2026 picks"} <= labels
+    elif page == "ledger":
+        assert not any(target["label"] == "Live 2026 picks" for target in interactions["targets"])
     targets = {target["index"] for target in interactions["targets"]
                if state == "focus" or target["hoverable"]}
     assert len(targets) >= 10, f"must exercise real {page} controls"
@@ -142,11 +150,14 @@ def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
             assert result["outline"]["ratio"] >= 3, result["outline"]
 
 
-@pytest.mark.parametrize("page", ["last_week", "teams", "model", "glossary"])
+@pytest.mark.parametrize("page", ["last_week", "teams", "model", "glossary", "ledger", "ledger_expanded", "freshness"])
 @pytest.mark.parametrize("viewport", ["mobile", "desktop"])
 @pytest.mark.parametrize("scheme", ["light", "dark"])
 def test_linked_page_text_contrast(highlight, page, viewport, scheme):
-    samples = highlight["linkedContrast"][page][viewport][scheme]["samples"]
+    result = highlight["linkedContrast"][page.removesuffix("_expanded")][viewport][scheme]
+    if page == "ledger_expanded":
+        result = result["expanded"]
+    samples = result["samples"]
     assert any(sample["tag"] == "h1" for sample in samples)
     if page == "teams":
         assert sum(sample["tag"] == "strong" and re.match(r"\d+\. ", sample["text"]) is not None
@@ -159,9 +170,21 @@ def test_linked_page_text_contrast(highlight, page, viewport, scheme):
             assert any(sample["id"] == caption for sample in samples)
         assert sum(sample["tag"] == "span" and sample["text"] in {"SF", "LAR", "JAX"}
                    for sample in samples) >= 3, "loaded rating labels must be measured"
-    else:
+    elif page == "glossary":
         assert sum(sample["tag"] == "h2" for sample in samples) >= 12, "definitions must be measured"
         assert any(sample["tag"] == "td" and "EPA per play" in sample["text"] for sample in samples)
+    elif page.startswith("ledger"):
+        assert any(sample["id"] == "tr-scope" and sample["text"] != "…" for sample in samples)
+        assert sum(sample["tag"] == "h3" and sample["text"].startswith("Week ") for sample in samples) >= 5
+        assert any(sample["tag"] == "summary" and sample["text"] == "For bettors" for sample in samples)
+        if page == "ledger_expanded":
+            for element in ["spread-rec", "total-rec", "live-health"]:
+                assert any(sample["id"] == element and sample["text"] != "…" for sample in samples)
+            assert sum(sample["tag"] == "td" and sample["text"] in {"2022", "2023", "2024", "2025"}
+                       for sample in samples) == 4, "holdout table must be measured"
+    else:
+        assert any(sample["id"] == "when" and sample["text"].startswith("Updated ")
+                   and "…" not in sample["text"] for sample in samples), "loaded timestamp must be measured"
     failures = [sample for sample in samples if sample["ratio"] < 4.5]
     assert not failures, f"{page} {viewport} {scheme} contrast below 4.5:1: {failures}"
 
