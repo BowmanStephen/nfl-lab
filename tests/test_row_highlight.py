@@ -1,4 +1,4 @@
-"""Homepage anchor behavior and screen/print contrast in the real browser."""
+"""Homepage anchors and contrast across the main navigation in Chrome."""
 from __future__ import annotations
 
 import json
@@ -115,22 +115,46 @@ def test_home_text_meets_wcag_aa(highlight, scheme, media, viewport, width, heig
 @pytest.mark.parametrize("viewport", ["mobile", "desktop"])
 @pytest.mark.parametrize("scheme", ["light", "dark"])
 @pytest.mark.parametrize("state", ["hover", "focus"])
-def test_home_interaction_contrast(highlight, viewport, scheme, state):
-    interactions = highlight["contrast"][viewport]["screen"][scheme]["interactions"]
+@pytest.mark.parametrize("page", ["home", "last_week", "teams"])
+def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
+    result = (highlight["contrast"][viewport]["screen"][scheme] if page == "home"
+              else highlight["linkedContrast"][page][viewport][scheme])
+    assert result["viewport"] == {"width": 390 if viewport == "mobile" else 1280,
+                                  "height": 844 if viewport == "mobile" else 900,
+                                  "mobileLayout": viewport == "mobile"}
+    assert result["screen"] and not result["print"]
+    assert result["dark"] is (scheme == "dark")
+    interactions = result["interactions"]
     targets = {target["index"] for target in interactions["targets"]
                if state == "focus" or target["hoverable"]}
-    assert len(targets) >= 10, "must exercise real homepage controls"
+    assert len(targets) >= 10, f"must exercise real {page} controls"
     assert {entry["index"] for entry in interactions[state]} == targets
     for entry in interactions[state]:
         result = entry["result"]
         assert result["hovered"] if state == "hover" else result["focused"] and result["focusVisible"]
         assert result["samples"], f"control {entry['index']} had no visible text"
         failures = [sample for sample in result["samples"] if sample["ratio"] < 4.5]
-        assert not failures, f"{viewport} {scheme} {state} control {entry['index']}: {failures}"
+        assert not failures, f"{page} {viewport} {scheme} {state} control {entry['index']}: {failures}"
         if state == "focus":
             assert result["outline"]["style"] not in {"none", "hidden"}
             assert result["outline"]["width"] > 0
             assert result["outline"]["ratio"] >= 3, result["outline"]
+
+
+@pytest.mark.parametrize("page", ["last_week", "teams"])
+@pytest.mark.parametrize("viewport", ["mobile", "desktop"])
+@pytest.mark.parametrize("scheme", ["light", "dark"])
+def test_linked_page_text_contrast(highlight, page, viewport, scheme):
+    samples = highlight["linkedContrast"][page][viewport][scheme]["samples"]
+    assert any(sample["tag"] == "h1" for sample in samples)
+    if page == "teams":
+        assert sum(sample["tag"] == "strong" and re.match(r"\d+\. ", sample["text"]) is not None
+                   for sample in samples) == 32, "all loaded rankings must be measured"
+    else:
+        assert any(sample["id"] == "what-mattered-h" for sample in samples)
+        assert sum(sample["tag"] == "h2" for sample in samples) >= 10, "recaps must be measured"
+    failures = [sample for sample in samples if sample["ratio"] < 4.5]
+    assert not failures, f"{page} {viewport} {scheme} contrast below 4.5:1: {failures}"
 
 
 @pytest.mark.parametrize("qualifies, expected_id", [
@@ -158,7 +182,7 @@ def test_missing_historical_recap_falls_back_to_saved_card(tmp_path):
     shutil.copytree(PUBLIC, public)
     (public / "recaps" / "week5.html").unlink()
     proc = subprocess.run(
-        ["node", str(PROBE), str(public)],
+        ["node", str(PROBE), str(public), "--skip-linked-contrast"],
         capture_output=True, text=True, timeout=60,
     )
     assert proc.returncode == 0, f"{proc.stderr}\n{proc.stdout}"
