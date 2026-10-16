@@ -307,6 +307,38 @@ async function main() {
       }
     }
 
+    // Follow the actual homepage navigation so a new recap week stays covered.
+    const linkedContrast = {};
+    // The missing-recap fixture deliberately removes the Last week destination.
+    const linkedPages = process.argv.includes("--skip-linked-contrast") ? []
+      : [["last_week", "Last week"], ["teams", "Teams"]];
+    for (const [name, label] of linkedPages) {
+      const href = await evaluate(rowPage, `Array.from(document.querySelectorAll(".nav a"))
+        .find((link) => link.textContent.trim() === ${JSON.stringify(label)})?.href`);
+      if (!href) throw new Error(`Homepage navigation is missing ${label}`);
+      linkedContrast[name] = {};
+      for (const [viewport, metrics] of Object.entries(viewports)) {
+        const page = await blankPage(browser);
+        pages.push(page);
+        await show(page, href, metrics);
+        await waitFor(page, name === "teams"
+          ? 'document.querySelectorAll("#teams .team").length === 32'
+          : 'Boolean(document.querySelector("#what-mattered p:not(.kicker)"))');
+        linkedContrast[name][viewport] = {};
+        for (const scheme of ["light", "dark"]) {
+          await page.send("Emulation.setEmulatedMedia", {
+            media: "screen",
+            features: [{ name: "prefers-color-scheme", value: scheme }],
+          });
+          await settleTransitions(page);
+          linkedContrast[name][viewport][scheme] = {
+            ...await evaluate(page, `(${measureContrast.toString()})()`),
+            interactions: await interactionContrast(page),
+          };
+        }
+      }
+    }
+
     process.stdout.write(JSON.stringify({
       pickId,
       pastId,
@@ -316,6 +348,7 @@ async function main() {
       missed,
       official,
       contrast,
+      linkedContrast,
     }));
   } finally {
     for (const page of pages) {
@@ -353,7 +386,8 @@ async function interactionContrast(page) {
     const point = await evaluate(page, `(() => {
       const el = document.querySelectorAll("a[href],button,summary")[${target.index}];
       el.scrollIntoView({ block: "center", inline: "center", behavior: "instant" });
-      const r = el.getBoundingClientRect();
+      // A wrapped inline link's bounding-box center can fall between its fragments.
+      const r = Array.from(el.getClientRects()).find((rect) => rect.width > 0 && rect.height > 0);
       return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
     })()`);
     await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", ...point });
