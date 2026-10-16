@@ -135,12 +135,12 @@ async function blankPage(browserWs) {
   return cdp;
 }
 
-async function show(cdp, url, { reduced = false, width = 390, height = 280 } = {}) {
+async function show(cdp, url, { reduced = false, width = 390, height = 280, mobile = true } = {}) {
   await cdp.send("Emulation.setDeviceMetricsOverride", {
     width,
     height,
     deviceScaleFactor: 1,
-    mobile: true,
+    mobile,
   });
   await cdp.send("Emulation.setEmulatedMedia", {
     features: [{ name: "prefers-reduced-motion", value: reduced ? "reduce" : "no-preference" }],
@@ -277,25 +277,32 @@ async function main() {
       return hrefs;
     })()`);
 
-    const contrastPage = await blankPage(browser);
-    pages.push(contrastPage);
-    await show(contrastPage, `${origin}/index.html`, { height: 700 });
-    // Rows appear after the optional recap request on a fully scored card.
-    await waitFor(contrastPage, `Boolean(document.getElementById(${JSON.stringify(pickId)}))`);
-    await evaluate(contrastPage, 'document.querySelectorAll(".row-toggle").forEach((button) => button.click())');
     const contrast = {};
-    for (const media of ["screen", "print"]) {
-      contrast[media] = {};
-      for (const scheme of ["light", "dark"]) {
-        await contrastPage.send("Emulation.setEmulatedMedia", {
-          media,
-          features: [{ name: "prefers-color-scheme", value: scheme }],
-        });
-        // Theme changes animate link colors; measure the settled palette.
-        await evaluate(contrastPage, `Promise.all(document.getAnimations()
-          .filter((animation) => animation instanceof CSSTransition)
-          .map((animation) => animation.finished.catch(() => {})))`);
-        contrast[media][scheme] = await evaluate(contrastPage, `(${measureContrast.toString()})()`);
+    const viewports = {
+      mobile: { width: 390, height: 844, mobile: true },
+      desktop: { width: 1280, height: 900, mobile: false },
+    };
+    for (const [viewport, metrics] of Object.entries(viewports)) {
+      const contrastPage = await blankPage(browser);
+      pages.push(contrastPage);
+      await show(contrastPage, `${origin}/index.html`, metrics);
+      // Rows appear after the optional recap request on a fully scored card.
+      await waitFor(contrastPage, `Boolean(document.getElementById(${JSON.stringify(pickId)}))`);
+      await evaluate(contrastPage, 'document.querySelectorAll(".row-toggle").forEach((button) => button.click())');
+      contrast[viewport] = {};
+      for (const media of ["screen", "print"]) {
+        contrast[viewport][media] = {};
+        for (const scheme of ["light", "dark"]) {
+          await contrastPage.send("Emulation.setEmulatedMedia", {
+            media,
+            features: [{ name: "prefers-color-scheme", value: scheme }],
+          });
+          // Theme changes animate link colors; measure the settled palette.
+          await evaluate(contrastPage, `Promise.all(document.getAnimations()
+            .filter((animation) => animation instanceof CSSTransition)
+            .map((animation) => animation.finished.catch(() => {})))`);
+          contrast[viewport][media][scheme] = await evaluate(contrastPage, `(${measureContrast.toString()})()`);
+        }
       }
     }
 
@@ -344,6 +351,11 @@ function measureContrast() {
     && el.getClientRects().length && getComputedStyle(el).visibility === "visible"
     && getComputedStyle(el).clipPath === "none");
   return {
+    viewport: {
+      width: innerWidth,
+      height: innerHeight,
+      mobileLayout: matchMedia("(max-width: 600px)").matches,
+    },
     print: matchMedia("print").matches,
     screen: matchMedia("screen").matches,
     dark: matchMedia("(prefers-color-scheme: dark)").matches,

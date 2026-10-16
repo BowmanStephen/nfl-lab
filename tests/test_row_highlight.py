@@ -92,8 +92,13 @@ def test_past_week_official_links_go_to_the_recap(highlight):
 
 @pytest.mark.parametrize("scheme", ["light", "dark"])
 @pytest.mark.parametrize("media", ["screen", "print"])
-def test_home_text_meets_wcag_aa(highlight, scheme, media):
-    result = highlight["contrast"][media][scheme]
+@pytest.mark.parametrize("viewport,width,height,mobile_layout", [
+    ("mobile", 390, 844, True),
+    ("desktop", 1280, 900, False),
+])
+def test_home_text_meets_wcag_aa(highlight, scheme, media, viewport, width, height, mobile_layout):
+    result = highlight["contrast"][viewport][media][scheme]
+    assert result["viewport"] == {"width": width, "height": height, "mobileLayout": mobile_layout}
     assert result["print"] is (media == "print")
     assert result["screen"] is (media == "screen")
     assert result["dark"] is (scheme == "dark")
@@ -104,7 +109,7 @@ def test_home_text_meets_wcag_aa(highlight, scheme, media):
     assert any(sample["id"] == "updated" for sample in samples), "muted text must be measured"
     assert len(samples) >= 10, "must measure actual homepage content"
     failures = [sample for sample in samples if sample["ratio"] < 4.5]
-    assert failures == [], f"{scheme}-scheme {media} contrast below 4.5:1: {failures}"
+    assert failures == [], f"{viewport} {scheme}-scheme {media} contrast below 4.5:1: {failures}"
 
 
 @pytest.mark.parametrize("qualifies, expected_id", [
