@@ -207,10 +207,18 @@ def test_linked_page_text_contrast(highlight, page, viewport, scheme):
     ("model", {"winrate-chart": 7, "mae-chart": 5}),
     ("replay", {"rc-winrate": 7, "rc-context": 5}),
 ])
-def test_svg_chart_text_contrast(highlight, viewport, scheme, page, charts):
-    result = highlight["linkedContrast"][page][viewport][scheme]
-    assert result["viewport"]["width"] == (390 if viewport == "mobile" else 1280)
+@pytest.mark.parametrize("media", ["screen", "print"])
+def test_svg_chart_text_contrast(highlight, viewport, scheme, page, charts, media):
+    modes = highlight["linkedContrast"][page][viewport]
+    result = modes[scheme] if media == "screen" else modes["print"][scheme]
+    assert result["viewport"] == {"width": 390 if viewport == "mobile" else 1280,
+                                  "height": 844 if viewport == "mobile" else 900,
+                                  "mobileLayout": viewport == "mobile"}
+    assert result["print"] is (media == "print")
+    assert result["screen"] is (media == "screen")
     assert result["dark"] is (scheme == "dark")
+    if media == "print":
+        assert result["paper"] == "rgb(255, 255, 255)"
     svg = result["svgContrast"]
     assert result["svgOcclusionError"].startswith("Later SVG paint overlaps text:"), \
         "a rectangle painted over the labels must fail the probe"
@@ -225,7 +233,7 @@ def test_svg_chart_text_contrast(highlight, viewport, scheme, page, charts):
         axes = [sample for sample in labels if sample["className"] in {"axis", "label"}]
         assert all(all(bg["source"] == "paper" for bg in sample["backgrounds"]) for sample in axes)
     failures = [sample for sample in svg["samples"] if sample["ratio"] < 4.5]
-    assert not failures, f"{page} {viewport} {scheme} SVG text below 4.5:1: {failures}"
+    assert not failures, f"{page} {viewport} {scheme} {media} SVG text below 4.5:1: {failures}"
 
 
 @pytest.mark.parametrize("viewport", ["mobile", "desktop"])

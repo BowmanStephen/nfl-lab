@@ -361,19 +361,7 @@ async function main() {
             interactions: await interactionContrast(page),
           };
           if (name === "model" || name === "replay") {
-            linkedContrast[name][viewport][scheme].svgContrast =
-              await evaluate(page, `(${measureSvgContrast.toString()})()`);
-            linkedContrast[name][viewport][scheme].svgOcclusionError = await evaluate(page, `(() => {
-              const svg = document.querySelector("main svg");
-              const cover = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-              cover.setAttribute("width", svg.viewBox.baseVal.width);
-              cover.setAttribute("height", svg.viewBox.baseVal.height);
-              cover.setAttribute("fill", "black");
-              svg.append(cover);
-              try { (${measureSvgContrast.toString()})(); return null; }
-              catch (error) { return error.message; }
-              finally { cover.remove(); }
-            })()`);
+            Object.assign(linkedContrast[name][viewport][scheme], await captureSvgContrast(page));
           }
           if (name === "ledger") {
             const closed = await evaluate(page, '!document.querySelector(".tr-bettors").open');
@@ -393,6 +381,17 @@ async function main() {
             linkedContrast[name][viewport][scheme].rowInteractions = {
               targets, hover: await hoverContrast(page, selector, targets),
             };
+          }
+        }
+        if (name === "model" || name === "replay") {
+          linkedContrast[name][viewport].print = {};
+          for (const scheme of ["light", "dark"]) {
+            await page.send("Emulation.setEmulatedMedia", {
+              media: "print",
+              features: [{ name: "prefers-color-scheme", value: scheme }],
+            });
+            await settleTransitions(page);
+            linkedContrast[name][viewport].print[scheme] = await captureSvgContrast(page);
           }
         }
       }
@@ -431,6 +430,28 @@ async function settleTransitions(page) {
   await evaluate(page, `Promise.all(document.getAnimations()
     .filter((animation) => animation instanceof CSSTransition)
     .map((animation) => animation.finished.catch(() => {})))`);
+}
+
+async function captureSvgContrast(page) {
+  const environment = await evaluate(page, `({
+    viewport: { width: innerWidth, height: innerHeight, mobileLayout: matchMedia("(max-width: 600px)").matches },
+    print: matchMedia("print").matches, screen: matchMedia("screen").matches,
+    dark: matchMedia("(prefers-color-scheme: dark)").matches,
+    paper: getComputedStyle(document.body).backgroundColor,
+  })`);
+  const svgContrast = await evaluate(page, `(${measureSvgContrast.toString()})()`);
+  const svgOcclusionError = await evaluate(page, `(() => {
+    const svg = document.querySelector("main svg");
+    const cover = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    cover.setAttribute("width", svg.viewBox.baseVal.width);
+    cover.setAttribute("height", svg.viewBox.baseVal.height);
+    cover.setAttribute("fill", "black");
+    svg.append(cover);
+    try { (${measureSvgContrast.toString()})(); return null; }
+    catch (error) { return error.message; }
+    finally { cover.remove(); }
+  })()`);
+  return { ...environment, svgContrast, svgOcclusionError };
 }
 
 async function toggleBettors(page) {
