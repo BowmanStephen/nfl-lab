@@ -280,7 +280,8 @@ async function main() {
     const contrastPage = await blankPage(browser);
     pages.push(contrastPage);
     await show(contrastPage, `${origin}/index.html`, { height: 700 });
-    await waitFor(contrastPage, 'document.getElementById("updated")?.textContent.trim()');
+    // Rows appear after the optional recap request on a fully scored card.
+    await waitFor(contrastPage, `Boolean(document.getElementById(${JSON.stringify(pickId)}))`);
     await evaluate(contrastPage, 'document.querySelectorAll(".row-toggle").forEach((button) => button.click())');
     const contrast = {};
     for (const media of ["screen", "print"]) {
