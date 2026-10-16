@@ -77,10 +77,10 @@
         ]
       },
       "grading": {
-        "home_score": null,
-        "away_score": null,
-        "actual_margin": null,
-        "actual_total": null,
+        "home_score": 17.0,
+        "away_score": 14.0,
+        "actual_margin": 3.0,
+        "actual_total": 31.0,
         "spread_outcome": null,
         "total_outcome": null,
         "spread_clv": null,
