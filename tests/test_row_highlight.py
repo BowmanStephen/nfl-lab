@@ -1,4 +1,4 @@
-"""Homepage anchor behavior and print contrast in the real browser."""
+"""Homepage anchor behavior and screen/print contrast in the real browser."""
 from __future__ import annotations
 
 import json
@@ -91,17 +91,20 @@ def test_past_week_official_links_go_to_the_recap(highlight):
 
 
 @pytest.mark.parametrize("scheme", ["light", "dark"])
-def test_home_print_text_meets_wcag_aa(highlight, scheme):
-    result = highlight["printContrast"][scheme]
-    assert result["print"] is True
+@pytest.mark.parametrize("media", ["screen", "print"])
+def test_home_text_meets_wcag_aa(highlight, scheme, media):
+    result = highlight["contrast"][media][scheme]
+    assert result["print"] is (media == "print")
+    assert result["screen"] is (media == "screen")
     assert result["dark"] is (scheme == "dark")
-    assert result["paper"] == "rgb(255, 255, 255)"
+    if media == "print":
+        assert result["paper"] == "rgb(255, 255, 255)"
     samples = result["samples"]
     assert any(sample["tag"] == "h1" for sample in samples), "heading must be measured"
     assert any(sample["id"] == "updated" for sample in samples), "muted text must be measured"
     assert len(samples) >= 10, "must measure actual homepage content"
     failures = [sample for sample in samples if sample["ratio"] < 4.5]
-    assert failures == [], f"{scheme}-scheme print contrast below 4.5:1: {failures}"
+    assert failures == [], f"{scheme}-scheme {media} contrast below 4.5:1: {failures}"
 
 
 @pytest.mark.parametrize("qualifies, expected_id", [

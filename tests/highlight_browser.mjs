@@ -276,18 +276,21 @@ async function main() {
       return hrefs;
     })()`);
 
-    const printPage = await blankPage(browser);
-    pages.push(printPage);
-    await show(printPage, `${origin}/index.html`, { height: 700 });
-    await waitFor(printPage, 'document.getElementById("updated")?.textContent.trim()');
-    await evaluate(printPage, 'document.querySelectorAll(".row-toggle").forEach((button) => button.click())');
-    const printContrast = {};
-    for (const scheme of ["light", "dark"]) {
-      await printPage.send("Emulation.setEmulatedMedia", {
-        media: "print",
-        features: [{ name: "prefers-color-scheme", value: scheme }],
-      });
-      printContrast[scheme] = await evaluate(printPage, `(${measurePrintContrast.toString()})()`);
+    const contrastPage = await blankPage(browser);
+    pages.push(contrastPage);
+    await show(contrastPage, `${origin}/index.html`, { height: 700 });
+    await waitFor(contrastPage, 'document.getElementById("updated")?.textContent.trim()');
+    await evaluate(contrastPage, 'document.querySelectorAll(".row-toggle").forEach((button) => button.click())');
+    const contrast = {};
+    for (const media of ["screen", "print"]) {
+      contrast[media] = {};
+      for (const scheme of ["light", "dark"]) {
+        await contrastPage.send("Emulation.setEmulatedMedia", {
+          media,
+          features: [{ name: "prefers-color-scheme", value: scheme }],
+        });
+        contrast[media][scheme] = await evaluate(contrastPage, `(${measureContrast.toString()})()`);
+      }
     }
 
     process.stdout.write(JSON.stringify({
@@ -298,7 +301,7 @@ async function main() {
       reduced: reducedSettled || reduced,
       missed,
       official,
-      printContrast,
+      contrast,
     }));
   } finally {
     for (const page of pages) {
@@ -319,7 +322,7 @@ async function main() {
 }
 
 // Runs in Chrome so media queries, inherited colors and transparency are real.
-function measurePrintContrast() {
+function measureContrast() {
   const rgba = (color) => {
     if (!/^rgba?\(/.test(color)) throw new Error(`Unsupported contrast color: ${color}`);
     const channels = color.match(/[\d.]+/g).map(Number);
@@ -336,6 +339,7 @@ function measurePrintContrast() {
     && getComputedStyle(el).clipPath === "none");
   return {
     print: matchMedia("print").matches,
+    screen: matchMedia("screen").matches,
     dark: matchMedia("(prefers-color-scheme: dark)").matches,
     paper: getComputedStyle(document.body).backgroundColor,
     samples: text.map((el) => {
