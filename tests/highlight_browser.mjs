@@ -318,7 +318,8 @@ async function main() {
       model: 'document.querySelectorAll("#ratings-chart .pw-row").length === 32'
         + ' && document.querySelectorAll("#games-chart .game-row").length > 0'
         + ' && document.querySelectorAll("#winrate-chart svg, #mae-chart svg").length === 2',
-      glossary: 'document.querySelectorAll("main article.game h2").length >= 12',
+      glossary: 'document.querySelectorAll("main article.game h2").length >= 12'
+        + ' && Boolean(document.querySelector("main table tbody tr:last-child td:last-child"))',
     };
     for (const [name, label] of linkedPages) {
       const href = await evaluate(rowPage, `Array.from(document.querySelectorAll(".nav a"))
@@ -329,7 +330,7 @@ async function main() {
         const page = await blankPage(browser);
         pages.push(page);
         await show(page, href, metrics);
-        await waitFor(page, ready[name]);
+        await waitFor(page, `document.readyState === "complete" && (${ready[name]})`);
         linkedContrast[name][viewport] = {};
         for (const scheme of ["light", "dark"]) {
           await page.send("Emulation.setEmulatedMedia", {
