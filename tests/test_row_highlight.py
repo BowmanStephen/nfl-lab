@@ -30,7 +30,7 @@ def highlight():
         check=False,
         capture_output=True,
         text=True,
-        timeout=60,
+        timeout=120,
     )
     if proc.returncode != 0:
         pytest.fail(f"highlight browser check failed\n{proc.stderr}\n{proc.stdout}")
@@ -115,7 +115,7 @@ def test_home_text_meets_wcag_aa(highlight, scheme, media, viewport, width, heig
 @pytest.mark.parametrize("viewport", ["mobile", "desktop"])
 @pytest.mark.parametrize("scheme", ["light", "dark"])
 @pytest.mark.parametrize("state", ["hover", "focus"])
-@pytest.mark.parametrize("page", ["home", "last_week", "teams"])
+@pytest.mark.parametrize("page", ["home", "last_week", "teams", "model", "glossary"])
 def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
     result = (highlight["contrast"][viewport]["screen"][scheme] if page == "home"
               else highlight["linkedContrast"][page][viewport][scheme])
@@ -142,7 +142,7 @@ def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
             assert result["outline"]["ratio"] >= 3, result["outline"]
 
 
-@pytest.mark.parametrize("page", ["last_week", "teams"])
+@pytest.mark.parametrize("page", ["last_week", "teams", "model", "glossary"])
 @pytest.mark.parametrize("viewport", ["mobile", "desktop"])
 @pytest.mark.parametrize("scheme", ["light", "dark"])
 def test_linked_page_text_contrast(highlight, page, viewport, scheme):
@@ -151,11 +151,34 @@ def test_linked_page_text_contrast(highlight, page, viewport, scheme):
     if page == "teams":
         assert sum(sample["tag"] == "strong" and re.match(r"\d+\. ", sample["text"]) is not None
                    for sample in samples) == 32, "all loaded rankings must be measured"
-    else:
+    elif page == "last_week":
         assert any(sample["id"] == "what-mattered-h" for sample in samples)
         assert sum(sample["tag"] == "h2" for sample in samples) >= 10, "recaps must be measured"
+    elif page == "model":
+        for caption in ["ratings-caption", "week5-caption", "live-label"]:
+            assert any(sample["id"] == caption for sample in samples)
+        assert sum(sample["tag"] == "span" and sample["text"] in {"SF", "LAR", "JAX"}
+                   for sample in samples) >= 3, "loaded rating labels must be measured"
+    else:
+        assert sum(sample["tag"] == "h2" for sample in samples) >= 12, "definitions must be measured"
+        assert any(sample["tag"] == "td" and "EPA per play" in sample["text"] for sample in samples)
     failures = [sample for sample in samples if sample["ratio"] < 4.5]
     assert not failures, f"{page} {viewport} {scheme} contrast below 4.5:1: {failures}"
+
+
+@pytest.mark.parametrize("viewport", ["mobile", "desktop"])
+@pytest.mark.parametrize("scheme", ["light", "dark"])
+def test_model_game_row_hover_contrast(highlight, viewport, scheme):
+    interactions = highlight["linkedContrast"]["model"][viewport][scheme]["rowInteractions"]
+    assert len(interactions["targets"]) >= 10, "loaded game rows must be exercised"
+    assert {entry["index"] for entry in interactions["hover"]} == {
+        target["index"] for target in interactions["targets"]}
+    for entry in interactions["hover"]:
+        result = entry["result"]
+        assert result["hovered"], entry
+        assert result["samples"], entry
+        failures = [sample for sample in result["samples"] if sample["ratio"] < 4.5]
+        assert not failures, f"model {viewport} {scheme} row {entry['index']}: {failures}"
 
 
 @pytest.mark.parametrize("qualifies, expected_id", [

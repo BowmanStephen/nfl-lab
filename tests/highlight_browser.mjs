@@ -109,7 +109,7 @@ async function evaluate(cdp, expression) {
     awaitPromise: true,
   });
   if (result.exceptionDetails) {
-    throw new Error(result.exceptionDetails.text || "evaluate failed");
+    throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text || "evaluate failed");
   }
   return result.result.value;
 }
@@ -311,7 +311,15 @@ async function main() {
     const linkedContrast = {};
     // The missing-recap fixture deliberately removes the Last week destination.
     const linkedPages = process.argv.includes("--skip-linked-contrast") ? []
-      : [["last_week", "Last week"], ["teams", "Teams"]];
+      : [["last_week", "Last week"], ["teams", "Teams"], ["model", "How it works"], ["glossary", "Glossary"]];
+    const ready = {
+      last_week: 'Boolean(document.querySelector("#what-mattered p:not(.kicker)"))',
+      teams: 'document.querySelectorAll("#teams .team").length === 32',
+      model: 'document.querySelectorAll("#ratings-chart .pw-row").length === 32'
+        + ' && document.querySelectorAll("#games-chart .game-row").length > 0'
+        + ' && document.querySelectorAll("#winrate-chart svg, #mae-chart svg").length === 2',
+      glossary: 'document.querySelectorAll("main article.game h2").length >= 12',
+    };
     for (const [name, label] of linkedPages) {
       const href = await evaluate(rowPage, `Array.from(document.querySelectorAll(".nav a"))
         .find((link) => link.textContent.trim() === ${JSON.stringify(label)})?.href`);
@@ -321,9 +329,7 @@ async function main() {
         const page = await blankPage(browser);
         pages.push(page);
         await show(page, href, metrics);
-        await waitFor(page, name === "teams"
-          ? 'document.querySelectorAll("#teams .team").length === 32'
-          : 'Boolean(document.querySelector("#what-mattered p:not(.kicker)"))');
+        await waitFor(page, ready[name]);
         linkedContrast[name][viewport] = {};
         for (const scheme of ["light", "dark"]) {
           await page.send("Emulation.setEmulatedMedia", {
@@ -335,6 +341,14 @@ async function main() {
             ...await evaluate(page, `(${measureContrast.toString()})()`),
             interactions: await interactionContrast(page),
           };
+          if (name === "model") {
+            const selector = "#games-chart .game-row";
+            const targets = await evaluate(page, `Array.from(document.querySelectorAll(${JSON.stringify(selector)}))
+              .map((el, index) => ({ index, text: el.textContent.trim() }))`);
+            linkedContrast[name][viewport][scheme].rowInteractions = {
+              targets, hover: await hoverContrast(page, selector, targets),
+            };
+          }
         }
       }
     }
@@ -374,17 +388,12 @@ async function settleTransitions(page) {
     .map((animation) => animation.finished.catch(() => {})))`);
 }
 
-async function interactionContrast(page) {
-  const targets = await evaluate(page, `Array.from(document.querySelectorAll("a[href],button,summary"))
-    .map((el, index) => ({ el, index }))
-    .filter(({ el }) => el.getClientRects().length && getComputedStyle(el).visibility === "visible"
-      && !el.disabled && el.tabIndex >= 0)
-    .map(({ el, index }) => ({ index, text: el.textContent.trim(), hoverable: !el.matches(".skip") }))`);
-  const hover = [], focus = [];
+async function hoverContrast(page, selector, targets) {
+  const hover = [];
   await evaluate(page, "document.activeElement.blur()");
-  for (const target of targets.filter((target) => target.hoverable)) {
+  for (const target of targets) {
     const point = await evaluate(page, `(() => {
-      const el = document.querySelectorAll("a[href],button,summary")[${target.index}];
+      const el = document.querySelectorAll(${JSON.stringify(selector)})[${target.index}];
       el.scrollIntoView({ block: "center", inline: "center", behavior: "instant" });
       // A wrapped inline link's bounding-box center can fall between its fragments.
       const r = Array.from(el.getClientRects()).find((rect) => rect.width > 0 && rect.height > 0);
@@ -392,9 +401,21 @@ async function interactionContrast(page) {
     })()`);
     await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", ...point });
     await settleTransitions(page);
-    hover.push({ index: target.index, result: await evaluate(page, `(${measureContrast.toString()})(${target.index})`) });
+    hover.push({ index: target.index, result: await evaluate(page,
+      `(${measureContrast.toString()})(${target.index}, ${JSON.stringify(selector)})`) });
   }
   await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: 0, y: 0 });
+  return hover;
+}
+
+async function interactionContrast(page) {
+  const targets = await evaluate(page, `Array.from(document.querySelectorAll("a[href],button,summary"))
+    .map((el, index) => ({ el, index }))
+    .filter(({ el }) => el.getClientRects().length && getComputedStyle(el).visibility === "visible"
+      && !el.disabled && el.tabIndex >= 0)
+    .map(({ el, index }) => ({ index, text: el.textContent.trim(), hoverable: !el.matches(".skip") }))`);
+  const hover = await hoverContrast(page, "a[href],button,summary", targets.filter((target) => target.hoverable));
+  const focus = [];
   const seen = new Set();
   for (let step = 0; step < targets.length * 2 + 4 && seen.size < targets.length; step++) {
     await page.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
@@ -410,8 +431,13 @@ async function interactionContrast(page) {
 }
 
 // Runs in Chrome so media queries, inherited colors and transparency are real.
-function measureContrast(targetIndex = null) {
+function measureContrast(targetIndex = null, selector = "a[href],button,summary") {
   const rgba = (color) => {
+    // Chrome preserves color-mix(in srgb, ...) in this computed-color syntax.
+    if (color.startsWith("color(srgb ")) {
+      const [channels, alpha = "1"] = color.slice(11, -1).split("/");
+      return [...channels.trim().split(/\s+/).map((value) => Number(value) * 255), Number(alpha)];
+    }
     if (!/^rgba?\(/.test(color)) throw new Error(`Unsupported contrast color: ${color}`);
     const channels = color.match(/[\d.]+/g).map(Number);
     return [...channels.slice(0, 3), channels[3] ?? 1];
@@ -433,12 +459,14 @@ function measureContrast(targetIndex = null) {
     }
     return background;
   };
-  const root = targetIndex === null ? document.body : document.querySelectorAll("a[href],button,summary")[targetIndex];
+  const root = targetIndex === null ? document.body : document.querySelectorAll(selector)[targetIndex];
   if (!root) throw new Error("Contrast target disappeared");
   const style = getComputedStyle(root);
   const outside = backgroundOf(root.parentElement);
+  // SVG text uses fill and may sit over other shapes, requiring a separate probe.
   const text = [root, ...root.querySelectorAll("*")].filter((el) =>
-    [...el.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim())
+    el.namespaceURI === "http://www.w3.org/1999/xhtml"
+    && [...el.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim())
     && el.getClientRects().length && getComputedStyle(el).visibility === "visible"
     && getComputedStyle(el).clipPath === "none");
   return {
