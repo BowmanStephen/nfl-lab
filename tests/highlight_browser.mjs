@@ -312,7 +312,8 @@ async function main() {
     // The missing-recap fixture deliberately removes the Last week destination.
     const linkedPages = process.argv.includes("--skip-linked-contrast") ? []
       : [["last_week", "Last week"], ["teams", "Teams"], ["model", "How it works"], ["glossary", "Glossary"],
-        ["ledger", "Track record"], ["freshness", "Data updates"]];
+        ["ledger", "Track record"], ["freshness", "Data updates"],
+        ["replay", "2026 replay"], ["preview6", "Week 6 previews"]];
     const ready = {
       last_week: 'Boolean(document.querySelector("#what-mattered p:not(.kicker)"))',
       teams: 'document.querySelectorAll("#teams .team").length === 32',
@@ -328,6 +329,14 @@ async function main() {
         + ' && document.getElementById("live-health").textContent !== "…"',
       freshness: 'document.getElementById("when").textContent.startsWith("Updated ")'
         + ' && !document.getElementById("when").textContent.includes("…")',
+      replay: 'document.querySelectorAll("#rc-hero .rc-big").length === 2'
+        + ' && document.querySelectorAll("#rc-weeks .rc-week:not(.rc-week-head)").length === 4'
+        + ' && document.querySelectorAll("#rc-lessons .rc-lesson").length === 3'
+        + ' && document.getElementById("rc-foot").textContent.startsWith("Backtest generated ")',
+      preview6: 'document.querySelectorAll("main article.game").length === 14'
+        + ' && document.querySelectorAll(".official-line").length === 14'
+        + ' && Array.from(document.querySelectorAll(".official-line"))'
+        + '.every((el) => el.textContent.trim() && el.textContent.trim() !== "unavailable")',
     };
     for (const [name, label] of linkedPages) {
       const href = await evaluate(rowPage, `Array.from(document.querySelectorAll(".nav a, .foot-nav a"))
@@ -448,7 +457,8 @@ async function interactionContrast(page) {
       && (!el.closest("details:not([open])")
         || el.closest("summary")?.parentElement === el.closest("details:not([open])")))
     .map(({ el, index }) => ({ index, text: el.textContent.trim(),
-      label: el.getAttribute("aria-label"), hoverable: !el.matches(".skip") }))`);
+      label: el.getAttribute("aria-label"), officialPick: Boolean(el.closest(".official-pick")),
+      hoverable: !el.matches(".skip") }))`);
   const hover = await hoverContrast(page, selector, targets.filter((target) => target.hoverable));
   const focus = [];
   const seen = new Set();

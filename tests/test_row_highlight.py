@@ -30,7 +30,7 @@ def highlight():
         check=False,
         capture_output=True,
         text=True,
-        timeout=120,
+        timeout=180,
     )
     if proc.returncode != 0:
         pytest.fail(f"highlight browser check failed\n{proc.stderr}\n{proc.stdout}")
@@ -115,7 +115,7 @@ def test_home_text_meets_wcag_aa(highlight, scheme, media, viewport, width, heig
 @pytest.mark.parametrize("viewport", ["mobile", "desktop"])
 @pytest.mark.parametrize("scheme", ["light", "dark"])
 @pytest.mark.parametrize("state", ["hover", "focus"])
-@pytest.mark.parametrize("page", ["home", "last_week", "teams", "model", "glossary", "ledger", "ledger_expanded", "freshness"])
+@pytest.mark.parametrize("page", ["home", "last_week", "teams", "model", "glossary", "ledger", "ledger_expanded", "freshness", "replay", "preview6"])
 def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
     result = (highlight["contrast"][viewport]["screen"][scheme] if page == "home"
               else highlight["linkedContrast"][page.removesuffix("_expanded")][viewport][scheme])
@@ -128,6 +128,8 @@ def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
     assert result["screen"] and not result["print"]
     assert result["dark"] is (scheme == "dark")
     interactions = result["interactions"]
+    if page == "preview6":
+        assert sum(target["officialPick"] for target in interactions["targets"]) == 14
     if page == "ledger_expanded":
         labels = {target["label"] for target in interactions["targets"]}
         assert {"Holdout record by season", "Live 2026 picks"} <= labels
@@ -150,7 +152,7 @@ def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
             assert result["outline"]["ratio"] >= 3, result["outline"]
 
 
-@pytest.mark.parametrize("page", ["last_week", "teams", "model", "glossary", "ledger", "ledger_expanded", "freshness"])
+@pytest.mark.parametrize("page", ["last_week", "teams", "model", "glossary", "ledger", "ledger_expanded", "freshness", "replay", "preview6"])
 @pytest.mark.parametrize("viewport", ["mobile", "desktop"])
 @pytest.mark.parametrize("scheme", ["light", "dark"])
 def test_linked_page_text_contrast(highlight, page, viewport, scheme):
@@ -182,9 +184,19 @@ def test_linked_page_text_contrast(highlight, page, viewport, scheme):
                 assert any(sample["id"] == element and sample["text"] != "…" for sample in samples)
             assert sum(sample["tag"] == "td" and sample["text"] in {"2022", "2023", "2024", "2025"}
                        for sample in samples) == 4, "holdout table must be measured"
-    else:
+    elif page == "freshness":
         assert any(sample["id"] == "when" and sample["text"].startswith("Updated ")
                    and "…" not in sample["text"] for sample in samples), "loaded timestamp must be measured"
+    elif page == "replay":
+        assert any(sample["id"] == "rec-caption" and "games graded" in sample["text"] for sample in samples)
+        assert any(sample["id"] == "rc-foot" and sample["text"].startswith("Backtest generated ") for sample in samples)
+        assert sum(sample["tag"] == "h3" for sample in samples) == 3, "all lessons must be measured"
+        for week in range(1, 5):
+            assert any(sample["tag"] == "span" and sample["text"] == f"Week {week}" for sample in samples)
+    else:
+        assert any(sample["tag"] == "h1" and sample["text"] == "Week 6 previews" for sample in samples)
+        assert sum(sample["tag"] == "h2" for sample in samples) == 14, "all game previews must be measured"
+        assert any(sample["tag"] == "p" and sample["text"].startswith("These previews do not change") for sample in samples)
     failures = [sample for sample in samples if sample["ratio"] < 4.5]
     assert not failures, f"{page} {viewport} {scheme} contrast below 4.5:1: {failures}"
 
