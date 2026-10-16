@@ -298,10 +298,11 @@ async function main() {
             features: [{ name: "prefers-color-scheme", value: scheme }],
           });
           // Theme changes animate link colors; measure the settled palette.
-          await evaluate(contrastPage, `Promise.all(document.getAnimations()
-            .filter((animation) => animation instanceof CSSTransition)
-            .map((animation) => animation.finished.catch(() => {})))`);
+          await settleTransitions(contrastPage);
           contrast[viewport][media][scheme] = await evaluate(contrastPage, `(${measureContrast.toString()})()`);
+          if (media === "screen") {
+            contrast[viewport][media][scheme].interactions = await interactionContrast(contrastPage);
+          }
         }
       }
     }
@@ -334,8 +335,48 @@ async function main() {
   }
 }
 
+async function settleTransitions(page) {
+  await evaluate(page, `Promise.all(document.getAnimations()
+    .filter((animation) => animation instanceof CSSTransition)
+    .map((animation) => animation.finished.catch(() => {})))`);
+}
+
+async function interactionContrast(page) {
+  const targets = await evaluate(page, `Array.from(document.querySelectorAll("a[href],button,summary"))
+    .map((el, index) => ({ el, index }))
+    .filter(({ el }) => el.getClientRects().length && getComputedStyle(el).visibility === "visible"
+      && !el.disabled && el.tabIndex >= 0)
+    .map(({ el, index }) => ({ index, text: el.textContent.trim(), hoverable: !el.matches(".skip") }))`);
+  const hover = [], focus = [];
+  await evaluate(page, "document.activeElement.blur()");
+  for (const target of targets.filter((target) => target.hoverable)) {
+    const point = await evaluate(page, `(() => {
+      const el = document.querySelectorAll("a[href],button,summary")[${target.index}];
+      el.scrollIntoView({ block: "center", inline: "center", behavior: "instant" });
+      const r = el.getBoundingClientRect();
+      return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+    })()`);
+    await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", ...point });
+    await settleTransitions(page);
+    hover.push({ index: target.index, result: await evaluate(page, `(${measureContrast.toString()})(${target.index})`) });
+  }
+  await page.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: 0, y: 0 });
+  const seen = new Set();
+  for (let step = 0; step < targets.length * 2 + 4 && seen.size < targets.length; step++) {
+    await page.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+    await page.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+    const index = await evaluate(page, 'Array.from(document.querySelectorAll("a[href],button,summary")).indexOf(document.activeElement)');
+    if (!targets.some((target) => target.index === index) || seen.has(index)) continue;
+    await settleTransitions(page);
+    focus.push({ index, result: await evaluate(page, `(${measureContrast.toString()})(${index})`) });
+    seen.add(index);
+  }
+  await evaluate(page, "document.activeElement.blur()");
+  return { targets, hover, focus };
+}
+
 // Runs in Chrome so media queries, inherited colors and transparency are real.
-function measureContrast() {
+function measureContrast(targetIndex = null) {
   const rgba = (color) => {
     if (!/^rgba?\(/.test(color)) throw new Error(`Unsupported contrast color: ${color}`);
     const channels = color.match(/[\d.]+/g).map(Number);
@@ -346,11 +387,35 @@ function measureContrast() {
     const channel = value / 255;
     return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
   }).reduce((total, value, i) => total + value * [0.2126, 0.7152, 0.0722][i], 0);
-  const text = [...document.querySelectorAll("body *")].filter((el) =>
+  const ratio = (a, b) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
+  const backgroundOf = (el) => {
+    const ancestors = [];
+    for (let node = el; node; node = node.parentElement) ancestors.unshift(node);
+    let background = [255, 255, 255];
+    for (const node of ancestors) {
+      const style = getComputedStyle(node);
+      if (style.opacity !== "1") throw new Error("Contrast probe needs opacity compositing");
+      background = over(rgba(style.backgroundColor), background);
+    }
+    return background;
+  };
+  const root = targetIndex === null ? document.body : document.querySelectorAll("a[href],button,summary")[targetIndex];
+  if (!root) throw new Error("Contrast target disappeared");
+  const style = getComputedStyle(root);
+  const outside = backgroundOf(root.parentElement);
+  const text = [root, ...root.querySelectorAll("*")].filter((el) =>
     [...el.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim())
     && el.getClientRects().length && getComputedStyle(el).visibility === "visible"
     && getComputedStyle(el).clipPath === "none");
   return {
+    hovered: root.matches(":hover"),
+    focused: root === document.activeElement,
+    focusVisible: root.matches(":focus-visible"),
+    outline: {
+      style: style.outlineStyle,
+      width: parseFloat(style.outlineWidth),
+      ratio: style.outlineStyle === "none" ? null : ratio(over(rgba(style.outlineColor), outside), outside),
+    },
     viewport: {
       width: innerWidth,
       height: innerHeight,
@@ -361,21 +426,13 @@ function measureContrast() {
     dark: matchMedia("(prefers-color-scheme: dark)").matches,
     paper: getComputedStyle(document.body).backgroundColor,
     samples: text.map((el) => {
-      const ancestors = [];
-      for (let node = el; node; node = node.parentElement) ancestors.unshift(node);
-      let background = [255, 255, 255];
-      for (const node of ancestors) {
-        const style = getComputedStyle(node);
-        if (style.opacity !== "1") throw new Error("Contrast probe needs opacity compositing");
-        background = over(rgba(style.backgroundColor), background);
-      }
+      const background = backgroundOf(el);
       const foreground = over(rgba(getComputedStyle(el).color), background);
-      const a = luminance(foreground), b = luminance(background);
       return {
         tag: el.tagName.toLowerCase(),
         id: el.id,
         text: el.textContent.trim().slice(0, 80),
-        ratio: (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05),
+        ratio: ratio(foreground, background),
       };
     }),
   };
