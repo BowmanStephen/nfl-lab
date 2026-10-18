@@ -1,48 +1,48 @@
 {
-  "generated_at": "2026-10-17T06:20:54.782415-05:00",
-  "stale_after": "2026-10-18T18:20:54.782415-05:00",
+  "generated_at": "2026-10-18T06:21:04.997290-05:00",
+  "stale_after": "2026-10-19T18:21:04.997290-05:00",
   "files": [
     {
       "path": "api/baseline.json",
       "bytes": 4704,
       "sha256": "99c3be16425e12796a9ad9e458a5c9a2f28a3466dc8ac87c8bf52277a0ec6344",
-      "updated_at": "2026-10-17T06:20:54.782415-05:00"
+      "updated_at": "2026-10-18T06:21:04.997290-05:00"
     },
     {
       "path": "api/model.json",
       "bytes": 14421,
       "sha256": "bc10fb6f44228f22cbcb1835c36d61e488c6480223ba5a983072f738e0509022",
-      "updated_at": "2026-10-17T06:20:54.782415-05:00"
+      "updated_at": "2026-10-18T06:21:04.997290-05:00"
     },
     {
       "path": "api/picks.json",
       "bytes": 24212,
       "sha256": "e7445a055dc0ee3d9eaaf89677a90216b6b695ca43991d6cd6972193aefd6306",
-      "updated_at": "2026-10-17T06:20:54.782415-05:00"
+      "updated_at": "2026-10-18T06:21:04.997290-05:00"
     },
     {
       "path": "api/report_card.json",
       "bytes": 49091,
       "sha256": "f59870fd55bef75b896d750180d63e9df26003ebf35276903aeb3d41668f72bd",
-      "updated_at": "2026-10-17T06:20:54.782415-05:00"
+      "updated_at": "2026-10-18T06:21:04.997290-05:00"
     },
     {
       "path": "api/saved_weeks.json",
       "bytes": 11039,
       "sha256": "49ca8771439b920bbe445bf45770913df211129d775a862def70533522aa3291",
-      "updated_at": "2026-10-17T06:20:54.782415-05:00"
+      "updated_at": "2026-10-18T06:21:04.997290-05:00"
     },
     {
       "path": "api/summary.json",
       "bytes": 498,
-      "sha256": "4b3456146f61ec0fccebc4bc49eb0d5883184804d6349344d78a9ec2638b1421",
-      "updated_at": "2026-10-17T06:20:54.782415-05:00"
+      "sha256": "da87d2d44290f983fb6cc8da79f2a9b850363d94fae9c1862f0cda742ec92726",
+      "updated_at": "2026-10-18T06:21:04.997290-05:00"
     },
     {
       "path": "api/teams.json",
-      "bytes": 34383,
-      "sha256": "0bc77a8f7106015dcc91423794877db380a8add6672c509ac7294a0950ff7958",
-      "updated_at": "2026-10-17T06:20:54.782415-05:00"
+      "bytes": 34381,
+      "sha256": "db599935af6b3f03a5651e17d36a47e927f3feb03488c6f6a7c700e9ded8f0d7",
+      "updated_at": "2026-10-18T06:21:04.997290-05:00"
     }
   ]
 }
