@@ -906,7 +906,20 @@
         "kickoff_utc": "2026-10-19T00:20Z",
         "espn_id": "401873007"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T22:24:17.146925+00:00",
+        "captured_at_ct": "2026-10-18T17:24:17.146925-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "line_source": "espn_draftkings",
+        "same_book": true,
+        "fallback": false,
+        "home_margin": -1.5,
+        "total": 53.5,
+        "spread_display": "DAL -1.5",
+        "kickoff_utc": "2026-10-19T00:20Z",
+        "espn_id": "401873007"
+      },
       "selection": {
         "model_margin": 3.4060762005,
         "base_margin": 3.4060762005,
@@ -926,8 +939,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "espn_draftkings"
     },
     {
       "game_id": "2026_06_WAS_SF",
