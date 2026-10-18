@@ -8,7 +8,7 @@
   "holdout_note": "Our model has been right 48.8% of the time against Vegas in its 2022 to 2025 test. Beating Vegas takes 52.4%.",
   "totals_void_note": "The 6 week-6 over/under picks were voided Oct 15: the over/under model went 6-18 on weeks 1-4, so we've paused over/unders. The spread picks stand.",
   "line_source": "espn_draftkings",
-  "same_book_clv": "ESPN DraftKings at pick time vs ESPN DraftKings pre-kickoff. Not nflverse.",
+  "same_book_clv": "ESPN DraftKings at pick time vs ESPN DraftKings pre-kickoff. Games tagged source nflverse_close are a different book and are not included.",
   "rule": {
     "spread_edge_min": 2.0,
     "total_edge_min": 3.0
@@ -113,7 +113,21 @@
         "kickoff_utc": "2026-10-18T13:30Z",
         "espn_id": "401872996"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T14:24:52.296019+00:00",
+        "captured_at_ct": "2026-10-18T09:24:52.296019-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "line_source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": 2.5,
+        "total": 42.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-18T13:30Z",
+        "espn_id": "401872996"
+      },
       "selection": {
         "model_margin": 3.4821030176,
         "base_margin": 3.5028870395,
@@ -133,8 +147,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_06_BAL_CLE",
@@ -719,5 +744,6 @@
     "moved_toward_rate": 0.0,
     "average_clv": -1.0
   },
-  "model_version": "v2-margin-calibration"
+  "model_version": "v2-margin-calibration",
+  "close_fallback_note": "1 games missed the DraftKings line we record just before kickoff (HOU-JAX). Those games use the nflverse closing line instead, from a different sportsbook. We do not count that as the same-book line move. The picks and the DraftKings lines from lock time are unchanged."
 }
