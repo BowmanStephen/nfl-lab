@@ -184,7 +184,20 @@
         "kickoff_utc": "2026-10-18T17:00Z",
         "espn_id": "401872997"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T15:24:19.047190+00:00",
+        "captured_at_ct": "2026-10-18T10:24:19.047190-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "line_source": "espn_draftkings",
+        "same_book": true,
+        "fallback": false,
+        "home_margin": -3.0,
+        "total": 39.5,
+        "spread_display": "BAL -3",
+        "kickoff_utc": "2026-10-18T17:00Z",
+        "espn_id": "401872997"
+      },
       "selection": {
         "model_margin": -4.0783287934,
         "base_margin": -7.9546715984,
@@ -209,8 +222,19 @@
           "BAL: using Tyler Huntley from the depth chart and injury report (schedule listed Lamar Jackson)"
         ]
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "espn_draftkings"
     },
     {
       "game_id": "2026_06_CAR_PHI",
@@ -235,7 +259,20 @@
         "kickoff_utc": "2026-10-18T17:00Z",
         "espn_id": "401872998"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T15:24:19.047190+00:00",
+        "captured_at_ct": "2026-10-18T10:24:19.047190-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "line_source": "espn_draftkings",
+        "same_book": true,
+        "fallback": false,
+        "home_margin": -3.0,
+        "total": 39.5,
+        "spread_display": "CAR -3",
+        "kickoff_utc": "2026-10-18T17:00Z",
+        "espn_id": "401872998"
+      },
       "selection": {
         "model_margin": 5.319172243,
         "base_margin": 5.3325433897,
@@ -257,8 +294,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": -4.5,
+        "total_clv": null,
+        "spread_moved_toward": false,
+        "total_moved_toward": null
+      },
+      "line_source": "espn_draftkings"
     },
     {
       "game_id": "2026_06_CHI_ATL",
@@ -283,7 +331,20 @@
         "kickoff_utc": "2026-10-18T17:00Z",
         "espn_id": "401872999"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T15:24:19.047190+00:00",
+        "captured_at_ct": "2026-10-18T10:24:19.047190-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "line_source": "espn_draftkings",
+        "same_book": true,
+        "fallback": false,
+        "home_margin": -1.5,
+        "total": 51.5,
+        "spread_display": "CHI -1.5",
+        "kickoff_utc": "2026-10-18T17:00Z",
+        "espn_id": "401872999"
+      },
       "selection": {
         "model_margin": -1.2844519497,
         "base_margin": -1.440262406,
@@ -308,8 +369,19 @@
           "CHI: using Caleb Williams from the depth chart and injury report (schedule listed Tyson Bagent)"
         ]
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "espn_draftkings"
     },
     {
       "game_id": "2026_06_NO_NYG",
@@ -334,7 +406,20 @@
         "kickoff_utc": "2026-10-18T17:00Z",
         "espn_id": "401873000"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T15:24:19.047190+00:00",
+        "captured_at_ct": "2026-10-18T10:24:19.047190-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "line_source": "espn_draftkings",
+        "same_book": true,
+        "fallback": false,
+        "home_margin": -1.5,
+        "total": 46.5,
+        "spread_display": "NO -1.5",
+        "kickoff_utc": "2026-10-18T17:00Z",
+        "espn_id": "401873000"
+      },
       "selection": {
         "model_margin": 2.4375994843,
         "base_margin": 2.8094625463,
@@ -354,8 +439,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "espn_draftkings"
     },
     {
       "game_id": "2026_06_NYJ_NE",
@@ -380,7 +476,20 @@
         "kickoff_utc": "2026-10-18T17:00Z",
         "espn_id": "401873001"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T15:24:19.047190+00:00",
+        "captured_at_ct": "2026-10-18T10:24:19.047190-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "line_source": "espn_draftkings",
+        "same_book": true,
+        "fallback": false,
+        "home_margin": 7.5,
+        "total": 43.5,
+        "spread_display": "NE -7.5",
+        "kickoff_utc": "2026-10-18T17:00Z",
+        "espn_id": "401873001"
+      },
       "selection": {
         "model_margin": 7.9676821022,
         "base_margin": 7.7246411898,
@@ -400,8 +509,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "espn_draftkings"
     },
     {
       "game_id": "2026_06_PIT_TB",
@@ -426,7 +546,20 @@
         "kickoff_utc": "2026-10-18T17:00Z",
         "espn_id": "401873002"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T15:24:19.047190+00:00",
+        "captured_at_ct": "2026-10-18T10:24:19.047190-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "line_source": "espn_draftkings",
+        "same_book": true,
+        "fallback": false,
+        "home_margin": -1.5,
+        "total": 38.5,
+        "spread_display": "PIT -1.5",
+        "kickoff_utc": "2026-10-18T17:00Z",
+        "espn_id": "401873002"
+      },
       "selection": {
         "model_margin": -1.3939796737,
         "base_margin": 0.9204919304,
@@ -451,8 +584,19 @@
           "TB: Baker Mayfield listed Out (Thumb) on week 5 report"
         ]
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "espn_draftkings"
     },
     {
       "game_id": "2026_06_TEN_IND",
@@ -477,7 +621,20 @@
         "kickoff_utc": "2026-10-18T17:00Z",
         "espn_id": "401873003"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T15:24:19.047190+00:00",
+        "captured_at_ct": "2026-10-18T10:24:19.047190-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "line_source": "espn_draftkings",
+        "same_book": true,
+        "fallback": false,
+        "home_margin": 6.5,
+        "total": 43.5,
+        "spread_display": "IND -6.5",
+        "kickoff_utc": "2026-10-18T17:00Z",
+        "espn_id": "401873003"
+      },
       "selection": {
         "model_margin": 9.2905225653,
         "base_margin": 9.2905225653,
@@ -497,8 +654,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": -0.5,
+        "total_clv": null,
+        "spread_moved_toward": false,
+        "total_moved_toward": null
+      },
+      "line_source": "espn_draftkings"
     },
     {
       "game_id": "2026_06_ARI_LA",
@@ -740,9 +908,9 @@
     "losses": 4,
     "pushes": 1,
     "cover_rate": 0.3333333333333333,
-    "clv_samples": 1,
+    "clv_samples": 3,
     "moved_toward_rate": 0.0,
-    "average_clv": -1.0
+    "average_clv": -2.0
   },
   "model_version": "v2-margin-calibration",
   "close_fallback_note": "1 games missed the DraftKings line we record just before kickoff (HOU-JAX). Those games use the nflverse closing line instead, from a different sportsbook. We do not count that as the same-book line move. The picks and the DraftKings lines from lock time are unchanged."
