@@ -691,7 +691,21 @@
         "kickoff_utc": "2026-10-18T20:05Z",
         "espn_id": "401873004"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T20:25:38.039809+00:00",
+        "captured_at_ct": "2026-10-18T15:25:38.039809-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "line_source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": 12.5,
+        "total": 51.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-18T20:05Z",
+        "espn_id": "401873004"
+      },
       "selection": {
         "model_margin": 10.6392291079,
         "base_margin": 10.5486124864,
@@ -713,8 +727,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_06_BUF_LV",
@@ -739,7 +764,21 @@
         "kickoff_utc": "2026-10-18T20:25Z",
         "espn_id": "401873005"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T20:25:38.039809+00:00",
+        "captured_at_ct": "2026-10-18T15:25:38.039809-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "line_source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": -5.5,
+        "total": 53.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-18T20:25Z",
+        "espn_id": "401873005"
+      },
       "selection": {
         "model_margin": -7.760010236,
         "base_margin": -7.9283594065,
@@ -759,8 +798,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_06_LAC_KC",
@@ -785,7 +835,21 @@
         "kickoff_utc": "2026-10-18T20:25Z",
         "espn_id": "401873006"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-18T20:25:38.039809+00:00",
+        "captured_at_ct": "2026-10-18T15:25:38.039809-05:00",
+        "provider": "nflverse",
+        "source": "nflverse_close",
+        "line_source": "nflverse_close",
+        "same_book": false,
+        "fallback": true,
+        "fallback_reason": "Kickoff passed with no ESPN DraftKings pre-kickoff line. This close is the nflverse schedule spread_line and total_line, a different book. Not same-book CLV.",
+        "home_margin": 7.5,
+        "total": 41.5,
+        "spread_display": null,
+        "kickoff_utc": "2026-10-18T20:25Z",
+        "espn_id": "401873006"
+      },
       "selection": {
         "model_margin": 8.7059556669,
         "base_margin": 8.7292213004,
@@ -805,8 +869,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": null,
+        "total_clv": null,
+        "spread_moved_toward": null,
+        "total_moved_toward": null
+      },
+      "line_source": "nflverse_close"
     },
     {
       "game_id": "2026_06_DAL_GB",
@@ -913,5 +988,5 @@
     "average_clv": -2.0
   },
   "model_version": "v2-margin-calibration",
-  "close_fallback_note": "1 games missed the DraftKings line we record just before kickoff (HOU-JAX). Those games use the nflverse closing line instead, from a different sportsbook. We do not count that as the same-book line move. The picks and the DraftKings lines from lock time are unchanged."
+  "close_fallback_note": "4 games missed the DraftKings line we record just before kickoff (HOU-JAX, ARI-LA, BUF-LV, LAC-KC). Those games use the nflverse closing line instead, from a different sportsbook. We do not count that as the same-book line move. The picks and the DraftKings lines from lock time are unchanged."
 }
