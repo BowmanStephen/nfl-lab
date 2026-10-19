@@ -559,9 +559,9 @@
   "live_2026": {
     "label": "Week 6 picks, locked Tue Oct 13 6:27 AM CT, using the DraftKings lines at that moment",
     "holdout_note": "Our model has been right 48.8% of the time against Vegas in its 2022 to 2025 test. Beating Vegas takes 52.4%.",
-    "settled_picks": 7,
-    "wins": 2,
-    "losses": 4,
+    "settled_picks": 10,
+    "wins": 3,
+    "losses": 6,
     "pushes": 1
   }
 }
