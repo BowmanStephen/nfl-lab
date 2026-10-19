@@ -976,7 +976,20 @@
         "kickoff_utc": "2026-10-20T00:15Z",
         "espn_id": "401873008"
       },
-      "pre_kickoff": null,
+      "pre_kickoff": {
+        "captured_at": "2026-10-19T22:25:51.333353+00:00",
+        "captured_at_ct": "2026-10-19T17:25:51.333353-05:00",
+        "provider": "DraftKings",
+        "source": "espn_scoreboard",
+        "line_source": "espn_draftkings",
+        "same_book": true,
+        "fallback": false,
+        "home_margin": 7.5,
+        "total": 52.5,
+        "spread_display": "SF -7.5",
+        "kickoff_utc": "2026-10-20T00:15Z",
+        "espn_id": "401873008"
+      },
       "selection": {
         "model_margin": 10.1765581778,
         "base_margin": 11.8477004739,
@@ -996,8 +1009,19 @@
         "home_qb_differs": false,
         "qb_notes": []
       },
-      "grading": null,
-      "line_source": null
+      "grading": {
+        "home_score": null,
+        "away_score": null,
+        "actual_margin": null,
+        "actual_total": null,
+        "spread_outcome": null,
+        "total_outcome": null,
+        "spread_clv": 0.0,
+        "total_clv": null,
+        "spread_moved_toward": false,
+        "total_moved_toward": null
+      },
+      "line_source": "espn_draftkings"
     }
   ],
   "health": {
@@ -1007,9 +1031,9 @@
     "losses": 6,
     "pushes": 1,
     "cover_rate": 0.3333333333333333,
-    "clv_samples": 3,
+    "clv_samples": 4,
     "moved_toward_rate": 0.0,
-    "average_clv": -2.0
+    "average_clv": -1.5
   },
   "model_version": "v2-margin-calibration",
   "close_fallback_note": "4 games missed the DraftKings line we record just before kickoff (HOU-JAX, ARI-LA, BUF-LV, LAC-KC). Those games use the nflverse closing line instead, from a different sportsbook. We do not count that as the same-book line move. The picks and the DraftKings lines from lock time are unchanged."

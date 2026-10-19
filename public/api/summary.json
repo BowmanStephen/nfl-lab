@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-19T06:24:37.274299-05:00",
+  "generated_at": "2026-10-19T17:25:51.530494-05:00",
   "timezone": "America/Chicago",
   "season": 2026,
   "week": 6,
@@ -11,9 +11,9 @@
     "losses": 6,
     "pushes": 1,
     "cover_rate": 0.3333333333333333,
-    "clv_samples": 3,
+    "clv_samples": 4,
     "moved_toward_rate": 0.0,
-    "average_clv": -2.0
+    "average_clv": -1.5
   },
   "n_games": 14,
   "n_spread_picks": 4,

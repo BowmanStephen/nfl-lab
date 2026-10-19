@@ -1,48 +1,48 @@
 {
-  "generated_at": "2026-10-19T06:24:37.274299-05:00",
-  "stale_after": "2026-10-20T18:24:37.274299-05:00",
+  "generated_at": "2026-10-19T17:25:51.530494-05:00",
+  "stale_after": "2026-10-21T05:25:51.530494-05:00",
   "files": [
     {
       "path": "api/baseline.json",
       "bytes": 4704,
       "sha256": "99c3be16425e12796a9ad9e458a5c9a2f28a3466dc8ac87c8bf52277a0ec6344",
-      "updated_at": "2026-10-19T06:24:37.274299-05:00"
+      "updated_at": "2026-10-19T17:25:51.530494-05:00"
     },
     {
       "path": "api/model.json",
       "bytes": 14422,
       "sha256": "371d6d7918c5d0ea4682264ac5c3efcab00a4acfb0882b011ff327e5b1a2f188",
-      "updated_at": "2026-10-19T06:24:37.274299-05:00"
+      "updated_at": "2026-10-19T17:25:51.530494-05:00"
     },
     {
       "path": "api/picks.json",
-      "bytes": 34698,
-      "sha256": "c2215f4986d5d879a965be80733cb6e166044b5805862b685f67267c9e2f6837",
-      "updated_at": "2026-10-19T06:24:37.274299-05:00"
+      "bytes": 35479,
+      "sha256": "84538825720552c3d8c8191dfeb2a4bfe237b4b7f711954d8bf49da7f1c82568",
+      "updated_at": "2026-10-19T17:25:51.530494-05:00"
     },
     {
       "path": "api/report_card.json",
       "bytes": 49091,
       "sha256": "f59870fd55bef75b896d750180d63e9df26003ebf35276903aeb3d41668f72bd",
-      "updated_at": "2026-10-19T06:24:37.274299-05:00"
+      "updated_at": "2026-10-19T17:25:51.530494-05:00"
     },
     {
       "path": "api/saved_weeks.json",
       "bytes": 11043,
       "sha256": "5b9e0e69f3ccefc542acec5bd49a4f6856fe444ea91f2f85abbeb5f443636627",
-      "updated_at": "2026-10-19T06:24:37.274299-05:00"
+      "updated_at": "2026-10-19T17:25:51.530494-05:00"
     },
     {
       "path": "api/summary.json",
       "bytes": 499,
-      "sha256": "7009f19811d0d9bc04a45fbf1d2e3bcdce11672a3076efa21e225b7c5cc1bd9e",
-      "updated_at": "2026-10-19T06:24:37.274299-05:00"
+      "sha256": "6f050195e64d0c8c3787ae95126313ae72fe9d532a59c482d7d0b168d763c723",
+      "updated_at": "2026-10-19T17:25:51.530494-05:00"
     },
     {
       "path": "api/teams.json",
       "bytes": 34383,
       "sha256": "0bc77a8f7106015dcc91423794877db380a8add6672c509ac7294a0950ff7958",
-      "updated_at": "2026-10-19T06:24:37.274299-05:00"
+      "updated_at": "2026-10-19T17:25:51.530494-05:00"
     }
   ]
 }
