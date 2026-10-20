@@ -1,0 +1,1797 @@
+{
+ "season": 2026,
+ "week": 6,
+ "source": "nflverse play_by_play",
+ "summary": {
+  "games": 14,
+  "decided": 14,
+  "winner_better_epa_per_play": 11,
+  "winner_better_success_rate": 8,
+  "winner_fewer_turnovers": 8,
+  "winner_more_turnovers": 2,
+  "best_qb": [
+   "D.Maye",
+   "NE",
+   13.8,
+   35
+  ],
+  "worst_qb": [
+   "J.Daniels",
+   "TB",
+   -17.2,
+   52
+  ],
+  "worst_epa_per_play": [
+   "LAC",
+   -0.311
+  ],
+  "worst_success_rate": [
+   "LAC",
+   0.27
+  ]
+ },
+ "games": {
+  "2026_06_ARI_LA": {
+   "away": "ARI",
+   "home": "LA",
+   "away_score": 18,
+   "home_score": 16,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q1 09:47 LA: (9:47) 19-B.Grupe 44 yard field goal is GOOD, Center-49-J.Cardona, Holder-42-E.Evans.",
+    "Q1 09:41 ARI: 19-B.Grupe kicks 58 yards from LA 35 to ARI 7. 81-D.Duvernay pushed ob at ARI 47 for 40 yards (19-B.Grupe). LA-19-B.Grupe was injured during the play. ARI-0-C.Simon was injured during the play.",
+    "Q1 05:41 ARI: (5:41) 38-C.Ryland 34 yard field goal is GOOD, Center-59-C.Kreiter, Holder-12-B.Gillikin.",
+    "Q2 14:55 ARI: (14:55) 38-C.Ryland 30 yard field goal is GOOD, Center-59-C.Kreiter, Holder-12-B.Gillikin.",
+    "Q2 08:29 LA: (8:29) (Shotgun) 9-M.Stafford pass short right to 24-B.Corum for 15 yards, TOUCHDOWN.",
+    "Q2 00:49 ARI: (:49) 38-C.Ryland 22 yard field goal is GOOD, Center-59-C.Kreiter, Holder-12-B.Gillikin.",
+    "Q3 06:29 ARI: (6:29) 38-C.Ryland 38 yard field goal is GOOD, Center-59-C.Kreiter, Holder-12-B.Gillikin.",
+    "Q4 09:31 ARI: (9:31) 38-C.Ryland 27 yard field goal is GOOD, Center-59-C.Kreiter, Holder-12-B.Gillikin.",
+    "Q4 00:52 LA: (:52) 9-M.Stafford pass short right to 84-C.Parkinson to ARI 1 for 5 yards (29-D.Burke). The Replay Official reviewed the short of the goal line ruling, and the play was REVERSED. 9-M.Stafford pass short right to 84-C.Pa",
+    "Q4 00:47 LA: 42-E.Evans extra point is GOOD, Center-49-J.Cardona, Holder-13-S.Bennett.",
+    "Q4 00:03 ARI: (:03) 38-C.Ryland 43 yard field goal is GOOD, Center-59-C.Kreiter, Holder-12-B.Gillikin."
+   ],
+   "ARI": {
+    "plays": 70,
+    "epa_per_play": -0.021,
+    "success_rate": 0.486,
+    "early_down_success": 0.509,
+    "pass_play_epa": 2.0,
+    "rush_epa": -3.4,
+    "rushes": 35,
+    "rush_yards": 120,
+    "third_down": "5/15",
+    "fourth_down": "0/0",
+    "explosive": 4,
+    "sacks_taken": 0,
+    "turnovers": 1,
+    "turnover_epa": -4.3,
+    "red_zone_trips": 5,
+    "red_zone_tds": 0,
+    "special_teams_net_epa": 1.6,
+    "field_goals": [
+     "34 made",
+     "30 made",
+     "22 made",
+     "38 made",
+     "27 made",
+     "43 made"
+    ],
+    "top_rushers": {
+     "Z.Knight": {
+      "carries": 15,
+      "yards": 80
+     },
+     "T.Allgeier": {
+      "carries": 18,
+      "yards": 38
+     },
+     "J.Brissett": {
+      "carries": 2,
+      "yards": 2
+     }
+    },
+    "turnover_plays": [
+     "Q1 12:23 ARI: (12:23) (Shotgun) 7-J.Brissett pass short left intended for 85-T.McBride INTERCEPTED by 37-Q.Lake [55-B.Fiske] at ARI 32. 37-Q.Lake pushed ob at ARI 32 for no gain (85-T.McBride)."
+    ],
+    "qbs": {
+     "J.Brissett": {
+      "dropbacks": 35,
+      "qb_points": 2.0,
+      "play_epa": 2.0
+     }
+    }
+   },
+   "LA": {
+    "plays": 56,
+    "epa_per_play": -0.141,
+    "success_rate": 0.482,
+    "early_down_success": 0.477,
+    "pass_play_epa": -5.7,
+    "rush_epa": -2.2,
+    "rushes": 20,
+    "rush_yards": 92,
+    "third_down": "4/10",
+    "fourth_down": "0/2",
+    "explosive": 3,
+    "sacks_taken": 3,
+    "turnovers": 1,
+    "turnover_epa": -4.3,
+    "red_zone_trips": 4,
+    "red_zone_tds": 2,
+    "special_teams_net_epa": -1.6,
+    "field_goals": [
+     "44 made"
+    ],
+    "top_rushers": {
+     "K.Williams": {
+      "carries": 10,
+      "yards": 50
+     },
+     "B.Corum": {
+      "carries": 9,
+      "yards": 42
+     },
+     "D.Allen": {
+      "carries": 1,
+      "yards": 0
+     }
+    },
+    "turnover_plays": [
+     "Q4 08:05 LA: (8:05) (Shotgun) 9-M.Stafford pass short right to 89-T.Higbee to ARI 22 for 8 yards (0-C.Simon). FUMBLES (0-C.Simon), RECOVERED by ARI-29-D.Burke at ARI 25. ** Injury Update: ARI-97-W.Nolen has returned to the game."
+    ],
+    "qbs": {
+     "M.Stafford": {
+      "dropbacks": 36,
+      "qb_points": -1.6,
+      "play_epa": -5.7
+     }
+    }
+   }
+  },
+  "2026_06_BAL_CLE": {
+   "away": "BAL",
+   "home": "CLE",
+   "away_score": 10,
+   "home_score": 13,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q1 08:14 BAL: (8:14) 5-T.Huntley pass short middle to 85-J.Cuevas for 2 yards, TOUCHDOWN [53-C.Williams].",
+    "Q1 08:11 BAL: 33-T.Loop extra point is GOOD, Center-46-N.Moore, Holder-30-R.Eckley.",
+    "Q1 04:40 BAL: (4:40) 33-T.Loop 34 yard field goal is GOOD, Center-46-N.Moore, Holder-30-R.Eckley.",
+    "Q3 07:53 CLE: (7:53) 25-A.Szmyt 48 yard field goal is GOOD, Center-50-R.Sunahara, Holder-13-C.Bojorquez.",
+    "Q4 14:18 BAL: (14:18) 33-T.Loop 49 yard field goal is No Good, Wide Left, Center-46-N.Moore, Holder-30-R.Eckley.",
+    "Q4 08:37 CLE: (8:37) 36-A.Estime right guard for 2 yards, TOUCHDOWN.",
+    "Q4 08:33 CLE: 25-A.Szmyt extra point is GOOD, Center-50-R.Sunahara, Holder-13-C.Bojorquez.",
+    "Q4 03:44 CLE: (3:44) 25-A.Szmyt 48 yard field goal is No Good, Wide Left, Center-50-R.Sunahara, Holder-13-C.Bojorquez.",
+    "Q4 00:00 CLE: (:00) 25-A.Szmyt 37 yard field goal is GOOD, Center-50-R.Sunahara, Holder-13-C.Bojorquez."
+   ],
+   "BAL": {
+    "plays": 57,
+    "epa_per_play": -0.094,
+    "success_rate": 0.333,
+    "early_down_success": 0.25,
+    "pass_play_epa": 5.4,
+    "rush_epa": -10.7,
+    "rushes": 19,
+    "rush_yards": 59,
+    "third_down": "6/16",
+    "fourth_down": "1/1",
+    "explosive": 5,
+    "sacks_taken": 3,
+    "turnovers": 1,
+    "turnover_epa": -5.0,
+    "red_zone_trips": 2,
+    "red_zone_tds": 1,
+    "special_teams_net_epa": -3.7,
+    "field_goals": [
+     "34 made",
+     "49 missed"
+    ],
+    "top_rushers": {
+     "D.Henry": {
+      "carries": 17,
+      "yards": 58
+     },
+     "Z.Flowers": {
+      "carries": 1,
+      "yards": 1
+     },
+     "T.Huntley": {
+      "carries": 1,
+      "yards": 0
+     }
+    },
+    "turnover_plays": [
+     "Q4 12:45 BAL: (12:45) 22-D.Henry left tackle to BAL 33 for 5 yards (49-C.Schwesinger; 7-T.Campbell). FUMBLES (49-C.Schwesinger), RECOVERED by CLE-7-T.Campbell at BAL 35."
+    ],
+    "qbs": {
+     "T.Huntley": {
+      "dropbacks": 38,
+      "qb_points": 5.4,
+      "play_epa": 5.4
+     }
+    }
+   },
+   "CLE": {
+    "plays": 60,
+    "epa_per_play": -0.117,
+    "success_rate": 0.433,
+    "early_down_success": 0.419,
+    "pass_play_epa": -7.6,
+    "rush_epa": 0.6,
+    "rushes": 23,
+    "rush_yards": 67,
+    "third_down": "5/16",
+    "fourth_down": "1/1",
+    "explosive": 1,
+    "sacks_taken": 5,
+    "turnovers": 0,
+    "turnover_epa": 0.0,
+    "red_zone_trips": 2,
+    "red_zone_tds": 1,
+    "special_teams_net_epa": 3.7,
+    "field_goals": [
+     "48 made",
+     "48 missed",
+     "37 made"
+    ],
+    "top_rushers": {
+     "J.McLaughlin": {
+      "carries": 9,
+      "yards": 41
+     },
+     "A.Estime": {
+      "carries": 9,
+      "yards": 19
+     },
+     "D.Watson": {
+      "carries": 2,
+      "yards": 3
+     }
+    },
+    "turnover_plays": [],
+    "qbs": {
+     "D.Watson": {
+      "dropbacks": 37,
+      "qb_points": -7.6,
+      "play_epa": -7.6
+     }
+    }
+   }
+  },
+  "2026_06_BUF_LV": {
+   "away": "BUF",
+   "home": "LV",
+   "away_score": 33,
+   "home_score": 30,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q1 15:00 BUF: 14-M.Gay kicks 61 yards from LV 35 to BUF 4. 7-R.Davis pushed ob at BUF 44 for 40 yards (14-M.Gay).",
+    "Q1 10:16 BUF: (10:16) 16-T.Bass 44 yard field goal is GOOD, Center-69-R.Ferguson, Holder-39-T.Doman.",
+    "Q1 04:32 LV: (4:32) 2-A.Jeanty left tackle for 1 yard, TOUCHDOWN.",
+    "Q1 04:27 LV: 14-M.Gay extra point is GOOD, Center-47-A.Ward, Holder-6-A.Cole.",
+    "Q2 14:48 BUF: (14:48) 16-T.Bass 28 yard field goal is GOOD, Center-69-R.Ferguson, Holder-39-T.Doman.",
+    "Q2 07:17 BUF: (7:17) (Shotgun) 17-J.Allen pass short right to 10-K.Shakir for 9 yards, TOUCHDOWN.",
+    "Q2 07:13 BUF: 16-T.Bass extra point is GOOD, Center-69-R.Ferguson, Holder-39-T.Doman.",
+    "Q2 02:18 LV: (2:18) 14-M.Gay 35 yard field goal is GOOD, Center-47-A.Ward, Holder-6-A.Cole.",
+    "Q2 00:04 LV: (:04) 14-M.Gay 27 yard field goal is GOOD, Center-47-A.Ward, Holder-6-A.Cole.",
+    "Q3 09:50 BUF: (9:50) 16-T.Bass 47 yard field goal is GOOD, Center-69-R.Ferguson, Holder-39-T.Doman.",
+    "Q3 06:30 BUF: (6:30) (Shotgun) 17-J.Allen pass short middle to 0-K.Coleman for 12 yards, TOUCHDOWN [98-M.Crosby].",
+    "Q3 06:22 BUF: 16-T.Bass extra point is GOOD, Center-69-R.Ferguson, Holder-39-T.Doman.",
+    "Q4 13:35 LV: (13:35) 14-M.Gay 23 yard field goal is GOOD, Center-47-A.Ward, Holder-6-A.Cole.",
+    "Q4 08:13 LV: (8:13) (Shotgun) 8-K.Cousins pass short right to 1-T.Tucker for 11 yards, TOUCHDOWN.",
+    "Q4 08:07 LV: 14-M.Gay extra point is GOOD, Center-47-A.Ward, Holder-6-A.Cole.",
+    "Q4 04:49 BUF: (4:49) 63-A.Corbett reported in as eligible. 4-J.Cook left guard for 3 yards, TOUCHDOWN.",
+    "Q4 04:43 BUF: 16-T.Bass extra point is GOOD, Center-69-R.Ferguson, Holder-39-T.Doman.",
+    "Q4 02:00 BUF: (2:00) 16-T.Bass 38 yard field goal is GOOD, Center-69-R.Ferguson, Holder-39-T.Doman.",
+    "Q4 01:39 LV: (1:39) (Shotgun) 8-K.Cousins pass deep middle to 1-T.Tucker for 44 yards, TOUCHDOWN.",
+    "Q4 01:32 LV: 14-M.Gay extra point is GOOD, Center-47-A.Ward, Holder-6-A.Cole."
+   ],
+   "BUF": {
+    "plays": 61,
+    "epa_per_play": 0.171,
+    "success_rate": 0.475,
+    "early_down_success": 0.471,
+    "pass_play_epa": 10.2,
+    "rush_epa": 0.3,
+    "rushes": 25,
+    "rush_yards": 104,
+    "third_down": "4/10",
+    "fourth_down": "0/0",
+    "explosive": 7,
+    "sacks_taken": 2,
+    "turnovers": 0,
+    "turnover_epa": 0.0,
+    "red_zone_trips": 6,
+    "red_zone_tds": 3,
+    "special_teams_net_epa": 4.5,
+    "field_goals": [
+     "44 made",
+     "28 made",
+     "47 made",
+     "38 made"
+    ],
+    "top_rushers": {
+     "J.Cook": {
+      "carries": 22,
+      "yards": 95
+     },
+     "R.Davis": {
+      "carries": 1,
+      "yards": 4
+     },
+     "T.Johnson": {
+      "carries": 1,
+      "yards": 3
+     }
+    },
+    "turnover_plays": [],
+    "qbs": {
+     "J.Allen": {
+      "dropbacks": 36,
+      "qb_points": 10.2,
+      "play_epa": 10.2
+     }
+    }
+   },
+   "LV": {
+    "plays": 61,
+    "epa_per_play": 0.095,
+    "success_rate": 0.426,
+    "early_down_success": 0.388,
+    "pass_play_epa": 11.5,
+    "rush_epa": -5.7,
+    "rushes": 20,
+    "rush_yards": 65,
+    "third_down": "7/12",
+    "fourth_down": "0/0",
+    "explosive": 6,
+    "sacks_taken": 0,
+    "turnovers": 1,
+    "turnover_epa": -5.0,
+    "red_zone_trips": 5,
+    "red_zone_tds": 2,
+    "special_teams_net_epa": -4.5,
+    "field_goals": [
+     "35 made",
+     "27 made",
+     "23 made"
+    ],
+    "top_rushers": {
+     "M.Washington": {
+      "carries": 9,
+      "yards": 43
+     },
+     "A.Jeanty": {
+      "carries": 10,
+      "yards": 22
+     },
+     "D.Laube": {
+      "carries": 1,
+      "yards": 0
+     }
+    },
+    "turnover_plays": [
+     "Q3 09:00 LV: (9:00) (Shotgun) 8-K.Cousins pass short middle intended for 87-M.Mayer INTERCEPTED by 42-D.Williams at LV 32. 42-D.Williams to LV 32 for no gain (87-M.Mayer)."
+    ],
+    "qbs": {
+     "K.Cousins": {
+      "dropbacks": 41,
+      "qb_points": 11.5,
+      "play_epa": 11.5
+     }
+    }
+   }
+  },
+  "2026_06_CAR_PHI": {
+   "away": "CAR",
+   "home": "PHI",
+   "away_score": 25,
+   "home_score": 14,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q1 10:56 CAR: (10:56) 10-R.Fitzgerald 47 yard field goal is GOOD, Center-44-J.Jansen, Holder-6-S.Martin.",
+    "Q2 08:14 CAR: (8:14) (Shotgun) 9-B.Young pass short left to 82-T.Tremble for 12 yards, TOUCHDOWN.",
+    "Q2 08:08 CAR: 10-R.Fitzgerald extra point is GOOD, Center-44-J.Jansen, Holder-6-S.Martin.",
+    "Q2 02:47 PHI: (2:47) (Shotgun) 39-D.Pierce up the middle for 2 yards, TOUCHDOWN.",
+    "Q2 02:42 PHI: 4-J.Elliott extra point is GOOD, Center-41-R.Underwood, Holder-10-B.Mann.",
+    "Q3 11:37 CAR: (11:37) 10-R.Fitzgerald 52 yard field goal is GOOD, Center-44-J.Jansen, Holder-6-S.Martin.",
+    "Q4 13:39 CAR: (13:39) 30-C.Hubbard left end for 1 yard, TOUCHDOWN.",
+    "Q4 10:48 PHI: (10:48) (No Huddle, Shotgun) 16-T.McKee pass deep right to 6-D.Smith for 19 yards, TOUCHDOWN.",
+    "Q4 10:42 PHI: 4-J.Elliott extra point is GOOD, Center-41-R.Underwood, Holder-10-B.Mann.",
+    "Q4 06:39 CAR: (6:39) 9-B.Young pass deep middle to 82-T.Tremble for 19 yards, TOUCHDOWN. PENALTY on CAR-82-T.Tremble, Taunting, 15 yards, enforced between downs."
+   ],
+   "CAR": {
+    "plays": 72,
+    "epa_per_play": 0.134,
+    "success_rate": 0.444,
+    "early_down_success": 0.444,
+    "pass_play_epa": 5.1,
+    "rush_epa": 4.5,
+    "rushes": 30,
+    "rush_yards": 120,
+    "third_down": "7/17",
+    "fourth_down": "1/1",
+    "explosive": 7,
+    "sacks_taken": 2,
+    "turnovers": 0,
+    "turnover_epa": 0.0,
+    "red_zone_trips": 4,
+    "red_zone_tds": 3,
+    "special_teams_net_epa": 3.1,
+    "field_goals": [
+     "47 made",
+     "52 made"
+    ],
+    "top_rushers": {
+     "C.Hubbard": {
+      "carries": 28,
+      "yards": 120
+     },
+     "M.Evans": {
+      "carries": 1,
+      "yards": 1
+     },
+     "T.Etienne": {
+      "carries": 1,
+      "yards": -1
+     }
+    },
+    "turnover_plays": [],
+    "qbs": {
+     "B.Young": {
+      "dropbacks": 42,
+      "qb_points": 5.1,
+      "play_epa": 5.1
+     }
+    }
+   },
+   "PHI": {
+    "plays": 61,
+    "epa_per_play": -0.171,
+    "success_rate": 0.377,
+    "early_down_success": 0.378,
+    "pass_play_epa": -8.6,
+    "rush_epa": -1.8,
+    "rushes": 13,
+    "rush_yards": 35,
+    "third_down": "6/15",
+    "fourth_down": "0/1",
+    "explosive": 0,
+    "sacks_taken": 3,
+    "turnovers": 0,
+    "turnover_epa": 0.0,
+    "red_zone_trips": 2,
+    "red_zone_tds": 2,
+    "special_teams_net_epa": -3.1,
+    "field_goals": [],
+    "top_rushers": {
+     "D.Pierce": {
+      "carries": 12,
+      "yards": 35
+     },
+     "T.McKee": {
+      "carries": 1,
+      "yards": 0
+     }
+    },
+    "turnover_plays": [],
+    "qbs": {
+     "T.McKee": {
+      "dropbacks": 48,
+      "qb_points": -8.6,
+      "play_epa": -8.6
+     }
+    }
+   }
+  },
+  "2026_06_CHI_ATL": {
+   "away": "CHI",
+   "home": "ATL",
+   "away_score": 31,
+   "home_score": 23,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q1 08:25 CHI: (8:25) (Shotgun) 18-C.Williams pass short right to 84-C.Loveland for 14 yards, TOUCHDOWN.",
+    "Q1 08:15 CHI: 8-C.Santos extra point is GOOD, Center-46-S.Daly, Holder-19-T.Taylor.",
+    "Q1 01:10 CHI: (1:10) 4-D.Swift left guard for 4 yards, TOUCHDOWN.",
+    "Q1 01:07 CHI: 8-C.Santos extra point is GOOD, Center-46-S.Daly, Holder-19-T.Taylor. ** Injury Update: ATL-34-J.Robinson has returned to the game.",
+    "Q2 07:23 CHI: (7:23) 8-C.Santos 56 yard field goal is No Good, Wide Left, Center-46-S.Daly, Holder-19-T.Taylor.",
+    "Q2 05:49 ATL: (5:49) (Shotgun) 9-M.Penix pass short left to 4-J.Dotson for 13 yards, TOUCHDOWN.",
+    "Q2 05:45 ATL: 6-N.Folk extra point is GOOD, Center-49-L.McCullough, Holder-16-J.Bailey.",
+    "Q2 01:30 CHI: (1:30) (Shotgun) 4-D.Swift right guard for 2 yards, TOUCHDOWN.",
+    "Q2 01:26 CHI: 8-C.Santos extra point is GOOD, Center-46-S.Daly, Holder-19-T.Taylor.",
+    "Q3 01:54 CHI: (1:54) 23-R.Johnson right guard for 4 yards, TOUCHDOWN.",
+    "Q3 01:48 CHI: 8-C.Santos extra point is GOOD, Center-46-S.Daly, Holder-19-T.Taylor.",
+    "Q4 15:00 CHI: (15:00) 8-C.Santos 50 yard field goal is GOOD, Center-46-S.Daly, Holder-19-T.Taylor.",
+    "Q4 09:39 ATL: (9:39) (Shotgun) 9-M.Penix pass short left to 8-K.Pitts for 10 yards, TOUCHDOWN.",
+    "Q4 09:34 ATL: TWO-POINT CONVERSION ATTEMPT. 9-M.Penix pass to 17-Z.Branch is complete. ATTEMPT SUCCEEDS.",
+    "Q4 05:46 ATL: (5:46) (No Huddle, Shotgun) 9-M.Penix pass short right to 8-K.Pitts for 5 yards, TOUCHDOWN.",
+    "Q4 05:41 ATL: TWO-POINT CONVERSION ATTEMPT. 9-M.Penix pass to 5-D.London is complete. ATTEMPT SUCCEEDS."
+   ],
+   "CHI": {
+    "plays": 72,
+    "epa_per_play": 0.038,
+    "success_rate": 0.5,
+    "early_down_success": 0.455,
+    "pass_play_epa": 10.1,
+    "rush_epa": -7.4,
+    "rushes": 31,
+    "rush_yards": 97,
+    "third_down": "9/17",
+    "fourth_down": "0/0",
+    "explosive": 5,
+    "sacks_taken": 4,
+    "turnovers": 1,
+    "turnover_epa": -5.6,
+    "red_zone_trips": 5,
+    "red_zone_tds": 4,
+    "special_teams_net_epa": 9.2,
+    "field_goals": [
+     "56 missed",
+     "50 made"
+    ],
+    "top_rushers": {
+     "R.Johnson": {
+      "carries": 13,
+      "yards": 51
+     },
+     "D.Swift": {
+      "carries": 16,
+      "yards": 44
+     },
+     "C.Williams": {
+      "carries": 2,
+      "yards": 2
+     }
+    },
+    "turnover_plays": [
+     "Q4 07:21 CHI: (7:21) 23-R.Johnson up the middle to ATL 45 for 4 yards (3-J.Bates). FUMBLES (3-J.Bates), RECOVERED by ATL-56-H.Perkins at ATL 43."
+    ],
+    "qbs": {
+     "C.Williams": {
+      "dropbacks": 41,
+      "qb_points": 10.1,
+      "play_epa": 10.1
+     }
+    }
+   },
+   "ATL": {
+    "plays": 50,
+    "epa_per_play": -0.308,
+    "success_rate": 0.3,
+    "early_down_success": 0.314,
+    "pass_play_epa": -12.7,
+    "rush_epa": -2.8,
+    "rushes": 11,
+    "rush_yards": 62,
+    "third_down": "3/12",
+    "fourth_down": "0/3",
+    "explosive": 6,
+    "sacks_taken": 5,
+    "turnovers": 3,
+    "turnover_epa": -3.5,
+    "red_zone_trips": 3,
+    "red_zone_tds": 3,
+    "special_teams_net_epa": -9.2,
+    "field_goals": [],
+    "top_rushers": {
+     "Bi.Robinson": {
+      "carries": 9,
+      "yards": 61
+     },
+     "Br.Robinson": {
+      "carries": 2,
+      "yards": 1
+     }
+    },
+    "turnover_plays": [
+     "Q2 01:52 CHI: (1:52) 19-T.Taylor punts 50 yards to ATL 10, Center-46-S.Daly. 17-Z.Branch MUFFS catch, RECOVERED by CHI-39-J.Blackwell at ATL 10.",
+     "Q3 01:48 ATL: 8-C.Santos kicks 62 yards from CHI 35 to ATL 3. 17-Z.Branch to ATL 29 for 26 yards (30-Z.Scott). FUMBLES (30-Z.Scott), touched at ATL 31, RECOVERED by CHI-26-N.McCloud at ATL 31.",
+     "Q4 03:01 ATL: (3:01) (Shotgun) 9-M.Penix sacked at ATL 14 for -8 yards (6-K.Gordon). FUMBLES (6-K.Gordon) [6-K.Gordon], RECOVERED by CHI-12-D.Bush at ATL 28. 12-D.Bush to ATL 28 for no gain (65-M.Bergeron)."
+    ],
+    "qbs": {
+     "M.Penix": {
+      "dropbacks": 39,
+      "qb_points": -12.7,
+      "play_epa": -12.7
+     }
+    }
+   }
+  },
+  "2026_06_DAL_GB": {
+   "away": "DAL",
+   "home": "GB",
+   "away_score": 13,
+   "home_score": 23,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q1 04:46 GB: (4:46) (Shotgun) 10-J.Love pass short middle to 0-M.Golden for 9 yards, TOUCHDOWN.",
+    "Q1 04:43 GB: 28-T.Smack extra point is GOOD, Center-42-M.Orzech, Holder-19-D.Whelan.",
+    "Q2 06:01 GB: (6:01) 28-T.Smack 25 yard field goal is GOOD, Center-42-M.Orzech, Holder-19-D.Whelan.",
+    "Q2 00:25 GB: (:25) 10-J.Love up the middle for 1 yard, TOUCHDOWN.",
+    "Q2 00:23 GB: 28-T.Smack extra point is GOOD, Center-42-M.Orzech, Holder-19-D.Whelan.",
+    "Q3 09:24 DAL: (9:24) 77-B.Jones reported in as eligible. 33-J.Williams up the middle for 1 yard, TOUCHDOWN.",
+    "Q3 09:19 DAL: 17-B.Aubrey extra point is GOOD, Center-44-T.Sieg, Holder-5-B.Anger.",
+    "Q3 05:06 GB: (5:06) 28-T.Smack 44 yard field goal is GOOD, Center-42-M.Orzech, Holder-19-D.Whelan.",
+    "Q4 10:10 GB: (10:10) 28-T.Smack 29 yard field goal is GOOD, Center-42-M.Orzech, Holder-19-D.Whelan.",
+    "Q4 00:52 DAL: (:52) (Shotgun) 4-D.Prescott pass short right to 19-R.Flournoy for 6 yards, TOUCHDOWN."
+   ],
+   "DAL": {
+    "plays": 70,
+    "epa_per_play": -0.121,
+    "success_rate": 0.429,
+    "early_down_success": 0.434,
+    "pass_play_epa": -8.3,
+    "rush_epa": -0.1,
+    "rushes": 14,
+    "rush_yards": 41,
+    "third_down": "5/13",
+    "fourth_down": "2/4",
+    "explosive": 1,
+    "sacks_taken": 1,
+    "turnovers": 2,
+    "turnover_epa": -8.3,
+    "red_zone_trips": 4,
+    "red_zone_tds": 2,
+    "special_teams_net_epa": -0.2,
+    "field_goals": [],
+    "top_rushers": {
+     "J.Williams": {
+      "carries": 11,
+      "yards": 41
+     },
+     "D.Prescott": {
+      "carries": 1,
+      "yards": 0
+     },
+     "T.Goodson": {
+      "carries": 2,
+      "yards": 0
+     }
+    },
+    "turnover_plays": [
+     "Q2 14:23 DAL: (14:23) (Shotgun) 4-D.Prescott pass short middle intended for 88-C.Lamb INTERCEPTED by 33-E.Williams at GB 3. 33-E.Williams to GB 20 for 17 yards (87-J.Ferguson).",
+     "Q2 02:00 DAL: (2:00) (Shotgun) 4-D.Prescott pass short left intended for 88-C.Lamb INTERCEPTED by 2-B.Cisse at GB 18. 2-B.Cisse ran ob at GB 23 for 5 yards (3-G.Pickens)."
+    ],
+    "qbs": {
+     "D.Prescott": {
+      "dropbacks": 56,
+      "qb_points": -8.3,
+      "play_epa": -8.3
+     }
+    }
+   },
+   "GB": {
+    "plays": 68,
+    "epa_per_play": 0.034,
+    "success_rate": 0.382,
+    "early_down_success": 0.286,
+    "pass_play_epa": 6.1,
+    "rush_epa": -3.8,
+    "rushes": 24,
+    "rush_yards": 59,
+    "third_down": "11/18",
+    "fourth_down": "1/1",
+    "explosive": 6,
+    "sacks_taken": 3,
+    "turnovers": 1,
+    "turnover_epa": -4.5,
+    "red_zone_trips": 4,
+    "red_zone_tds": 2,
+    "special_teams_net_epa": 0.2,
+    "field_goals": [
+     "25 made",
+     "44 made",
+     "29 made"
+    ],
+    "top_rushers": {
+     "P.Strong": {
+      "carries": 11,
+      "yards": 28
+     },
+     "J.Love": {
+      "carries": 2,
+      "yards": 14
+     },
+     "M.Lloyd": {
+      "carries": 8,
+      "yards": 10
+     }
+    },
+    "turnover_plays": [
+     "Q1 01:53 GB: (1:53) (Shotgun) 10-J.Love pass short left intended for 0-M.Golden INTERCEPTED by 53-D.Winters at GB 42. 53-D.Winters for 42 yards, TOUCHDOWN. The Replay Official reviewed the runner was not down by contact ruling, and t"
+    ],
+    "qbs": {
+     "J.Love": {
+      "dropbacks": 44,
+      "qb_points": 6.1,
+      "play_epa": 6.1
+     }
+    }
+   }
+  },
+  "2026_06_HOU_JAX": {
+   "away": "HOU",
+   "home": "JAX",
+   "away_score": 34,
+   "home_score": 31,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q1 05:15 HOU: (5:15) (Shotgun) 7-C.Stroud pass short right to 87-F.Moreau for 6 yards, TOUCHDOWN.",
+    "Q1 05:13 HOU: 15-K.Fairbairn extra point is GOOD, Center-40-A.Brinkman, Holder-38-K.Kroeger.",
+    "Q2 06:56 JAX: (6:56) (Shotgun) 16-T.Lawrence pass short right to 33-B.Tuten for 27 yards, TOUCHDOWN. HOU-0-A.Al-Shaair was injured during the play.",
+    "Q2 06:47 JAX: 39-C.Little extra point is GOOD, Center-55-J.Bobenmoyer, Holder-9-L.Cooke.",
+    "Q2 04:18 HOU: (4:18) 15-K.Fairbairn 25 yard field goal is GOOD, Center-40-A.Brinkman, Holder-38-K.Kroeger.",
+    "Q2 04:16 JAX: 15-K.Fairbairn kicks 59 yards from HOU 35 to JAX 6. 19-J.Cameron pushed ob at HOU 48 for 46 yards (15-K.Fairbairn; 35-J.Hansen). ** Injury Update: JAX-20-A.Abdullah has returned to the game.",
+    "Q2 00:59 JAX: (:59) 64-W.Milum reported in as eligible. 16-T.Lawrence pass short right to 33-B.Tuten for 2 yards, TOUCHDOWN.",
+    "Q2 00:55 JAX: 39-C.Little extra point is GOOD, Center-55-J.Bobenmoyer, Holder-9-L.Cooke.",
+    "Q2 00:12 HOU: (:12) (Shotgun) 7-C.Stroud pass short left to 87-F.Moreau for 1 yard, TOUCHDOWN.",
+    "Q2 00:08 HOU: 15-K.Fairbairn extra point is GOOD, Center-40-A.Brinkman, Holder-38-K.Kroeger.",
+    "Q3 09:26 HOU: (9:26) (Shotgun) 7-C.Stroud pass short right to 13-J.Noel for 13 yards, TOUCHDOWN.",
+    "Q3 09:21 HOU: 15-K.Fairbairn extra point is GOOD, Center-40-A.Brinkman, Holder-38-K.Kroeger.",
+    "Q3 02:37 JAX: (2:37) 64-W.Milum reported in as eligible. 16-T.Lawrence pass short right to 87-N.Boerkircher for 1 yard, TOUCHDOWN.",
+    "Q3 02:34 JAX: 39-C.Little extra point is GOOD, Center-55-J.Bobenmoyer, Holder-9-L.Cooke.",
+    "Q3 00:58 HOU: (:58) 57-B.Fisher reported in as eligible. 25-J.Jordan left tackle for 25 yards, TOUCHDOWN.",
+    "Q3 00:50 HOU: 15-K.Fairbairn extra point is GOOD, Center-40-A.Brinkman, Holder-38-K.Kroeger.",
+    "Q4 11:30 JAX: (11:30) (Shotgun) 16-T.Lawrence pass short left to 12-T.Hunter for 7 yards, TOUCHDOWN.",
+    "Q4 11:26 JAX: 39-C.Little extra point is GOOD, Center-55-J.Bobenmoyer, Holder-9-L.Cooke.",
+    "Q4 02:00 JAX: (2:00) 39-C.Little 60 yard field goal is GOOD, Center-55-J.Bobenmoyer, Holder-9-L.Cooke.",
+    "Q4 00:03 HOU: (:03) 15-K.Fairbairn 49 yard field goal is GOOD, Center-40-A.Brinkman, Holder-38-K.Kroeger."
+   ],
+   "HOU": {
+    "plays": 59,
+    "epa_per_play": 0.225,
+    "success_rate": 0.475,
+    "early_down_success": 0.458,
+    "pass_play_epa": 13.1,
+    "rush_epa": 0.2,
+    "rushes": 24,
+    "rush_yards": 109,
+    "third_down": "5/11",
+    "fourth_down": "0/0",
+    "explosive": 6,
+    "sacks_taken": 0,
+    "turnovers": 1,
+    "turnover_epa": -6.0,
+    "red_zone_trips": 5,
+    "red_zone_tds": 3,
+    "special_teams_net_epa": -4.5,
+    "field_goals": [
+     "25 made",
+     "49 made"
+    ],
+    "top_rushers": {
+     "W.Marks": {
+      "carries": 15,
+      "yards": 56
+     },
+     "J.Jordan": {
+      "carries": 6,
+      "yards": 43
+     },
+     "C.Stover": {
+      "carries": 2,
+      "yards": 5
+     }
+    },
+    "turnover_plays": [
+     "Q4 03:59 HOU: (3:59) (Shotgun) 57-B.Fisher reported in as eligible. 7-C.Stroud pass short right intended for 19-X.Hutchinson INTERCEPTED by 12-T.Hunter at JAX -5. Touchback. Penalty on HOU-79-A.Ersery, Ineligible Downfield Pass, decli"
+    ],
+    "qbs": {
+     "C.Stroud": {
+      "dropbacks": 35,
+      "qb_points": 13.1,
+      "play_epa": 13.1
+     }
+    }
+   },
+   "JAX": {
+    "plays": 67,
+    "epa_per_play": 0.174,
+    "success_rate": 0.522,
+    "early_down_success": 0.519,
+    "pass_play_epa": 11.5,
+    "rush_epa": 0.1,
+    "rushes": 24,
+    "rush_yards": 95,
+    "third_down": "7/12",
+    "fourth_down": "0/1",
+    "explosive": 7,
+    "sacks_taken": 0,
+    "turnovers": 1,
+    "turnover_epa": -4.8,
+    "red_zone_trips": 4,
+    "red_zone_tds": 3,
+    "special_teams_net_epa": 4.5,
+    "field_goals": [
+     "60 made"
+    ],
+    "top_rushers": {
+     "C.Rodriguez": {
+      "carries": 11,
+      "yards": 55
+     },
+     "B.Tuten": {
+      "carries": 12,
+      "yards": 39
+     },
+     "L.Allen": {
+      "carries": 1,
+      "yards": 1
+     }
+    },
+    "turnover_plays": [
+     "Q2 13:24 JAX: (13:24) (Shotgun) 16-T.Lawrence pass short left intended for 3-J.Meyers INTERCEPTED by 2-C.Bullock at HOU -6. Touchback."
+    ],
+    "qbs": {
+     "T.Lawrence": {
+      "dropbacks": 43,
+      "qb_points": 11.5,
+      "play_epa": 11.5
+     }
+    }
+   }
+  },
+  "2026_06_LAC_KC": {
+   "away": "LAC",
+   "home": "KC",
+   "away_score": 6,
+   "home_score": 22,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q1 11:25 KC: (11:25) 7-H.Butker 44 yard field goal is GOOD, Center-41-J.Winchester, Holder-14-M.Araiza.",
+    "Q1 07:29 KC: (7:29) (Shotgun) 9-K.Walker up the middle for 33 yards, TOUCHDOWN.",
+    "Q1 01:38 LAC: (1:38) 11-C.Dicker 23 yard field goal is GOOD, Center-47-J.Harris, Holder-16-J.Scott.",
+    "Q2 01:53 KC: (1:53) (Shotgun) 9-K.Walker left tackle for 2 yards, TOUCHDOWN.",
+    "Q2 01:49 KC: 7-H.Butker extra point is GOOD, Center-41-J.Winchester, Holder-14-M.Araiza.",
+    "Q2 00:07 KC: (:07) 7-H.Butker 50 yard field goal is GOOD, Center-41-J.Winchester, Holder-14-M.Araiza.",
+    "Q3 10:48 LAC: (10:48) 11-C.Dicker 30 yard field goal is GOOD, Center-47-J.Harris, Holder-16-J.Scott.",
+    "Q4 11:51 KC: (11:51) 7-H.Butker 52 yard field goal is No Good, Wide Right, Center-41-J.Winchester, Holder-14-M.Araiza.",
+    "Q4 03:56 KC: (3:56) 7-H.Butker 30 yard field goal is GOOD, Center-41-J.Winchester, Holder-14-M.Araiza."
+   ],
+   "LAC": {
+    "plays": 63,
+    "epa_per_play": -0.311,
+    "success_rate": 0.27,
+    "early_down_success": 0.25,
+    "pass_play_epa": -15.3,
+    "rush_epa": -4.2,
+    "rushes": 19,
+    "rush_yards": 54,
+    "third_down": "5/16",
+    "fourth_down": "1/3",
+    "explosive": 1,
+    "sacks_taken": 4,
+    "turnovers": 2,
+    "turnover_epa": -12.7,
+    "red_zone_trips": 3,
+    "red_zone_tds": 0,
+    "special_teams_net_epa": 7.0,
+    "field_goals": [
+     "23 made",
+     "30 made"
+    ],
+    "top_rushers": {
+     "K.Vidal": {
+      "carries": 7,
+      "yards": 21
+     },
+     "O.Hampton": {
+      "carries": 7,
+      "yards": 18
+     },
+     "J.Herbert": {
+      "carries": 2,
+      "yards": 7
+     }
+    },
+    "turnover_plays": [
+     "Q2 10:59 LAC: (10:59) 10-J.Herbert pass short right intended for 84-K.Lambert-Smith INTERCEPTED by 43-J.Cochrane [97-A.Gillotte] at KC 35. 43-J.Cochrane pushed ob at LAC 17 for 48 yards (40-H.Rucci). Penalty on LAC-73-A.Harkey, Illega",
+     "Q4 09:50 LAC: (9:50) (Shotgun) 10-J.Herbert pass short right to 84-K.Lambert-Smith to KC 36 for 1 yard (38-L.Sneed). FUMBLES (38-L.Sneed), RECOVERED by KC-23-D.Tranquill at KC 38."
+    ],
+    "qbs": {
+     "J.Herbert": {
+      "dropbacks": 44,
+      "qb_points": -12.6,
+      "play_epa": -15.3
+     }
+    }
+   },
+   "KC": {
+    "plays": 55,
+    "epa_per_play": 0.081,
+    "success_rate": 0.527,
+    "early_down_success": 0.545,
+    "pass_play_epa": 2.2,
+    "rush_epa": 2.3,
+    "rushes": 23,
+    "rush_yards": 144,
+    "third_down": "3/10",
+    "fourth_down": "0/1",
+    "explosive": 9,
+    "sacks_taken": 0,
+    "turnovers": 2,
+    "turnover_epa": -1.1,
+    "red_zone_trips": 4,
+    "red_zone_tds": 1,
+    "special_teams_net_epa": -7.0,
+    "field_goals": [
+     "44 made",
+     "50 made",
+     "52 missed",
+     "30 made"
+    ],
+    "top_rushers": {
+     "K.Walker": {
+      "carries": 19,
+      "yards": 128
+     },
+     "P.Mahomes": {
+      "carries": 1,
+      "yards": 10
+     },
+     "E.Johnson": {
+      "carries": 3,
+      "yards": 6
+     }
+    },
+    "turnover_plays": [
+     "Q2 08:37 KC: (8:37) (Shotgun) 15-P.Mahomes pass short right intended for 85-A.Armstrong INTERCEPTED by 20-C.Hart [93-T.Tart] at LAC -9. Touchback.",
+     "Q3 04:34 LAC: (4:34) 16-J.Scott punts 35 yards to LAC 37, Center-47-J.Harris. 81-N.Remigio to LAC 41 for -4 yards (43-T.Dye). FUMBLES (43-T.Dye), recovered by KC-45-Ca.Jones at LAC 41. PENALTY on KC-88-J.Briningstool, Illegal Block Ab"
+    ],
+    "qbs": {
+     "P.Mahomes": {
+      "dropbacks": 32,
+      "qb_points": 2.2,
+      "play_epa": 2.2
+     }
+    }
+   }
+  },
+  "2026_06_NO_NYG": {
+   "away": "NO",
+   "home": "NYG",
+   "away_score": 34,
+   "home_score": 27,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q1 05:23 NYG: (5:23) (Shotgun) 19-J.Winston pass short right to 29-T.Tracy for 17 yards, TOUCHDOWN [94-C.Jordan].",
+    "Q1 05:14 NYG: 34-D.Zvada extra point is GOOD, Center-58-B.Mann, Holder-15-J.Stout.",
+    "Q2 06:56 NO: (6:56) 10-D.Carlson 55 yard field goal is No Good, Wide Left, Center-49-Z.Wood, Holder-17-R.Wright.",
+    "Q2 02:30 NYG: (2:30) 34-D.Zvada 34 yard field goal is GOOD, Center-58-B.Mann, Holder-15-J.Stout.",
+    "Q2 02:27 NO: 34-D.Zvada kicks 62 yards from NYG 35 to NO 3. 19-B.Brown ran ob at NO 44 for 41 yards (24-A.Washington).",
+    "Q2 01:23 NO: (1:23) 10-D.Carlson 58 yard field goal is GOOD, Center-49-Z.Wood, Holder-17-R.Wright.",
+    "Q2 00:05 NO: (:05) (Shotgun) 6-T.Shough pass short middle to 18-B.Lance for 2 yards, TOUCHDOWN.",
+    "Q2 00:01 NO: 10-D.Carlson extra point is GOOD, Center-49-Z.Wood, Holder-17-R.Wright.",
+    "Q3 12:31 NO: (12:31) (Shotgun) 6-T.Shough pass short right to 41-A.Kamara for 31 yards, TOUCHDOWN.",
+    "Q3 12:21 NO: 10-D.Carlson extra point is GOOD, Center-49-Z.Wood, Holder-17-R.Wright.",
+    "Q3 05:48 NO: (5:48) 6-T.Shough up the middle for 1 yard, TOUCHDOWN.",
+    "Q3 05:43 NO: 10-D.Carlson extra point is GOOD, Center-49-Z.Wood, Holder-17-R.Wright.",
+    "Q3 01:17 NO: (1:17) 10-D.Carlson 51 yard field goal is GOOD, Center-49-Z.Wood, Holder-17-R.Wright.",
+    "Q4 11:36 NO: (11:36) 6-T.Shough pass deep right to 12-C.Olave for 18 yards, TOUCHDOWN.",
+    "Q4 11:31 NO: 10-D.Carlson extra point is GOOD, Center-49-Z.Wood, Holder-17-R.Wright.",
+    "Q4 07:04 NYG: (7:04) (Shotgun) 29-T.Tracy right guard for 5 yards, TOUCHDOWN.",
+    "Q4 07:00 NYG: TWO-POINT CONVERSION ATTEMPT. 18-J.McCarthy pass to 9-I.Likely is complete. ATTEMPT SUCCEEDS.",
+    "Q4 05:11 NYG: (5:11) (Shotgun) 18-J.McCarthy pass deep left to 9-I.Likely for 24 yards, TOUCHDOWN.",
+    "Q4 02:08 NYG: (2:08) 34-D.Zvada 41 yard field goal is GOOD, Center-58-B.Mann, Holder-15-J.Stout."
+   ],
+   "NO": {
+    "plays": 67,
+    "epa_per_play": -0.035,
+    "success_rate": 0.343,
+    "early_down_success": 0.333,
+    "pass_play_epa": 3.5,
+    "rush_epa": -5.8,
+    "rushes": 35,
+    "rush_yards": 142,
+    "third_down": "4/15",
+    "fourth_down": "1/1",
+    "explosive": 7,
+    "sacks_taken": 0,
+    "turnovers": 1,
+    "turnover_epa": -5.1,
+    "red_zone_trips": 3,
+    "red_zone_tds": 3,
+    "special_teams_net_epa": 8.1,
+    "field_goals": [
+     "55 missed",
+     "58 made",
+     "51 made"
+    ],
+    "top_rushers": {
+     "K.Miller": {
+      "carries": 20,
+      "yards": 70
+     },
+     "C.Donaldson": {
+      "carries": 6,
+      "yards": 39
+     },
+     "A.Kamara": {
+      "carries": 7,
+      "yards": 34
+     }
+    },
+    "turnover_plays": [
+     "Q4 09:40 NO: (9:40) (Shotgun) 43-C.Donaldson up the middle to NYG 48 for 1 yard (25-J.Pinnock; 52-A.Reese). FUMBLES (25-J.Pinnock), RECOVERED by NYG-52-A.Reese at NYG 48."
+    ],
+    "qbs": {
+     "T.Shough": {
+      "dropbacks": 32,
+      "qb_points": 3.5,
+      "play_epa": 3.5
+     }
+    }
+   },
+   "NYG": {
+    "plays": 67,
+    "epa_per_play": -0.057,
+    "success_rate": 0.433,
+    "early_down_success": 0.453,
+    "pass_play_epa": -3.8,
+    "rush_epa": 0.0,
+    "rushes": 18,
+    "rush_yards": 57,
+    "third_down": "4/12",
+    "fourth_down": "1/2",
+    "explosive": 8,
+    "sacks_taken": 5,
+    "turnovers": 4,
+    "turnover_epa": -19.1,
+    "red_zone_trips": 4,
+    "red_zone_tds": 2,
+    "special_teams_net_epa": -8.1,
+    "field_goals": [
+     "34 made",
+     "41 made"
+    ],
+    "top_rushers": {
+     "D.Mooney": {
+      "carries": 1,
+      "yards": 20
+     },
+     "T.Tracy": {
+      "carries": 6,
+      "yards": 18
+     },
+     "D.Singletary": {
+      "carries": 4,
+      "yards": 14
+     }
+    },
+    "turnover_plays": [
+     "Q3 04:23 NYG: (4:23) (No Huddle, Shotgun) 19-J.Winston pass short left intended for 1-M.Nabers INTERCEPTED by 22-M.Emerson at NO 26. 22-M.Emerson pushed ob at NO 38 for 12 yards (1-M.Nabers).",
+     "Q4 12:28 NYG: (12:28) (No Huddle, Shotgun) 19-J.Winston pass deep middle intended for 9-I.Likely INTERCEPTED by 23-J.Blackmon at NYG 42. 23-J.Blackmon to NYG 21 for 21 yards (88-M.Fields).",
+     "Q4 10:27 NYG: (10:27) (Shotgun) 18-J.McCarthy pass short right intended for 88-M.Fields INTERCEPTED by 22-M.Emerson at NO 37. 22-M.Emerson to NO 44 for 7 yards (88-M.Fields).",
+     "Q2 01:18 NYG: 10-D.Carlson kicks 60 yards from NO 35 to NYG 5. 89-C.Jones to NYG 27 for 22 yards (44-I.Stalbird). FUMBLES (44-I.Stalbird), RECOVERED by NO-4-O.Delp at NYG 28."
+    ],
+    "qbs": {
+     "J.McCarthy": {
+      "dropbacks": 19,
+      "qb_points": 8.2,
+      "play_epa": 8.2
+     },
+     "J.Winston": {
+      "dropbacks": 30,
+      "qb_points": -12.0,
+      "play_epa": -12.0
+     }
+    }
+   }
+  },
+  "2026_06_NYJ_NE": {
+   "away": "NYJ",
+   "home": "NE",
+   "away_score": 19,
+   "home_score": 26,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q1 08:21 NYJ: (8:21) 19-J.Sanders 42 yard field goal is GOOD, Center-42-T.Hennessy, Holder-14-A.McNamara.",
+    "Q1 04:18 NE: (4:18) (Shotgun) 10-D.Maye pass deep right to 87-R.Doubs for 42 yards, TOUCHDOWN. NE-87-R.Doubs was injured during the play.",
+    "Q1 04:10 NE: 8-A.Borregales extra point is GOOD, Center-47-J.Ashby, Holder-19-M.Wishnowsky.",
+    "Q2 01:49 NE: (1:49) 8-A.Borregales 32 yard field goal is GOOD, Center-47-J.Ashby, Holder-19-M.Wishnowsky.",
+    "Q2 00:20 NE: (:20) (Shotgun) 10-D.Maye pass short right to 3-D.Douglas for 9 yards, TOUCHDOWN.",
+    "Q2 00:14 NE: 8-A.Borregales extra point is GOOD, Center-47-J.Ashby, Holder-19-M.Wishnowsky.",
+    "Q3 10:32 NYJ: (10:32) 7-G.Smith pass deep left to 11-O.Cooper for 48 yards, TOUCHDOWN.",
+    "Q3 10:24 NYJ: 19-J.Sanders extra point is GOOD, Center-42-T.Hennessy, Holder-14-A.McNamara.",
+    "Q3 04:50 NYJ: (4:50) 19-J.Sanders 36 yard field goal is GOOD, Center-42-T.Hennessy, Holder-14-A.McNamara.",
+    "Q4 14:13 NE: (14:13) (Shotgun) 10-D.Maye pass short right to 85-H.Henry for 7 yards, TOUCHDOWN.",
+    "Q4 07:24 NYJ: (7:24) 19-J.Sanders 40 yard field goal is GOOD, Center-42-T.Hennessy, Holder-14-A.McNamara.",
+    "Q4 01:14 NE: (1:14) 8-A.Borregales 27 yard field goal is GOOD, Center-47-J.Ashby, Holder-19-M.Wishnowsky.",
+    "Q4 00:36 NYJ: (:36) 19-J.Sanders 36 yard field goal is GOOD, Center-42-T.Hennessy, Holder-14-A.McNamara."
+   ],
+   "NYJ": {
+    "plays": 59,
+    "epa_per_play": -0.037,
+    "success_rate": 0.492,
+    "early_down_success": 0.553,
+    "pass_play_epa": 5.9,
+    "rush_epa": -8.1,
+    "rushes": 26,
+    "rush_yards": 98,
+    "third_down": "3/10",
+    "fourth_down": "0/2",
+    "explosive": 5,
+    "sacks_taken": 3,
+    "turnovers": 1,
+    "turnover_epa": -3.6,
+    "red_zone_trips": 3,
+    "red_zone_tds": 0,
+    "special_teams_net_epa": -1.9,
+    "field_goals": [
+     "42 made",
+     "36 made",
+     "40 made",
+     "36 made"
+    ],
+    "top_rushers": {
+     "B.Allen": {
+      "carries": 17,
+      "yards": 78
+     },
+     "I.Davis": {
+      "carries": 7,
+      "yards": 16
+     },
+     "I.Williams": {
+      "carries": 1,
+      "yards": 4
+     }
+    },
+    "turnover_plays": [
+     "Q4 12:31 NYJ: (12:31) (Shotgun) 7-G.Smith pass deep left intended for 16-K.Sadiq INTERCEPTED by 22-C.Woods at NE 24. 22-C.Woods ran ob at NE 24 for no gain."
+    ],
+    "qbs": {
+     "G.Smith": {
+      "dropbacks": 33,
+      "qb_points": 5.9,
+      "play_epa": 5.9
+     }
+    }
+   },
+   "NE": {
+    "plays": 67,
+    "epa_per_play": 0.012,
+    "success_rate": 0.433,
+    "early_down_success": 0.4,
+    "pass_play_epa": 7.8,
+    "rush_epa": -7.0,
+    "rushes": 32,
+    "rush_yards": 124,
+    "third_down": "8/15",
+    "fourth_down": "1/2",
+    "explosive": 5,
+    "sacks_taken": 0,
+    "turnovers": 2,
+    "turnover_epa": -7.7,
+    "red_zone_trips": 4,
+    "red_zone_tds": 2,
+    "special_teams_net_epa": 1.9,
+    "field_goals": [
+     "32 made",
+     "27 made"
+    ],
+    "top_rushers": {
+     "C.Kiner": {
+      "carries": 11,
+      "yards": 57
+     },
+     "R.Stevenson": {
+      "carries": 14,
+      "yards": 36
+     },
+     "T.Henderson": {
+      "carries": 7,
+      "yards": 31
+     }
+    },
+    "turnover_plays": [
+     "Q3 08:17 NE: (8:17) (Shotgun) 32-T.Henderson right guard to NE 35 for 6 yards (31-D.Bailey; 91-J.Briggs). FUMBLES (31-D.Bailey), RECOVERED by NYJ-44-J.Sherwood at NE 36. The Replay Official reviewed the runner was not down by contact",
+     "Q4 11:16 NE: (11:16) (Shotgun) 10-D.Maye pass deep right to 3-D.Douglas to NYJ 33 for 39 yards (44-J.Sherwood). FUMBLES (44-J.Sherwood), RECOVERED by NYJ-29-M.Fitzpatrick at NYJ 25. 29-M.Fitzpatrick pushed ob at NYJ 45 for 20 yards ("
+    ],
+    "qbs": {
+     "D.Maye": {
+      "dropbacks": 35,
+      "qb_points": 13.8,
+      "play_epa": 7.8
+     }
+    }
+   }
+  },
+  "2026_06_PIT_TB": {
+   "away": "PIT",
+   "home": "TB",
+   "away_score": 26,
+   "home_score": 19,
+   "overtime": true,
+   "scoring_and_kicks": [
+    "Q1 07:55 TB: (7:55) 4-C.McLaughlin 43 yard field goal is GOOD, Center-86-E.Deckers, Holder-9-R.Dixon.",
+    "Q2 14:55 TB: (14:55) (Shotgun) 10-J.Daniels pass short left to 2-E.Egbuka for 2 yards, TOUCHDOWN.",
+    "Q2 14:52 TB: 4-C.McLaughlin extra point is GOOD, Center-86-E.Deckers, Holder-9-R.Dixon.",
+    "Q2 07:15 PIT: (7:15) 9-C.Boswell 48 yard field goal is No Good, Wide Left, Center-46-C.Kuntz, Holder-19-C.Johnston.",
+    "Q2 04:12 TB: (4:12) 4-C.McLaughlin 47 yard field goal is GOOD, Center-86-E.Deckers, Holder-9-R.Dixon.",
+    "Q2 00:03 PIT: (:03) 9-C.Boswell 52 yard field goal is GOOD, Center-46-C.Kuntz, Holder-19-C.Johnston.",
+    "Q3 05:05 TB: (5:05) 4-C.McLaughlin 33 yard field goal is GOOD, Center-86-E.Deckers, Holder-9-R.Dixon.",
+    "Q4 13:53 PIT: (13:53) (Shotgun) 8-A.Rodgers pass short left to 80-D.Washington for 5 yards, TOUCHDOWN.",
+    "Q4 13:48 PIT: 9-C.Boswell extra point is GOOD, Center-46-C.Kuntz, Holder-19-C.Johnston.",
+    "Q4 08:11 PIT: (8:11) 9-C.Boswell 39 yard field goal is GOOD, Center-46-C.Kuntz, Holder-19-C.Johnston.",
+    "Q4 02:00 PIT: (2:00) 9-C.Boswell 58 yard field goal is GOOD, Center-46-C.Kuntz, Holder-19-C.Johnston.",
+    "Q4 01:23 PIT: (1:23) 9-C.Boswell 20 yard field goal is GOOD, Center-46-C.Kuntz, Holder-19-C.Johnston.",
+    "Q4 00:13 TB: (:13) 4-C.McLaughlin 53 yard field goal is GOOD, Center-86-E.Deckers, Holder-9-R.Dixon.",
+    "Q5 03:20 PIT: (3:20) (Shotgun) 8-A.Rodgers pass short right to 17-G.Bernard for 6 yards, TOUCHDOWN.",
+    "Q5 03:15 PIT: 9-C.Boswell extra point is GOOD, Center-46-C.Kuntz, Holder-19-C.Johnston."
+   ],
+   "PIT": {
+    "plays": 73,
+    "epa_per_play": -0.201,
+    "success_rate": 0.37,
+    "early_down_success": 0.386,
+    "pass_play_epa": -13.7,
+    "rush_epa": -0.9,
+    "rushes": 21,
+    "rush_yards": 90,
+    "third_down": "5/15",
+    "fourth_down": "0/1",
+    "explosive": 3,
+    "sacks_taken": 5,
+    "turnovers": 1,
+    "turnover_epa": -5.3,
+    "red_zone_trips": 4,
+    "red_zone_tds": 2,
+    "special_teams_net_epa": -0.7,
+    "field_goals": [
+     "48 missed",
+     "52 made",
+     "39 made",
+     "58 made",
+     "20 made"
+    ],
+    "top_rushers": {
+     "J.Warren": {
+      "carries": 14,
+      "yards": 50
+     },
+     "R.Dowdle": {
+      "carries": 7,
+      "yards": 40
+     }
+    },
+    "turnover_plays": [
+     "Q1 10:51 PIT: (10:51) (Shotgun) 8-A.Rodgers pass short right intended for 80-D.Washington INTERCEPTED by 91-A.Robinson (3-R.Bain) [0-Y.Diaby] at PIT 39. 91-A.Robinson to PIT 39 for no gain (67-B.Hoffman)."
+    ],
+    "qbs": {
+     "A.Rodgers": {
+      "dropbacks": 52,
+      "qb_points": -13.7,
+      "play_epa": -13.7
+     }
+    }
+   },
+   "TB": {
+    "plays": 73,
+    "epa_per_play": -0.304,
+    "success_rate": 0.301,
+    "early_down_success": 0.269,
+    "pass_play_epa": -17.2,
+    "rush_epa": -5.0,
+    "rushes": 21,
+    "rush_yards": 63,
+    "third_down": "6/19",
+    "fourth_down": "1/2",
+    "explosive": 4,
+    "sacks_taken": 5,
+    "turnovers": 2,
+    "turnover_epa": -10.1,
+    "red_zone_trips": 2,
+    "red_zone_tds": 1,
+    "special_teams_net_epa": 0.7,
+    "field_goals": [
+     "43 made",
+     "47 made",
+     "33 made",
+     "53 made"
+    ],
+    "top_rushers": {
+     "B.Irving": {
+      "carries": 19,
+      "yards": 46
+     },
+     "K.Gainwell": {
+      "carries": 2,
+      "yards": 17
+     }
+    },
+    "turnover_plays": [
+     "Q4 13:14 TB: (13:14) (Shotgun) 10-J.Daniels pass short left intended for 2-E.Egbuka INTERCEPTED by 23-D.Everette [97-C.Heyward] at TB 45. 23-D.Everette ran ob at TB 45 for no gain.",
+     "Q4 01:46 TB: (1:46) (Shotgun) 10-J.Daniels pass short right intended for 2-E.Egbuka INTERCEPTED by 35-J.Dean at TB 43. 35-J.Dean pushed ob at TB 3 for 40 yards (10-J.Daniels)."
+    ],
+    "qbs": {
+     "J.Daniels": {
+      "dropbacks": 52,
+      "qb_points": -17.2,
+      "play_epa": -17.2
+     }
+    }
+   }
+  },
+  "2026_06_SEA_DEN": {
+   "away": "SEA",
+   "home": "DEN",
+   "away_score": 14,
+   "home_score": 17,
+   "overtime": true,
+   "scoring_and_kicks": [
+    "Q1 06:35 SEA: (6:35) 5-J.Myers 55 yard field goal is GOOD, Center-41-C.Stoll, Holder-4-M.Dickson.",
+    "Q2 12:56 DEN: (12:56) 27-J.Dobbins right tackle for 4 yards, TOUCHDOWN.",
+    "Q2 12:52 DEN: 3-W.Lutz extra point is GOOD, Center-48-M.Fraboni, Holder-16-J.Crawshaw.",
+    "Q2 05:19 DEN: (5:19) (Shotgun) 63-A.Palczewski reported in as eligible. Direct snap to 12-R.Harvey. 12-R.Harvey right guard for 1 yard, TOUCHDOWN.",
+    "Q2 05:15 DEN: 3-W.Lutz extra point is GOOD, Center-48-M.Fraboni, Holder-16-J.Crawshaw.",
+    "Q3 08:34 SEA: (8:34) 5-J.Myers 47 yard field goal is No Good, Hit Right Upright, Center-41-C.Stoll, Holder-4-M.Dickson.",
+    "Q4 05:47 SEA: (5:47) (No Huddle) 36-G.Holani right end for 1 yard, TOUCHDOWN.",
+    "Q4 05:41 SEA: TWO-POINT CONVERSION ATTEMPT. 14-S.Darnold pass to 22-R.Shaheed is complete. ATTEMPT SUCCEEDS.",
+    "Q4 00:07 SEA: (:07) 5-J.Myers 34 yard field goal is GOOD, Center-41-C.Stoll, Holder-4-M.Dickson.",
+    "Q5 04:57 DEN: (4:57) 3-W.Lutz 53 yard field goal is GOOD, Center-48-M.Fraboni, Holder-16-J.Crawshaw. Penalty on SEA-13-E.Jones, Leverage, declined."
+   ],
+   "SEA": {
+    "plays": 80,
+    "epa_per_play": -0.101,
+    "success_rate": 0.388,
+    "early_down_success": 0.371,
+    "pass_play_epa": -5.9,
+    "rush_epa": -2.2,
+    "rushes": 24,
+    "rush_yards": 94,
+    "third_down": "7/17",
+    "fourth_down": "1/1",
+    "explosive": 5,
+    "sacks_taken": 5,
+    "turnovers": 3,
+    "turnover_epa": -10.9,
+    "red_zone_trips": 2,
+    "red_zone_tds": 1,
+    "special_teams_net_epa": -1.9,
+    "field_goals": [
+     "55 made",
+     "47 missed",
+     "34 made"
+    ],
+    "top_rushers": {
+     "E.Wilson": {
+      "carries": 14,
+      "yards": 52
+     },
+     "G.Holani": {
+      "carries": 5,
+      "yards": 20
+     },
+     "V.Jones": {
+      "carries": 4,
+      "yards": 20
+     }
+    },
+    "turnover_plays": [
+     "Q4 01:31 SEA: (1:31) (No Huddle) 14-S.Darnold pass short left intended for 15-T.Horton INTERCEPTED by 31-K.Abrams-Draine at DEN 31. 31-K.Abrams-Draine to DEN 31 for no gain (15-T.Horton).",
+     "Q5 07:17 SEA: (7:17) (Shotgun) 14-S.Darnold pass short left intended for 22-R.Shaheed INTERCEPTED by 29-J.McMillian at SEA 43. 29-J.McMillian ran ob at SEA 43 for no gain.",
+     "Q2 02:34 SEA: (2:34) 22-R.Shaheed left end to DEN 30 for 5 yards (15-N.Bonitto). FUMBLES (15-N.Bonitto), touched at DEN 33, RECOVERED by DEN-40-J.Strnad at DEN 34. SEA-18-E.Arroyo was injured during the play."
+    ],
+    "qbs": {
+     "S.Darnold": {
+      "dropbacks": 56,
+      "qb_points": -5.9,
+      "play_epa": -5.9
+     }
+    }
+   },
+   "DEN": {
+    "plays": 56,
+    "epa_per_play": -0.144,
+    "success_rate": 0.286,
+    "early_down_success": 0.268,
+    "pass_play_epa": -6.2,
+    "rush_epa": -1.8,
+    "rushes": 26,
+    "rush_yards": 72,
+    "third_down": "4/14",
+    "fourth_down": "1/1",
+    "explosive": 1,
+    "sacks_taken": 2,
+    "turnovers": 0,
+    "turnover_epa": 0.0,
+    "red_zone_trips": 2,
+    "red_zone_tds": 2,
+    "special_teams_net_epa": 1.9,
+    "field_goals": [
+     "53 made"
+    ],
+    "top_rushers": {
+     "J.Dobbins": {
+      "carries": 17,
+      "yards": 41
+     },
+     "R.Harvey": {
+      "carries": 6,
+      "yards": 25
+     },
+     "T.Badie": {
+      "carries": 1,
+      "yards": 6
+     }
+    },
+    "turnover_plays": [],
+    "qbs": {
+     "B.Nix": {
+      "dropbacks": 30,
+      "qb_points": -6.2,
+      "play_epa": -6.2
+     }
+    }
+   }
+  },
+  "2026_06_TEN_IND": {
+   "away": "TEN",
+   "home": "IND",
+   "away_score": 26,
+   "home_score": 20,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q2 11:12 IND: (11:12) 17-D.Jones pass short left to 81-M.Alie-Cox for 1 yard, TOUCHDOWN.",
+    "Q2 11:07 IND: 3-S.Shrader extra point is GOOD, Center-46-L.Rhodes, Holder-8-R.Sanchez.",
+    "Q2 02:09 IND: (2:09) 3-S.Shrader 23 yard field goal is GOOD, Center-46-L.Rhodes, Holder-8-R.Sanchez.",
+    "Q2 00:15 IND: (:15) 3-S.Shrader 47 yard field goal is GOOD, Center-46-L.Rhodes, Holder-8-R.Sanchez.",
+    "Q3 13:33 TEN: (13:33) 6-J.Slye 29 yard field goal is GOOD, Center-46-M.Cox, Holder-3-T.Townsend.",
+    "Q3 03:26 TEN: (3:26) 6-J.Slye 56 yard field goal is GOOD, Center-46-M.Cox, Holder-3-T.Townsend.",
+    "Q4 13:04 TEN: (13:04) 1-C.Ward pass short left to 14-C.Tate for 8 yards, TOUCHDOWN.",
+    "Q4 13:00 TEN: 6-J.Slye extra point is GOOD, Center-46-M.Cox, Holder-3-T.Townsend.",
+    "Q4 10:25 IND: (10:25) 8-R.Sanchez punt is BLOCKED by 36-J.Chestnut, Center-46-L.Rhodes, RECOVERED by TEN-7-O.Oladejo at IND 14. 7-O.Oladejo for 14 yards, TOUCHDOWN. IND-8-R.Sanchez was injured during the play. PENALTY on TEN, Unsports",
+    "Q4 10:17 TEN: 6-J.Slye extra point is GOOD, Center-46-M.Cox, Holder-3-T.Townsend.",
+    "Q4 05:36 IND: (5:36) 28-J.Taylor left end for 4 yards, TOUCHDOWN.",
+    "Q4 05:32 IND: 3-S.Shrader extra point is GOOD, Center-46-L.Rhodes, Holder-8-R.Sanchez. ** Injury Update: IND-8-R.Sanchez has returned to the game.",
+    "Q4 02:07 TEN: (2:07) 6-J.Slye 49 yard field goal is GOOD, Center-46-M.Cox, Holder-3-T.Townsend.",
+    "Q4 00:47 TEN: (:47) 6-J.Slye 44 yard field goal is GOOD, Center-46-M.Cox, Holder-3-T.Townsend."
+   ],
+   "TEN": {
+    "plays": 44,
+    "epa_per_play": -0.147,
+    "success_rate": 0.386,
+    "early_down_success": 0.412,
+    "pass_play_epa": -3.5,
+    "rush_epa": -3.0,
+    "rushes": 21,
+    "rush_yards": 80,
+    "third_down": "3/10",
+    "fourth_down": "0/0",
+    "explosive": 1,
+    "sacks_taken": 0,
+    "turnovers": 1,
+    "turnover_epa": -4.0,
+    "red_zone_trips": 2,
+    "red_zone_tds": 1,
+    "special_teams_net_epa": 9.3,
+    "field_goals": [
+     "29 made",
+     "56 made",
+     "49 made",
+     "44 made"
+    ],
+    "top_rushers": {
+     "T.Pollard": {
+      "carries": 19,
+      "yards": 76
+     },
+     "C.Ward": {
+      "carries": 1,
+      "yards": 3
+     },
+     "T.Spears": {
+      "carries": 1,
+      "yards": 1
+     }
+    },
+    "turnover_plays": [
+     "Q2 02:00 TEN: (2:00) 1-C.Ward pass deep right intended for 4-W.Robinson INTERCEPTED by 0-C.Bynum [95-A.Adebawore] at IND 39. 0-C.Bynum to TEN 49 for 12 yards (20-T.Pollard)."
+    ],
+    "qbs": {
+     "C.Ward": {
+      "dropbacks": 23,
+      "qb_points": -3.5,
+      "play_epa": -3.5
+     }
+    }
+   },
+   "IND": {
+    "plays": 77,
+    "epa_per_play": -0.105,
+    "success_rate": 0.416,
+    "early_down_success": 0.373,
+    "pass_play_epa": -4.7,
+    "rush_epa": -3.3,
+    "rushes": 27,
+    "rush_yards": 135,
+    "third_down": "7/15",
+    "fourth_down": "1/3",
+    "explosive": 6,
+    "sacks_taken": 6,
+    "turnovers": 3,
+    "turnover_epa": -14.2,
+    "red_zone_trips": 4,
+    "red_zone_tds": 2,
+    "special_teams_net_epa": -9.3,
+    "field_goals": [
+     "23 made",
+     "47 made"
+    ],
+    "top_rushers": {
+     "J.Taylor": {
+      "carries": 21,
+      "yards": 94
+     },
+     "S.McGowan": {
+      "carries": 4,
+      "yards": 27
+     },
+     "J.Downs": {
+      "carries": 1,
+      "yards": 7
+     }
+    },
+    "turnover_plays": [
+     "Q1 02:44 IND: (2:44) (Shotgun) 17-D.Jones pass short right intended for 2-J.Downs INTERCEPTED by 37-A.Hooker at TEN 6. 37-A.Hooker ran ob at TEN 6 for no gain. The Replay Official reviewed the interception ruling, and the play was Uph",
+     "Q3 07:07 IND: (7:07) 17-D.Jones pass short left intended for 86-W.Mallory INTERCEPTED by 18-C.Flott at TEN 11. 18-C.Flott to TEN 11 for no gain (86-W.Mallory).",
+     "Q3 14:56 IND: (14:56) 28-J.Taylor right tackle to IND 32 for 4 yards (98-J.Simmons; 53-A.Hill). FUMBLES (98-J.Simmons), RECOVERED by TEN-98-J.Simmons at IND 33."
+    ],
+    "qbs": {
+     "D.Jones": {
+      "dropbacks": 50,
+      "qb_points": -4.7,
+      "play_epa": -4.7
+     }
+    }
+   }
+  },
+  "2026_06_WAS_SF": {
+   "away": "WAS",
+   "home": "SF",
+   "away_score": 17,
+   "home_score": 23,
+   "overtime": false,
+   "scoring_and_kicks": [
+    "Q1 10:58 SF: (10:58) (Shotgun) 13-B.Purdy pass short left to 85-G.Kittle for 11 yards, TOUCHDOWN.",
+    "Q1 10:53 SF: 18-E.Pineiro extra point is GOOD, Center-46-J.Weeks, Holder-15-C.Waitman.",
+    "Q1 08:53 WAS: (8:53) 19-D.Stevens 51 yard field goal is GOOD, Center-69-T.Ott, Holder-10-T.Way.",
+    "Q1 04:11 SF: (4:11) 23-C.McCaffrey left guard for 1 yard, TOUCHDOWN.",
+    "Q2 00:18 SF: (:18) 23-C.McCaffrey left guard for 1 yard, TOUCHDOWN. WAS-99-J.Kinlaw was injured during the play.",
+    "Q2 00:13 SF: 18-E.Pineiro extra point is GOOD, Center-46-J.Weeks, Holder-15-C.Waitman.",
+    "Q3 06:01 SF: (6:01) 18-E.Pineiro 33 yard field goal is GOOD, Center-46-J.Weeks, Holder-15-C.Waitman.",
+    "Q3 00:18 WAS: (:18) (Shotgun) 5-J.Daniels pass short left to 3-S.Diggs for 1 yard, TOUCHDOWN [6-M.Mustapha].",
+    "Q3 00:15 WAS: 19-D.Stevens extra point is GOOD, Center-69-T.Ott, Holder-10-T.Way.",
+    "Q4 09:26 WAS: (9:26) (Shotgun) 5-J.Daniels pass short left to 1-R.White for 9 yards, TOUCHDOWN.",
+    "Q4 09:22 WAS: 19-D.Stevens extra point is GOOD, Center-69-T.Ott, Holder-10-T.Way."
+   ],
+   "WAS": {
+    "plays": 58,
+    "epa_per_play": -0.006,
+    "success_rate": 0.483,
+    "early_down_success": 0.558,
+    "pass_play_epa": 1.7,
+    "rush_epa": -2.1,
+    "rushes": 13,
+    "rush_yards": 43,
+    "third_down": "3/12",
+    "fourth_down": "1/3",
+    "explosive": 4,
+    "sacks_taken": 4,
+    "turnovers": 0,
+    "turnover_epa": 0.0,
+    "red_zone_trips": 4,
+    "red_zone_tds": 2,
+    "special_teams_net_epa": 5.2,
+    "field_goals": [
+     "51 made"
+    ],
+    "top_rushers": {
+     "R.White": {
+      "carries": 7,
+      "yards": 27
+     },
+     "J.McNichols": {
+      "carries": 5,
+      "yards": 13
+     },
+     "A.Ekeler": {
+      "carries": 1,
+      "yards": 3
+     }
+    },
+    "turnover_plays": [],
+    "qbs": {
+     "J.Daniels": {
+      "dropbacks": 45,
+      "qb_points": 1.7,
+      "play_epa": 1.7
+     }
+    }
+   },
+   "SF": {
+    "plays": 60,
+    "epa_per_play": 0.208,
+    "success_rate": 0.533,
+    "early_down_success": 0.5,
+    "pass_play_epa": 3.8,
+    "rush_epa": 8.7,
+    "rushes": 26,
+    "rush_yards": 102,
+    "third_down": "7/14",
+    "fourth_down": "2/2",
+    "explosive": 4,
+    "sacks_taken": 2,
+    "turnovers": 1,
+    "turnover_epa": -4.4,
+    "red_zone_trips": 4,
+    "red_zone_tds": 3,
+    "special_teams_net_epa": -5.2,
+    "field_goals": [
+     "33 made"
+    ],
+    "top_rushers": {
+     "C.McCaffrey": {
+      "carries": 16,
+      "yards": 64
+     },
+     "K.Black": {
+      "carries": 8,
+      "yards": 34
+     },
+     "B.Purdy": {
+      "carries": 2,
+      "yards": 4
+     }
+    },
+    "turnover_plays": [
+     "Q2 09:11 SF: (9:11) 13-B.Purdy pass short right to 23-C.McCaffrey to WAS 21 for 12 yards (45-K.Chaisson; 52-S.Styles). FUMBLES (45-K.Chaisson), RECOVERED by WAS-4-F.Luvu at WAS 19."
+    ],
+    "qbs": {
+     "B.Purdy": {
+      "dropbacks": 34,
+      "qb_points": 9.0,
+      "play_epa": 3.8
+     }
+    }
+   }
+  }
+ },
+ "prior_week_qbs": {
+  "ARI J.Brissett": {
+   "dropbacks": 52,
+   "qb_points": 4.3
+  },
+  "ATL M.Penix": {
+   "dropbacks": 37,
+   "qb_points": 5.9
+  },
+  "ATL T.Tagovailoa": {
+   "dropbacks": 3,
+   "qb_points": -1.5
+  },
+  "BAL T.Huntley": {
+   "dropbacks": 37,
+   "qb_points": 3.2
+  },
+  "BUF J.Allen": {
+   "dropbacks": 28,
+   "qb_points": 19.0
+  },
+  "CHI C.Keenum": {
+   "dropbacks": 22,
+   "qb_points": -6.8
+  },
+  "CHI T.Bagent": {
+   "dropbacks": 25,
+   "qb_points": -10.2
+  },
+  "CIN J.Burrow": {
+   "dropbacks": 33,
+   "qb_points": 14.7
+  },
+  "CLE D.Watson": {
+   "dropbacks": 44,
+   "qb_points": -10.4
+  },
+  "DAL D.Prescott": {
+   "dropbacks": 42,
+   "qb_points": -2.3
+  },
+  "DEN B.Nix": {
+   "dropbacks": 29,
+   "qb_points": -12.2
+  },
+  "DET J.Goff": {
+   "dropbacks": 33,
+   "qb_points": 16.4
+  },
+  "GB J.Love": {
+   "dropbacks": 34,
+   "qb_points": 16.1
+  },
+  "HOU C.Stroud": {
+   "dropbacks": 36,
+   "qb_points": 10.5
+  },
+  "IND D.Jones": {
+   "dropbacks": 45,
+   "qb_points": -0.1
+  },
+  "JAX T.Lawrence": {
+   "dropbacks": 44,
+   "qb_points": 11.2
+  },
+  "LA M.Stafford": {
+   "dropbacks": 55,
+   "qb_points": 19.4
+  },
+  "LAC J.Herbert": {
+   "dropbacks": 31,
+   "qb_points": -10.0
+  },
+  "LV F.Mendoza": {
+   "dropbacks": 9,
+   "qb_points": -1.7
+  },
+  "LV K.Cousins": {
+   "dropbacks": 31,
+   "qb_points": 9.2
+  },
+  "MIA M.Willis": {
+   "dropbacks": 33,
+   "qb_points": -6.2
+  },
+  "MIN K.Murray": {
+   "dropbacks": 38,
+   "qb_points": 12.7
+  },
+  "NE D.Maye": {
+   "dropbacks": 38,
+   "qb_points": 29.6
+  },
+  "NO T.Shough": {
+   "dropbacks": 26,
+   "qb_points": -11.9
+  },
+  "NYG J.Winston": {
+   "dropbacks": 60,
+   "qb_points": 14.7
+  },
+  "NYJ G.Smith": {
+   "dropbacks": 35,
+   "qb_points": -10.1
+  },
+  "PHI J.Hurts": {
+   "dropbacks": 42,
+   "qb_points": -1.6
+  },
+  "PIT A.Rodgers": {
+   "dropbacks": 33,
+   "qb_points": 4.5
+  },
+  "SEA S.Darnold": {
+   "dropbacks": 35,
+   "qb_points": -10.5
+  },
+  "SF B.Purdy": {
+   "dropbacks": 34,
+   "qb_points": -4.6
+  },
+  "TB J.Daniels": {
+   "dropbacks": 31,
+   "qb_points": 6.9
+  },
+  "TEN C.Ward": {
+   "dropbacks": 41,
+   "qb_points": -17.5
+  },
+  "WAS J.Daniels": {
+   "dropbacks": 37,
+   "qb_points": 6.7
+  }
+ }
+}
