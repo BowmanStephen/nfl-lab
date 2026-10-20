@@ -27,7 +27,8 @@ start_server() {
 
   # Bind ephemeral port on loopback only.
   # Python writes the chosen port to PORT_FILE once listen succeeds.
-  python3 - "$PUBLIC" "$PORT_FILE" "$LOG_FILE" <<'PY' &
+  # Do not keep a caller's command-substitution pipeline open for the server's lifetime.
+  python3 - "$PUBLIC" "$PORT_FILE" "$LOG_FILE" >>"$LOG_FILE" 2>&1 <<'PY' &
 import http.server, socketserver, sys, pathlib
 root, port_file, log_path = sys.argv[1:4]
 class Handler(http.server.SimpleHTTPRequestHandler):

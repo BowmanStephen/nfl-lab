@@ -145,22 +145,41 @@ async function main() {
 
     const url = new URL(pagePath, baseUrl.endsWith("/") ? baseUrl : baseUrl + "/").href;
     await cdp.send("Page.navigate", { url });
-    await cdp.send("Page.loadEventFired").catch(() => {});
-    // Wait for site.js hydration: home-title leaves the loading placeholder
+    // Navigation and static headings do not prove that site.js loaded the API data.
     const deadline = Date.now() + 10000;
     let snap = null;
     while (Date.now() < deadline) {
       snap = await evaluate(
         cdp,
         `(() => {
+          const page = document.body?.dataset.page || "";
+          const text = (id) => document.getElementById(id)?.textContent?.trim() || "";
+          const populated = (value) => !!value && !/^(?:…|\\.\\.\\.)$|Loading/i.test(value);
           const title = document.getElementById("home-title")?.textContent?.trim() || "";
           const mark = document.querySelector("a.mark")?.textContent?.trim() || "";
           const h1 = document.querySelector("h1")?.textContent?.trim() || "";
           const games = document.querySelectorAll("#games .game-row:not(.placeholder)").length;
           const spread = document.getElementById("spread-rec")?.textContent?.trim() || "";
           const live = document.getElementById("live-health")?.textContent?.trim() || "";
+          const total = text("total-rec");
+          const scope = text("tr-scope");
+          const tiles = document.querySelectorAll("#tr-tiles .tr-tile").length;
+          const charts = {
+            ratings: document.querySelectorAll("#ratings-chart .pw-row").length,
+            games: document.querySelectorAll("#games-chart .game-row").length,
+            winrate: !!document.querySelector("#winrate-chart svg"),
+            mae: !!document.querySelector("#mae-chart svg"),
+          };
           const loading = /Loading/i.test(title);
-          return { title, mark, h1, games, spread, live, loading, ready: !loading && !!(title || h1) };
+          let ready = !loading && !!(title || h1);
+          if (page === "home") ready = populated(title);
+          if (page === "ledger") {
+            ready = [spread, total, live, scope].every(populated) && tiles > 0;
+          }
+          if (page === "model") {
+            ready = charts.ratings > 0 && charts.games > 0 && charts.winrate && charts.mae;
+          }
+          return { page, title, mark, h1, games, spread, total, live, scope, tiles, charts, loading, ready };
         })()`,
       );
       if (snap?.ready) break;
