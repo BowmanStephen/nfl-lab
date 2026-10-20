@@ -10,3 +10,6 @@ output/previews/
 .playwright-mcp/
 research/.cache/
 research/run.log
+
+# verify-nfl-lab local proof runs (keep artifacts off git)
+.cursor/skills/verify-nfl-lab/runs/
