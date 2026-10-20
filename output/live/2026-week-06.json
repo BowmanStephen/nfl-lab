@@ -1010,11 +1010,11 @@
         "qb_notes": []
       },
       "grading": {
-        "home_score": null,
-        "away_score": null,
-        "actual_margin": null,
-        "actual_total": null,
-        "spread_outcome": null,
+        "home_score": 23.0,
+        "away_score": 17.0,
+        "actual_margin": 6.0,
+        "actual_total": 40.0,
+        "spread_outcome": "loss",
         "total_outcome": null,
         "spread_clv": 0.0,
         "total_clv": null,
@@ -1025,15 +1025,15 @@
     }
   ],
   "health": {
-    "line": "Live 2026 record: 3\u20136, 1 pushes (33.3%). Judged once after week 18.",
-    "settled_picks": 10,
-    "wins": 3,
-    "losses": 6,
-    "pushes": 1,
-    "cover_rate": 0.3333333333333333,
-    "clv_samples": 4,
+    "line": "Live 2026 record: 1\u20133, 0 pushes (25.0%). Judged once after week 18.",
+    "settled_picks": 4,
+    "wins": 1,
+    "losses": 3,
+    "pushes": 0,
+    "cover_rate": 0.25,
+    "clv_samples": 3,
     "moved_toward_rate": 0.0,
-    "average_clv": -1.5
+    "average_clv": -1.6666666666666667
   },
   "model_version": "v2-margin-calibration",
   "close_fallback_note": "4 games missed the DraftKings line we record just before kickoff (HOU-JAX, ARI-LA, BUF-LV, LAC-KC). Those games use the nflverse closing line instead, from a different sportsbook. We do not count that as the same-book line move. The picks and the DraftKings lines from lock time are unchanged."
