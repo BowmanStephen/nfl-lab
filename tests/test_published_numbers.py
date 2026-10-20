@@ -32,11 +32,12 @@ WITH_PUSH = re.compile(
 WEEK_FINAL = re.compile(r"Our picks went\s+(\d+)\s*[–-]\s*(\d+)(?:\s*[–-]\s*(\d+))?")
 
 
-def _cards() -> list[dict]:
+def _cards(season: int | None = None) -> list[dict]:
     cards = [json.loads(path.read_text()) for path in sorted(LIVE_DIR.glob("*.json"))]
     if not cards:
         raise AssertionError(f"no saved cards in {LIVE_DIR}")
-    season = max(int(card["season"]) for card in cards)
+    if season is None:
+        season = max(int(card["season"]) for card in cards)
     return [card for card in cards if int(card["season"]) == season]
 
 
@@ -223,7 +224,7 @@ def test_week6_recap_matches_saved_spread_grades():
     week_line = re.search(r"Week 6:\s+(\d+)\s*[–-]\s*(\d+)\.", recap)
     assert week_line, "week 6 recap does not publish its spread record"
     assert (int(week_line.group(1)), int(week_line.group(2)), 0) == expected
-    through = [item for item in _cards() if int(item["week"]) <= 6]
+    through = [item for item in _cards(season=2026) if int(item["week"]) <= 6]
     wins, losses, pushes = _spread_record(_games(through))
     season = WITH_PUSH.search(recap)
     assert season, "week 6 recap does not publish the season record"
@@ -232,6 +233,19 @@ def test_week6_recap_matches_saved_spread_grades():
     decided = wins + losses
     assert decided > 0
     assert f"{100 * wins / decided:.1f}%" in recap
+
+
+def test_next_season_does_not_change_week6_recap(monkeypatch, tmp_path):
+    for week in (5, 6):
+        name = f"2026-week-{week:02d}.json"
+        (tmp_path / name).write_text((LIVE_DIR / name).read_text())
+    (tmp_path / "2027-week-01.json").write_text(json.dumps({
+        "season": 2027, "week": 1,
+        "games": [{"selection": {"spread_qualifies": True},
+                   "grading": {"spread_outcome": "win"}}],
+    }))
+    monkeypatch.setitem(globals(), "LIVE_DIR", tmp_path)
+    test_week6_recap_matches_saved_spread_grades()
 
 
 @pytest.mark.parametrize("recap", [

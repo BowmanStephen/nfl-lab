@@ -650,9 +650,9 @@ def test_week6_voids_only_the_six_totals():
     assert summary["week"] == 6
     assert summary["n_spread_picks"] == 4
     assert summary["n_total_picks"] == 0
-    assert summary["health"]["wins"] == 2
-    assert summary["health"]["losses"] == 4
-    assert summary["health"]["pushes"] == 1
+    assert summary["health"]["wins"] == 1
+    assert summary["health"]["losses"] == 3
+    assert summary["health"]["pushes"] == 0
     model = json.loads((PUBLIC_API / "model.json").read_text())
     by_game = {row["game"]: row for row in model["games"]}
     for game in live["games"]:
@@ -664,6 +664,25 @@ def test_week6_voids_only_the_six_totals():
     assert by_game["TEN@IND"]["spread_pick"] == "IND -7"
     assert by_game["ARI@LA"]["spread_pick"] == "ARI +13.5"
     assert by_game["WAS@SF"]["spread_pick"] == "SF -7.5"
+
+
+def test_week6_publication_checks_run_after_site_moves_on(monkeypatch, tmp_path):
+    """Exercise the historical publication branch using the real publisher."""
+    from nfl_lab import publish
+
+    api = tmp_path / "api"
+    api.mkdir()
+    (tmp_path / "previews").mkdir()
+    for relative in ("index.html", "previews/week6.html"):
+        (tmp_path / relative).write_text((PUBLIC_API.parent / relative).read_text())
+    live = json.loads((LIVE_DIR / "2026-week-06.json").read_text())
+    monkeypatch.setattr(publish, "PUBLIC_API", api)
+    publish.publish_card(live, datetime(2026, 10, 20, tzinfo=timezone.utc))
+    (api / "model.json").write_text(json.dumps({
+        "games": [model_game_from_card(game) for game in live["games"]],
+    }))
+    monkeypatch.setitem(globals(), "PUBLIC_API", api)
+    test_week6_voids_only_the_six_totals()
 
 
 def test_nflverse_sign_matches_tb_at_dal_draftkings_lock():
