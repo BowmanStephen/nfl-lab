@@ -314,7 +314,7 @@ async function main() {
     const linkedPages = process.argv.includes("--skip-linked-contrast") ? []
       : [["last_week", "Last week"], ["teams", "Teams"], ["model", "How it works"], ["glossary", "Glossary"],
         ["ledger", "Track record"], ["freshness", "Data updates"],
-        ["replay", "2026 replay"], ["preview6", "Week 6 previews"]];
+        ["replay", "2026 replay"], ["preview7", "Week 7 previews"]];
     const ready = {
       last_week: 'Boolean(document.querySelector("#what-mattered p:not(.kicker)"))',
       teams: 'document.querySelectorAll("#teams .team").length === 32',
@@ -334,7 +334,7 @@ async function main() {
         + ' && document.querySelectorAll("#rc-weeks .rc-week:not(.rc-week-head)").length === 4'
         + ' && document.querySelectorAll("#rc-lessons .rc-lesson").length === 3'
         + ' && document.getElementById("rc-foot").textContent.startsWith("Backtest generated ")',
-      preview6: 'document.querySelectorAll("main article.game").length === 14'
+      preview7: 'document.querySelectorAll("main article.game").length === 14'
         + ' && document.querySelectorAll(".official-line").length === 14'
         + ' && Array.from(document.querySelectorAll(".official-line"))'
         + '.every((el) => el.textContent.trim() && el.textContent.trim() !== "unavailable")',

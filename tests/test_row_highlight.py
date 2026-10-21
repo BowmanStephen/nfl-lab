@@ -115,7 +115,7 @@ def test_home_text_meets_wcag_aa(highlight, scheme, media, viewport, width, heig
 @pytest.mark.parametrize("viewport", ["mobile", "desktop"])
 @pytest.mark.parametrize("scheme", ["light", "dark"])
 @pytest.mark.parametrize("state", ["hover", "focus"])
-@pytest.mark.parametrize("page", ["home", "last_week", "teams", "model", "glossary", "ledger", "ledger_expanded", "freshness", "replay", "preview6"])
+@pytest.mark.parametrize("page", ["home", "last_week", "teams", "model", "glossary", "ledger", "ledger_expanded", "freshness", "replay", "preview7"])
 def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
     result = (highlight["contrast"][viewport]["screen"][scheme] if page == "home"
               else highlight["linkedContrast"][page.removesuffix("_expanded")][viewport][scheme])
@@ -128,7 +128,7 @@ def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
     assert result["screen"] and not result["print"]
     assert result["dark"] is (scheme == "dark")
     interactions = result["interactions"]
-    if page == "preview6":
+    if page == "preview7":
         assert sum(target["officialPick"] for target in interactions["targets"]) == 14
     if page == "ledger_expanded":
         labels = {target["label"] for target in interactions["targets"]}
@@ -152,7 +152,7 @@ def test_page_interaction_contrast(highlight, viewport, scheme, state, page):
             assert result["outline"]["ratio"] >= 3, result["outline"]
 
 
-@pytest.mark.parametrize("page", ["last_week", "teams", "model", "glossary", "ledger", "ledger_expanded", "freshness", "replay", "preview6"])
+@pytest.mark.parametrize("page", ["last_week", "teams", "model", "glossary", "ledger", "ledger_expanded", "freshness", "replay", "preview7"])
 @pytest.mark.parametrize("viewport", ["mobile", "desktop"])
 @pytest.mark.parametrize("scheme", ["light", "dark"])
 def test_linked_page_text_contrast(highlight, page, viewport, scheme):
@@ -194,7 +194,7 @@ def test_linked_page_text_contrast(highlight, page, viewport, scheme):
         for week in range(1, 5):
             assert any(sample["tag"] == "span" and sample["text"] == f"Week {week}" for sample in samples)
     else:
-        assert any(sample["tag"] == "h1" and sample["text"] == "Week 6 previews" for sample in samples)
+        assert any(sample["tag"] == "h1" and sample["text"] == "Week 7 previews" for sample in samples)
         assert sum(sample["tag"] == "h2" for sample in samples) == 14, "all game previews must be measured"
         assert any(sample["tag"] == "p" and sample["text"].startswith("These previews do not change") for sample in samples)
     failures = [sample for sample in samples if sample["ratio"] < 4.5]
