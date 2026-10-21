@@ -578,17 +578,21 @@ WEEK6_SPREADS = {
 def test_week6_voids_only_the_six_totals():
     live = json.loads((LIVE_DIR / "2026-week-06.json").read_text())
     published = json.loads((PUBLIC_API / "picks.json").read_text())
-    assert published == live
+    # The site publishes the current card; once week 7 is live, the site JSON moves on.
+    week6_published = published.get("season") == 2026 and published.get("week") == 6
+    if week6_published:
+        assert published == live
     assert live["season"] == 2026
     assert live["week"] == 6
     assert live["official_lock"] is True
     assert live["created_at"] == "2026-10-13T11:27:41.742842+00:00"
     assert live["rule"] == {"spread_edge_min": 2.0, "total_edge_min": 3.0}
     assert live["totals_void_note"] == WEEK6_VOID_NOTE
-    assert live["health"]["wins"] == 2
-    assert live["health"]["losses"] == 4
-    assert live["health"]["pushes"] == 1
-    assert live["health"]["settled_picks"] == 7
+    # Health on this file is this week's spreads only, after the games were graded.
+    assert live["health"]["wins"] == 1
+    assert live["health"]["losses"] == 3
+    assert live["health"]["pushes"] == 0
+    assert live["health"]["settled_picks"] == 4
     week5 = json.loads((LIVE_DIR / "2026-week-05.json").read_text())
     assert week5["totals_void_note"] == VOID_NOTE
     assert week5["health"]["wins"] == 2
@@ -622,24 +626,6 @@ def test_week6_voids_only_the_six_totals():
             assert total_is_active(sel) is False
     assert voided == list(WEEK6_VOIDED_TOTALS)
     assert spreads == list(WEEK6_SPREADS)
-    summary = json.loads((PUBLIC_API / "summary.json").read_text())
-    assert summary["week"] == 6
-    assert summary["n_spread_picks"] == 4
-    assert summary["n_total_picks"] == 0
-    assert summary["health"]["wins"] == 2
-    assert summary["health"]["losses"] == 4
-    assert summary["health"]["pushes"] == 1
-    model = json.loads((PUBLIC_API / "model.json").read_text())
-    by_game = {row["game"]: row for row in model["games"]}
-    for game in live["games"]:
-        row = by_game[f"{game['away_team']}@{game['home_team']}"]
-        if game["game_id"] in WEEK6_VOIDED_TOTALS:
-            assert row["total_pick"] is None
-        assert row["is_pick"] is game["selection"]["spread_qualifies"]
-    assert by_game["CAR@PHI"]["spread_pick"] == "PHI -1.5"
-    assert by_game["TEN@IND"]["spread_pick"] == "IND -7"
-    assert by_game["ARI@LA"]["spread_pick"] == "ARI +13.5"
-    assert by_game["WAS@SF"]["spread_pick"] == "SF -7.5"
     home = (PUBLIC_API.parent / "index.html").read_text()
     assert "The original frozen-model record remains 10-19" in home
     assert WEEK6_VOID_NOTE not in home
@@ -658,6 +644,45 @@ def test_week6_voids_only_the_six_totals():
     ):
         assert phrase not in previews
     assert previews.count("Over/under voided Oct 15") == 6
+    if not week6_published:
+        return
+    summary = json.loads((PUBLIC_API / "summary.json").read_text())
+    assert summary["week"] == 6
+    assert summary["n_spread_picks"] == 4
+    assert summary["n_total_picks"] == 0
+    assert summary["health"]["wins"] == 1
+    assert summary["health"]["losses"] == 3
+    assert summary["health"]["pushes"] == 0
+    model = json.loads((PUBLIC_API / "model.json").read_text())
+    by_game = {row["game"]: row for row in model["games"]}
+    for game in live["games"]:
+        row = by_game[f"{game['away_team']}@{game['home_team']}"]
+        if game["game_id"] in WEEK6_VOIDED_TOTALS:
+            assert row["total_pick"] is None
+        assert row["is_pick"] is game["selection"]["spread_qualifies"]
+    assert by_game["CAR@PHI"]["spread_pick"] == "PHI -1.5"
+    assert by_game["TEN@IND"]["spread_pick"] == "IND -7"
+    assert by_game["ARI@LA"]["spread_pick"] == "ARI +13.5"
+    assert by_game["WAS@SF"]["spread_pick"] == "SF -7.5"
+
+
+def test_week6_publication_checks_run_after_site_moves_on(monkeypatch, tmp_path):
+    """Exercise the historical publication branch using the real publisher."""
+    from nfl_lab import publish
+
+    api = tmp_path / "api"
+    api.mkdir()
+    (tmp_path / "previews").mkdir()
+    for relative in ("index.html", "previews/week6.html"):
+        (tmp_path / relative).write_text((PUBLIC_API.parent / relative).read_text())
+    live = json.loads((LIVE_DIR / "2026-week-06.json").read_text())
+    monkeypatch.setattr(publish, "PUBLIC_API", api)
+    publish.publish_card(live, datetime(2026, 10, 20, tzinfo=timezone.utc))
+    (api / "model.json").write_text(json.dumps({
+        "games": [model_game_from_card(game) for game in live["games"]],
+    }))
+    monkeypatch.setitem(globals(), "PUBLIC_API", api)
+    test_week6_voids_only_the_six_totals()
 
 
 def test_nflverse_sign_matches_tb_at_dal_draftkings_lock():

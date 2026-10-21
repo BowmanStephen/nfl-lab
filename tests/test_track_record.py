@@ -17,7 +17,7 @@ def test_saved_weeks_keep_week5_record_and_week6_slate():
     payload = saved_weeks_payload()
     by_week = {week["week"]: week["games"] for week in payload["weeks"]}
     assert payload["season"] == 2026
-    assert payload["current_week"] == 6
+    assert payload["current_week"] == 7
     week5 = _outcomes(by_week[5])
     assert week5.count("win") == 2
     assert week5.count("loss") == 4

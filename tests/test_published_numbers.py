@@ -32,11 +32,12 @@ WITH_PUSH = re.compile(
 WEEK_FINAL = re.compile(r"Our picks went\s+(\d+)\s*[–-]\s*(\d+)(?:\s*[–-]\s*(\d+))?")
 
 
-def _cards() -> list[dict]:
+def _cards(season: int | None = None) -> list[dict]:
     cards = [json.loads(path.read_text()) for path in sorted(LIVE_DIR.glob("*.json"))]
     if not cards:
         raise AssertionError(f"no saved cards in {LIVE_DIR}")
-    season = max(int(card["season"]) for card in cards)
+    if season is None:
+        season = max(int(card["season"]) for card in cards)
     return [card for card in cards if int(card["season"]) == season]
 
 
@@ -213,6 +214,51 @@ def test_week5_recap_rejects_wrong_record_or_rate(monkeypatch, tmp_path, recap):
     monkeypatch.setitem(globals(), "PUBLIC", tmp_path)
     with pytest.raises(AssertionError):
         test_week5_recap_matches_saved_spread_grades()
+
+
+def test_week6_recap_matches_saved_spread_grades():
+    # Week 6 has no push. The season line is the record through that week.
+    card = json.loads((LIVE_DIR / "2026-week-06.json").read_text())
+    expected = _week_spread_record(card)
+    recap = (PUBLIC / "recaps" / "week6.html").read_text()
+    week_line = re.search(r"Week 6:\s+(\d+)\s*[–-]\s*(\d+)\.", recap)
+    assert week_line, "week 6 recap does not publish its spread record"
+    assert (int(week_line.group(1)), int(week_line.group(2)), 0) == expected
+    through = [item for item in _cards(season=2026) if int(item["week"]) <= 6]
+    wins, losses, pushes = _spread_record(_games(through))
+    season = WITH_PUSH.search(recap)
+    assert season, "week 6 recap does not publish the season record"
+    shown_pushes = 1 if season.group(3).lower() == "one" else int(season.group(3))
+    assert (int(season.group(1)), int(season.group(2)), shown_pushes) == (wins, losses, pushes)
+    decided = wins + losses
+    assert decided > 0
+    assert f"{100 * wins / decided:.1f}%" in recap
+
+
+def test_next_season_does_not_change_week6_recap(monkeypatch, tmp_path):
+    for week in (5, 6):
+        name = f"2026-week-{week:02d}.json"
+        (tmp_path / name).write_text((LIVE_DIR / name).read_text())
+    (tmp_path / "2027-week-01.json").write_text(json.dumps({
+        "season": 2027, "week": 1,
+        "games": [{"selection": {"spread_qualifies": True},
+                   "grading": {"spread_outcome": "win"}}],
+    }))
+    monkeypatch.setitem(globals(), "LIVE_DIR", tmp_path)
+    test_week6_recap_matches_saved_spread_grades()
+
+
+@pytest.mark.parametrize("recap", [
+    "Week 6: 2–2. The live 2026 record is now 3–7 with one push, 30.0%.",
+    "Week 6: 1–3. The live 2026 record is now 3–7 with one push, 40.0%.",
+    "Week 6: 1–3. The live 2026 record is now 4–6 with one push, 40.0%.",
+])
+def test_week6_recap_rejects_wrong_record_or_rate(monkeypatch, tmp_path, recap):
+    (tmp_path / "recaps").mkdir()
+    (tmp_path / "recaps" / "week6.html").write_text(recap)
+    monkeypatch.setitem(globals(), "PUBLIC", tmp_path)
+    with pytest.raises(AssertionError):
+        test_week6_recap_matches_saved_spread_grades()
 
 
 def test_week_record_is_required_once_every_game_has_a_score():

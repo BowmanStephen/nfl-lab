@@ -13,6 +13,8 @@ from pathlib import Path
 
 import pytest
 
+from nfl_lab.config import LIVE_DIR
+
 ROOT = Path(__file__).resolve().parents[1]
 RENDER = ROOT / "tests" / "js" / "render_page.js"
 PICKS = ROOT / "public" / "api" / "picks.json"
@@ -52,8 +54,13 @@ def _live():
     return json.loads(PICKS.read_text())
 
 
+def _week6_card():
+    """The void-note card. The site now publishes week 7, which has no void note."""
+    return json.loads((LIVE_DIR / "2026-week-06.json").read_text())
+
+
 def test_void_note_is_the_only_home_note(tmp_path):
-    card = _live()
+    card = _week6_card()
     assert card["totals_void_note"] == VOID_NOTE
     out = _render("index.html", card, tmp_path)
     assert out["totals-void-note"]["hidden"] is False
@@ -66,7 +73,7 @@ def test_void_note_is_the_only_home_note(tmp_path):
 
 def test_pause_note_shows_when_a_total_would_be_active(tmp_path):
     card = _live()
-    card.pop("totals_void_note")
+    card.pop("totals_void_note", None)
     game = card["games"][0]
     game["selection"]["total_voided"] = False
     game["selection"]["total_qualifies"] = True
@@ -85,7 +92,7 @@ def test_pause_note_shows_when_a_total_would_be_active(tmp_path):
 
 def test_pause_note_shows_on_a_future_card_with_no_locked_totals(tmp_path):
     card = _live()
-    card.pop("totals_void_note")
+    card.pop("totals_void_note", None)
     card["totals_paused"] = True
     for game in card["games"]:
         game["selection"]["total_qualifies"] = False
@@ -98,7 +105,8 @@ def test_pause_note_shows_on_a_future_card_with_no_locked_totals(tmp_path):
 
 def test_pause_note_stays_hidden_when_totals_are_not_paused(tmp_path):
     card = _live()
-    card.pop("totals_void_note")
+    card.pop("totals_void_note", None)
+    card["totals_paused"] = False
     for game in card["games"]:
         game["selection"]["total_qualifies"] = False
         game["selection"].pop("total_voided", None)
@@ -108,7 +116,7 @@ def test_pause_note_stays_hidden_when_totals_are_not_paused(tmp_path):
 
 def test_ledger_says_over_under_paused_instead_of_a_live_total(tmp_path):
     card = _live()
-    card.pop("totals_void_note")
+    card.pop("totals_void_note", None)
     game = next(g for g in card["games"] if g["selection"]["spread_qualifies"])
     game["selection"]["total_voided"] = False
     game["selection"]["total_qualifies"] = True
@@ -127,7 +135,7 @@ def test_ledger_says_over_under_paused_instead_of_a_live_total(tmp_path):
 
 
 def test_ledger_keeps_the_void_note_and_skips_the_pause_line(tmp_path):
-    card = _live()
+    card = _week6_card()
     out = _render("ledger.html", card, tmp_path)
     assert out["totals-void-note"]["text"] == CLARIFIED_VOID_NOTE
     assert out["totals-paused"]["hidden"] is True
