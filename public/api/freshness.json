@@ -1,48 +1,48 @@
 {
-  "generated_at": "2026-10-20T06:24:29.851946-05:00",
-  "stale_after": "2026-10-21T18:24:29.851946-05:00",
+  "generated_at": "2026-10-21T06:24:49.318883-05:00",
+  "stale_after": "2026-10-22T18:24:49.318883-05:00",
   "files": [
     {
       "path": "api/baseline.json",
       "bytes": 4704,
       "sha256": "99c3be16425e12796a9ad9e458a5c9a2f28a3466dc8ac87c8bf52277a0ec6344",
-      "updated_at": "2026-10-20T06:24:29.851946-05:00"
+      "updated_at": "2026-10-21T06:24:49.318883-05:00"
     },
     {
       "path": "api/model.json",
       "bytes": 14375,
       "sha256": "de9dbaad47a7c5db39fc251a545009c36f15368b229234c87d93369e00907e89",
-      "updated_at": "2026-10-20T06:24:29.851946-05:00"
+      "updated_at": "2026-10-21T06:24:49.318883-05:00"
     },
     {
       "path": "api/picks.json",
       "bytes": 23161,
       "sha256": "b894227159aa4cffeb0391a3511ee18f2e1c9dabae44714c2320ac3909a2d0de",
-      "updated_at": "2026-10-20T06:24:29.851946-05:00"
+      "updated_at": "2026-10-21T06:24:49.318883-05:00"
     },
     {
       "path": "api/report_card.json",
       "bytes": 49091,
       "sha256": "f59870fd55bef75b896d750180d63e9df26003ebf35276903aeb3d41668f72bd",
-      "updated_at": "2026-10-20T06:24:29.851946-05:00"
+      "updated_at": "2026-10-21T06:24:49.318883-05:00"
     },
     {
       "path": "api/saved_weeks.json",
       "bytes": 16342,
       "sha256": "20ef0627e92a73ba3d6d8b5b900e03ecb60a86e6b86cbde46db2a0a0879e2b7f",
-      "updated_at": "2026-10-20T06:24:29.851946-05:00"
+      "updated_at": "2026-10-21T06:24:49.318883-05:00"
     },
     {
       "path": "api/summary.json",
       "bytes": 484,
-      "sha256": "110386f7cfacf0372d0cc98c04b027fb269e3997984b335c512783e8c60eba42",
-      "updated_at": "2026-10-20T06:24:29.851946-05:00"
+      "sha256": "1c277f6f5df7c55a11d81297fed2acd66a62feeb58ad99efe6ea8fdcbe50b6c4",
+      "updated_at": "2026-10-21T06:24:49.318883-05:00"
     },
     {
       "path": "api/teams.json",
       "bytes": 38600,
       "sha256": "16953323a789d932cc733305abb078c416e02b08c52d8bb6c31b8d667e0f192b",
-      "updated_at": "2026-10-20T06:24:29.851946-05:00"
+      "updated_at": "2026-10-21T06:24:49.318883-05:00"
     }
   ]
 }
